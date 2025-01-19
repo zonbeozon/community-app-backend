@@ -1,6 +1,7 @@
 package com.zonbeozon.communityapp.crpyto.fetch.upbit;
 
 import com.zonbeozon.communityapp.crpyto.domain.market.Market;
+import com.zonbeozon.communityapp.crpyto.domain.market.MarketType;
 import com.zonbeozon.communityapp.crpyto.fetch.MarketFetcher;
 import com.zonbeozon.communityapp.crpyto.fetch.dto.MarketFetchResult;
 import com.zonbeozon.communityapp.crpyto.fetch.upbit.dto.UpbitMarketRequest;
@@ -38,7 +39,8 @@ public class UpbitMarketFetcher implements MarketFetcher {
                 .map(r-> new MarketRequest(
                         r.getMarketCode(),
                         r.getKoreanName(),
-                        r.getEnglishName()))
+                        r.getEnglishName(),
+                        MarketType.fromPairString(r.getMarketCode())))
                 .map(Market::fromDto).toList();
 
         marketFetchResult.setMarkets(markets);

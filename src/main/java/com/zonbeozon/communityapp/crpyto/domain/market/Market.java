@@ -34,20 +34,26 @@ public class Market {
     @JoinColumn(name = "ticker_id")
     private Ticker ticker;
 
+    @Enumerated(value = EnumType.STRING)
+    private MarketType marketType;
+
     private Market(
             String marketCode,
             String koreanName,
-            String englishName) {
+            String englishName,
+            MarketType marketType) {
         this.marketCode = marketCode;
         this.koreanName = koreanName;
         this.englishName = englishName;
+        this.marketType = marketType;
     }
 
     public static Market fromDto(MarketRequest marketRequest) {
         return new Market(
                 marketRequest.getMarketCode(),
                 marketRequest.getKoreanName(),
-                marketRequest.getEnglishName()
+                marketRequest.getEnglishName(),
+                marketRequest.getMarketType()
         );
     }
 }
