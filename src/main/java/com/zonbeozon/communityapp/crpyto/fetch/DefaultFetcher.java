@@ -1,5 +1,7 @@
 package com.zonbeozon.communityapp.crpyto.fetch;
 
+import com.zonbeozon.communityapp.crpyto.exception.FetchException;
+import com.zonbeozon.communityapp.exception.ErrorCode;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -41,12 +43,14 @@ public class DefaultFetcher {
                     );
             T dto = responseEntity.getBody();
             if(dto == null) {
-                throw new RuntimeException("DTO is null");
+                throw new RestClientException("dto is null");
             }
             validate(dto);
             return dto;
-        } catch (RestClientException | ClassCastException e) {
-            throw new RuntimeException(e);
+        } catch (RestClientException e) {
+            throw new FetchException(ErrorCode.EXTERNAL_SERVICE_COMMUNICATION_FAILED);
+        } catch (ClassCastException e) {
+            throw new FetchException(ErrorCode.CAST_FAILED);
         }
     }
 

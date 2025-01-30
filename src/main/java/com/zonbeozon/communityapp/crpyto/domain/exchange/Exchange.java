@@ -14,25 +14,32 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class Exchange {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exchange_id")
     private Long id;
 
+    @Column(nullable = false)
     private String englishName;
+    @Column(nullable = false)
     private String koreanName;
+    @Column(nullable = false)
     private String description;
 
     @OneToMany(mappedBy = "exchange")
     private Set<ExchangeMarket> exchangeMarkets = new HashSet<>();
 
+    private Exchange(String englishName, String koreanName, String description) {
+        this.englishName = englishName;
+        this.koreanName = koreanName;
+        this.description = description;
+    }
+
     public static Exchange fromDto(ExchangeRequest exchangeRequest) {
-        Exchange exchange = new Exchange();
-        exchange.setEnglishName(exchangeRequest.getEnglishName());
-        exchange.setKoreanName(exchangeRequest.getKoreanName());
-        exchange.setDescription(exchangeRequest.getDescription());
-        return exchange;
+        return new Exchange(
+                exchangeRequest.englishName(),
+                exchangeRequest.koreanName(),
+                exchangeRequest.description());
     }
 }

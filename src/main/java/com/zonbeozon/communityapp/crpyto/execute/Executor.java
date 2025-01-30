@@ -26,14 +26,14 @@ public class Executor {
                 .forEach(Updater::update);
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelayString ="${scheduler.delay.five-sec}", initialDelayString = "${scheduler.delay.five-sec}")
     public void fiveSecExecute() {
         updaters.stream()
                 .filter(updater->updater.getExecuteTypes().contains(ExecuteType.FIVE_SEC))
                 .forEach(Updater::update);
     }
 
-    @Scheduled(fixedDelay = 3600000)
+    @Scheduled(fixedDelayString = "${scheduler.delay.one-hour}", initialDelayString = "${scheduler.delay.one-hour}")
     public void OneHourExecute() {
         updaters.stream()
                 .filter(updater->updater.getExecuteTypes().contains(ExecuteType.ONE_HOUR))
@@ -42,16 +42,18 @@ public class Executor {
 
 
     private void addDefaultExchanges() {
-        ExchangeRequest upbitExchangeRequest = new ExchangeRequest();
-        upbitExchangeRequest.setKoreanName("업비트");
-        upbitExchangeRequest.setEnglishName("upbit");
-        upbitExchangeRequest.setDescription("업비트 거래소.");
+        ExchangeRequest upbitExchangeRequest = ExchangeRequest.builder()
+                .koreanName("업비트")
+                .englishName("upbit")
+                .description("업비트 거래소")
+                .build();
         exchangeService.register(upbitExchangeRequest);
 
-        ExchangeRequest bithumbExchangeRequest = new ExchangeRequest();
-        bithumbExchangeRequest.setKoreanName("빗썸");
-        bithumbExchangeRequest.setEnglishName("bithumb");
-        bithumbExchangeRequest.setDescription("빗썸 거래소.");
+        ExchangeRequest bithumbExchangeRequest = ExchangeRequest.builder()
+                .koreanName("빗썸")
+                .englishName("bithumb")
+                .description("빗썸 거래소")
+                .build();
         exchangeService.register(bithumbExchangeRequest);
     }
 

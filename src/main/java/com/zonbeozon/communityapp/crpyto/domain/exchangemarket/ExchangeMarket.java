@@ -10,16 +10,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(uniqueConstraints = @UniqueConstraint(
+        name = "uk_exchange_id_market_id",
+        columnNames = {"exchange_id", "market_id"}
+))
 public class ExchangeMarket {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exchange_market_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exchange_id")
+    @JoinColumn(name = "exchange_id", nullable = false)
     private Exchange exchange;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_id")
+    @JoinColumn(name = "market_id", nullable = false)
     private Market market;
 
     public ExchangeMarket(Exchange exchange, Market market) {

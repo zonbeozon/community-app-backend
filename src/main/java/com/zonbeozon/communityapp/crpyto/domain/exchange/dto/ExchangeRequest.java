@@ -1,12 +1,11 @@
 package com.zonbeozon.communityapp.crpyto.domain.exchange.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Setter
-@Getter
-public class ExchangeRequest {
-    private String englishName;
-    private String koreanName;
-    private String description;
+@Builder
+public record ExchangeRequest(
+        String englishName,
+        String koreanName,
+        String description
+) {
 }

@@ -3,88 +3,42 @@ package com.zonbeozon.communityapp.crypto;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.dto.ExchangeRequest;
 import com.zonbeozon.communityapp.crpyto.domain.market.Market;
+import com.zonbeozon.communityapp.crpyto.domain.market.MarketType;
 import com.zonbeozon.communityapp.crpyto.domain.market.dto.MarketRequest;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.Ticker;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.dto.TickerRequest;
+import org.yaml.snakeyaml.error.Mark;
 
 import java.time.LocalDateTime;
 
 public class ExampleObjectFactory {
-    public static ExchangeRequest createExampleExchangeRequest(
-            String englishName,
-            String koreanName,
-            String description) {
-        ExchangeRequest exchangeRequest = new ExchangeRequest();
-        exchangeRequest.setEnglishName(englishName);
-        exchangeRequest.setKoreanName(koreanName);
-        exchangeRequest.setDescription(description);
-        return exchangeRequest;
-    }
-
-    public static Exchange createExampleExchange(
-            long id,
+    public static Exchange createExchange(
             String englishName,
             String koreanName,
             String description
     ) {
-        Exchange exchange = Exchange.fromDto(createExampleExchangeRequest(
-                englishName,
-                koreanName,
-                description));
-        exchange.setId(id);
-        return exchange;
+        return Exchange.fromDto(ExchangeRequest.builder()
+                        .englishName(englishName)
+                        .koreanName(koreanName)
+                        .description(description)
+                        .build());
     }
 
-    public static Exchange createExampleExchange(
+    public static Market createMarket(
+            String marketCode,
+            String koreanName,
             String englishName,
-            String koreanName,
-            String description
+            MarketType marketType
     ) {
-        return Exchange.fromDto(createExampleExchangeRequest(
-                englishName,
-                koreanName,
-                description));
+        return Market.fromDto(MarketRequest.builder()
+                        .koreanName(koreanName)
+                        .marketType(marketType)
+                        .englishName(englishName)
+                        .marketCode(marketCode)
+                        .build());
     }
 
-    public static MarketRequest createExampleMarketRequest(
-            String marketCode,
-            String koreanName,
-            String englishName) {
-        MarketRequest marketRequest = new MarketRequest();
-        marketRequest.setMarketCode(marketCode);
-        marketRequest.setKoreanName(koreanName);
-        marketRequest.setEnglishName(englishName);
-        return marketRequest;
-    }
-
-    public static Market createExampleMarket(
-            long id,
-            String marketCode,
-            String koreanName,
-            String englishName
-    ) {
-        Market market = Market.fromDto(createExampleMarketRequest(
-                marketCode,
-                koreanName,
-                englishName
-        ));
-        market.setId(id);
-        return market;
-    }
-
-    public static Market createExampleMarket(
-            String marketCode,
-            String koreanName,
-            String englishName
-    ) {
-        return Market.fromDto(createExampleMarketRequest(
-                marketCode,
-                koreanName,
-                englishName
-        ));
-    }
-
-    public static TickerRequest createExampleTickerRequest(
+    public static Ticker createTicker(
             String marketCode,
             double openingPrice,
             double highPrice,
@@ -92,70 +46,17 @@ public class ExampleObjectFactory {
             double tradePrice,
             double signedChangePrice,
             double signedChangeRate,
-            double accTracePrice,
-            LocalDateTime updatedAt
+            double accTracePrice
     ) {
-        TickerRequest tickerRequest = new TickerRequest();
-        tickerRequest.setMarketCode(marketCode);
-        tickerRequest.setOpeningPrice(openingPrice);
-        tickerRequest.setHighPrice(highPrice);
-        tickerRequest.setLowPrice(lowPrice);
-        tickerRequest.setTradePrice(tradePrice);
-        tickerRequest.setSignedChangePrice(signedChangePrice);
-        tickerRequest.setSignedChangeRate(signedChangeRate);
-        tickerRequest.setAccTradePrice(accTracePrice);
-        tickerRequest.setUpdatedAt(updatedAt);
-        return tickerRequest;
-    }
-
-    public static Ticker createExampleTicker(
-            long id,
-            String marketCode,
-            double openingPrice,
-            double highPrice,
-            double lowPrice,
-            double tradePrice,
-            double signedChangePrice,
-            double signedChangeRate,
-            double accTracePrice,
-            LocalDateTime updatedAt
-    ) {
-        Ticker ticker = Ticker.fromDto(createExampleTickerRequest(
-                marketCode,
-                openingPrice,
-                highPrice,
-                lowPrice,
-                tradePrice,
-                signedChangePrice,
-                signedChangeRate,
-                accTracePrice,
-                updatedAt
-        ));
-        ticker.setId(id);
-        return ticker;
-    }
-
-    public static Ticker createExampleTicker(
-            String marketCode,
-            double openingPrice,
-            double highPrice,
-            double lowPrice,
-            double tradePrice,
-            double signedChangePrice,
-            double signedChangeRate,
-            double accTracePrice,
-            LocalDateTime updatedAt
-    ) {
-        return Ticker.fromDto(createExampleTickerRequest(
-                marketCode,
-                openingPrice,
-                highPrice,
-                lowPrice,
-                tradePrice,
-                signedChangePrice,
-                signedChangeRate,
-                accTracePrice,
-                updatedAt
-        ));
+        return Ticker.fromDto(TickerRequest.builder()
+                        .marketCode(marketCode)
+                        .openingPrice(openingPrice)
+                        .highPrice(highPrice)
+                        .lowPrice(lowPrice)
+                        .tradePrice(tradePrice)
+                        .signedChangePrice(signedChangePrice)
+                        .signedChangeRate(signedChangeRate)
+                        .accTradePrice(accTracePrice)
+                .build());
     }
 }

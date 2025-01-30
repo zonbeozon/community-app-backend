@@ -33,7 +33,4 @@ public class UpbitTickerRequest {
     @NotNull(message = "Accumulated trade price cannot be null")
     @JsonProperty("acc_trade_price")
     private Double accTradePrice;
-    @NotNull(message = "Timestamp cannot be null")
-    @JsonProperty("timestamp")
-    private Double updatedAt;
 }

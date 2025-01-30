@@ -1,46 +1,47 @@
 package com.zonbeozon.communityapp.crpyto.domain.ticker;
 
+import com.zonbeozon.communityapp.common.entity.BaseTimeEntity;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
 import com.zonbeozon.communityapp.crpyto.domain.market.Market;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.dto.TickerRequest;
-import com.zonbeozon.communityapp.crpyto.fetch.upbit.dto.UpbitTickerRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ticker {
+public class Ticker extends BaseTimeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticker_id")
     private Long id;
 
+    @Column(nullable = false)
     private String marketCode;
+    @Column(nullable = false)
     private Double openingPrice;
+    @Column(nullable = false)
     private Double highPrice;
+    @Column(nullable = false)
     private Double lowPrice;
+    @Column(nullable = false)
     private Double tradePrice;
+    @Column(nullable = false)
     private Double signedChangePrice;
+    @Column(nullable = false)
     private Double signedChangeRate;
+    @Column(nullable = false)
     private Double accTradePrice;
-    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exchange_id")
+    @JoinColumn(name = "exchange_id", nullable = false)
     private Exchange exchange;
 
     @OneToOne(mappedBy = "ticker")
     private Market market;
 
+    @Builder
     private Ticker(
             String marketCode,
             Double openingPrice,
@@ -49,32 +50,28 @@ public class Ticker {
             Double tradePrice,
             Double signedChangePrice,
             Double signedChangeRate,
-            Double accTradePrice,
-            LocalDateTime updatedAt) {
+            Double accTradePrice
+    ) {
         this.marketCode = marketCode;
         this.openingPrice = openingPrice;
         this.highPrice = highPrice;
         this.lowPrice = lowPrice;
         this.tradePrice = tradePrice;
-
         this.signedChangePrice = signedChangePrice;
         this.signedChangeRate = signedChangeRate;
         this.accTradePrice = accTradePrice;
-        this.updatedAt = updatedAt;
     }
 
     public static Ticker fromDto(TickerRequest tickerRequest) {
-        return new Ticker(
-                tickerRequest.getMarketCode(),
-                tickerRequest.getOpeningPrice(),
-                tickerRequest.getHighPrice(),
-                tickerRequest.getLowPrice(),
-                tickerRequest.getTradePrice(),
-                tickerRequest.getSignedChangePrice(),
-                tickerRequest.getSignedChangeRate(),
-                tickerRequest.getAccTradePrice(),
-                tickerRequest.getUpdatedAt()
-        );
-
+        return Ticker.builder()
+                .marketCode(tickerRequest.marketCode())
+                .openingPrice(tickerRequest.openingPrice())
+                .highPrice(tickerRequest.highPrice())
+                .lowPrice(tickerRequest.lowPrice())
+                .tradePrice(tickerRequest.tradePrice())
+                .signedChangePrice(tickerRequest.signedChangePrice())
+                .signedChangeRate(tickerRequest.signedChangeRate())
+                .accTradePrice(tickerRequest.accTradePrice())
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.zonbeozon.communityapp.crypto.fetch;
 
+import com.zonbeozon.communityapp.crpyto.exception.FetchException;
 import com.zonbeozon.communityapp.crpyto.fetch.DefaultFetcher;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -7,7 +8,11 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +25,14 @@ import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DefaultFetcherTest {
-    private DefaultFetcher defaultFetcher;
+    @Mock
     private RestTemplate mockRestTemplate;
+    @Mock
     private Validator mockValidator;
+    @InjectMocks
+    private DefaultFetcher defaultFetcher;
 
     String exampleUrl = "http://example.com";
     String exampleParamValue = "key";
@@ -87,7 +96,7 @@ public class DefaultFetcherTest {
                 eq(null),
                 any(ParameterizedTypeReference.class))).thenThrow(RestClientException.class);
 
-        Assertions.assertThrows(RuntimeException.class,
+        Assertions.assertThrows(FetchException.class,
                 () -> defaultFetcher.fetchWithParam(exampleUrl, params, responseType));
     }
 

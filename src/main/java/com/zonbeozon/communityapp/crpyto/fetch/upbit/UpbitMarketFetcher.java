@@ -36,13 +36,13 @@ public class UpbitMarketFetcher implements MarketFetcher {
     public MarketFetchResult convert(List<UpbitMarketRequest> upbitMarketRequests) {
         MarketFetchResult marketFetchResult = new MarketFetchResult();
         List<Market> markets = upbitMarketRequests.stream()
-                .map(r-> new MarketRequest(
-                        r.getMarketCode(),
-                        r.getKoreanName(),
-                        r.getEnglishName(),
-                        MarketType.fromPairString(r.getMarketCode())))
+                .map(r-> MarketRequest.builder()
+                        .marketCode(r.getMarketCode())
+                        .koreanName(r.getKoreanName())
+                        .englishName(r.getEnglishName())
+                        .marketType(MarketType.fromPairString(r.getMarketCode(), false))
+                        .build())
                 .map(Market::fromDto).toList();
-
         marketFetchResult.setMarkets(markets);
         marketFetchResult.setExchangeName(exchangeName);
 

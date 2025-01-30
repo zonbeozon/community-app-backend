@@ -1,7 +1,5 @@
 package com.zonbeozon.communityapp.crypto.domain.ticker;
 
-import com.zonbeozon.communityapp.crpyto.domain.market.Market;
-import com.zonbeozon.communityapp.crpyto.domain.market.dto.MarketRequest;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.Ticker;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.dto.TickerRequest;
 import com.zonbeozon.communityapp.crypto.ExampleObjectFactory;
@@ -13,29 +11,27 @@ import java.time.LocalDateTime;
 public class TickerTest {
     @Test
     void DTO로_부터_엔터티가_제대로_생성되어야_한다() {
-        TickerRequest tickerRequest = ExampleObjectFactory.createExampleTickerRequest(
-                "BTC-USDT",
-                1000.,
-                1000.,
-                1000.,
-                1000.,
-                1000.,
-                10.,
-                1000.,
-                LocalDateTime.of(2000,1,1,0,0,0)
-        );
+        TickerRequest tickerRequest = TickerRequest.builder()
+                .marketCode("BTC-USDT")
+                .highPrice(100.)
+                .lowPrice(100.)
+                .openingPrice(100.)
+                .tradePrice(100.)
+                .accTradePrice(100.)
+                .signedChangeRate(10.)
+                .signedChangePrice(1.)
+                .build();
 
         Ticker ticker = Ticker.fromDto(tickerRequest);
 
-        Assertions.assertEquals(tickerRequest.getMarketCode(), ticker.getMarketCode());
-        Assertions.assertEquals(tickerRequest.getHighPrice(), ticker.getHighPrice());
-        Assertions.assertEquals(tickerRequest.getLowPrice(), ticker.getLowPrice());
-        Assertions.assertEquals(tickerRequest.getOpeningPrice(), ticker.getOpeningPrice());
-        Assertions.assertEquals(tickerRequest.getTradePrice(), ticker.getTradePrice());
-        Assertions.assertEquals(tickerRequest.getAccTradePrice(), ticker.getAccTradePrice());
-        Assertions.assertEquals(tickerRequest.getSignedChangeRate(), ticker.getSignedChangeRate());
-        Assertions.assertEquals(tickerRequest.getSignedChangePrice(), ticker.getSignedChangePrice());
-        Assertions.assertEquals(tickerRequest.getUpdatedAt(), ticker.getUpdatedAt());
+        Assertions.assertEquals(tickerRequest.marketCode(), ticker.getMarketCode());
+        Assertions.assertEquals(tickerRequest.highPrice(), ticker.getHighPrice());
+        Assertions.assertEquals(tickerRequest.lowPrice(), ticker.getLowPrice());
+        Assertions.assertEquals(tickerRequest.openingPrice(), ticker.getOpeningPrice());
+        Assertions.assertEquals(tickerRequest.tradePrice(), ticker.getTradePrice());
+        Assertions.assertEquals(tickerRequest.accTradePrice(), ticker.getAccTradePrice());
+        Assertions.assertEquals(tickerRequest.signedChangeRate(), ticker.getSignedChangeRate());
+        Assertions.assertEquals(tickerRequest.signedChangePrice(), ticker.getSignedChangePrice());
 
     }
 }

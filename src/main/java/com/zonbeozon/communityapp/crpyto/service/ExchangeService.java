@@ -3,6 +3,8 @@ package com.zonbeozon.communityapp.crpyto.service;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.dto.ExchangeRequest;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.repository.ExchangeRepository;
+import com.zonbeozon.communityapp.crpyto.exception.ExchangeException;
+import com.zonbeozon.communityapp.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
 
-    public long register(ExchangeRequest exchangeRequest) {
-        if(isDuplicate(exchangeRequest.getEnglishName())) {
-            throw new RuntimeException("Exchange name already exists");
+    public void register(ExchangeRequest exchangeRequest) {
+        if(isDuplicate(exchangeRequest.englishName())) {
+            throw new ExchangeException(ErrorCode.DUPLICATE_EXCHANGE);
         }
-        return exchangeRepository.save(Exchange.fromDto(exchangeRequest)).getId();
+        exchangeRepository.save(Exchange.fromDto(exchangeRequest));
     }
 
     @Transactional(readOnly = true)
@@ -28,6 +30,6 @@ public class ExchangeService {
     @Transactional(readOnly = true)
     public Exchange findByName(String exchangeName) {
         return exchangeRepository.findByEnglishName(exchangeName)
-                .orElseThrow(() -> new RuntimeException("Exchange not found"));
+                .orElseThrow(() -> new ExchangeException(ErrorCode.EXCHANGE_NOT_FOUND));
     }
 }
