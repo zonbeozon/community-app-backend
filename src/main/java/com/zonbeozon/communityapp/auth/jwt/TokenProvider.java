@@ -44,22 +44,22 @@ public class TokenProvider {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+        return generateToken(authentication, now, expiryDate);
     }
 
     public void generateRefreshToken(Authentication authentication, String accessToken) {
-        String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
-        tokenService.saveOrUpdate(authentication.getName(), accessToken, refreshToken);
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        String refreshToken = generateToken(authentication, now, expiryDate);
+        tokenService.saveOrUpdate(authentication.getName(), accessToken, refreshToken, expiryDate);
     }
 
-    private String generateToken(Authentication authentication, long expireTime) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expireTime);
-
+    private String generateToken(Authentication authentication,Date now, Date expiryDate) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining());
-
         return Jwts.builder()
                 .subject(authentication.getName())
                 .claim(KEY_ROLE, authorities)
@@ -86,6 +86,9 @@ public class TokenProvider {
                 tokenService.updatedAccessToken(reissueAccessToken, token);
                 return reissueAccessToken;
             }
+            //refresh token이 만료된 경우
+            tokenService.deleteToken(token.getMemberKey());
+            throw new TokenException(ErrorCode.TOKEN_EXPIRED);
         }
         return null;
     }

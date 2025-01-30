@@ -8,35 +8,39 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TokenService {
     private final TokenRepository tokenRepository;
 
-    @Transactional
-    public void saveOrUpdate(String username, String accessToken, String refreshToken) {
+    public void saveOrUpdate(String memberKey, String accessToken, String refreshToken, Date expiresAt) {
         Token token = tokenRepository.findByAccessToken(accessToken)
-                .map(t->t.updateRefreshToken(refreshToken))
-                .orElseGet(()->new Token(username, accessToken, refreshToken));
+                .map(t-> t.updateRefreshToken(refreshToken, expiresAt))
+                .orElseGet(()->new Token(memberKey, accessToken, refreshToken, expiresAt));
 
         tokenRepository.save(token);
     }
 
+    @Transactional(readOnly = true)
     public Token findByAccessTokenOrThrow(String accessToken) {
         return tokenRepository.findByAccessToken(accessToken)
                 .orElseThrow(() -> new TokenException(ErrorCode.TOKEN_EXPIRED));
     }
 
-    @Transactional
     public void updatedAccessToken(String accessToken, Token token) {
         token.setAccessToken(accessToken);
         tokenRepository.save(token);
     }
 
-    @Transactional
     public void deleteToken(String memberKey) {
         tokenRepository.deleteByMemberKey(memberKey);
     }
 
-
+    public void deleteExpiredTokens(Date now) {
+        tokenRepository.deleteExpiredTokens(now);
+    }
 }
