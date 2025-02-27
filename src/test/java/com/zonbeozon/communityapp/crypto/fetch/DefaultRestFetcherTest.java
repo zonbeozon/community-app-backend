@@ -1,12 +1,12 @@
 package com.zonbeozon.communityapp.crypto.fetch;
 
 import com.zonbeozon.communityapp.crpyto.exception.FetchException;
-import com.zonbeozon.communityapp.crpyto.fetch.DefaultFetcher;
+import com.zonbeozon.communityapp.crpyto.fetch.DefaultRestFetcher;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,13 +26,15 @@ import java.util.Set;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultFetcherTest {
+public class DefaultRestFetcherTest {
     @Mock
-    private RestTemplate mockRestTemplate;
+    private RestTemplate restTemplate;
     @Mock
-    private Validator mockValidator;
+    private Validator validator;
+    @Mock
+    private ResponseEntity<Object> responseEntity;
     @InjectMocks
-    private DefaultFetcher defaultFetcher;
+    private DefaultRestFetcher defaultRestFetcher;
 
     String exampleUrl = "http://example.com";
     String exampleParamValue = "key";
@@ -40,31 +42,23 @@ public class DefaultFetcherTest {
 
     String paramIncludeUrl = createUrl();
     MultiValueMap<String, String> params = createParams();
-    ParameterizedTypeReference<TestClass> responseType = new ParameterizedTypeReference<>() {};
-
-
-    @BeforeEach
-    void setup() {
-        mockRestTemplate = mock(RestTemplate.class);
-        mockValidator = mock(Validator.class);
-        defaultFetcher = new DefaultFetcher(mockRestTemplate, mockValidator);
-    }
+    ParameterizedTypeReference<Object> responseType = new ParameterizedTypeReference<>() {};
 
     @Test
-    void 요청한_url_파라미터_응답_타입에_맞게_요청을_보내야_한다() {
+    @DisplayName("요청한 url 파라미터 응답 타입에 맞게 요청을 보내야 한다")
+    void shouldSendGetRequestWithCorrectUrlAndResponseType() {
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        ResponseEntity<TestClass> mockResponse = mock(ResponseEntity.class);
-        when(mockResponse.getBody()).thenReturn(new TestClass());
-        when(mockRestTemplate.exchange(
+        when(responseEntity.getBody()).thenReturn(new Object());
+        when(restTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
-                any(ParameterizedTypeReference.class))).thenReturn(mockResponse);
-        when(mockValidator.validate(any())).thenReturn(Set.of());
+                any(ParameterizedTypeReference.class))).thenReturn(responseEntity);
+        when(validator.validate(any())).thenReturn(Set.of());
 
-        defaultFetcher.fetchWithParam(exampleUrl, params, responseType);
+        defaultRestFetcher.fetchWithParam(exampleUrl, params, responseType);
 
-        verify(mockRestTemplate).exchange(
+        verify(restTemplate).exchange(
                 urlCaptor.capture(),
                 eq(HttpMethod.GET),
                 eq(null),
@@ -74,30 +68,31 @@ public class DefaultFetcherTest {
     }
 
     @Test
-    void 검증에서_문제가_발생하면_예외를_발생시킨다() {
-        ResponseEntity<TestClass> mockResponse = mock(ResponseEntity.class);
-        when(mockResponse.getBody()).thenReturn(new TestClass());
-        when(mockRestTemplate.exchange(
+    @DisplayName("검증에서 문제가 발생하면 예외를 발생시킨다")
+    void shouldThrowConstraintViolationExceptionWhenValidationFails() {
+        when(responseEntity.getBody()).thenReturn(responseEntity);
+        when(restTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
-                any(ParameterizedTypeReference.class))).thenReturn(mockResponse);
-        when(mockValidator.validate(any())).thenReturn(Set.of(createConstraintViolation()));
+                any(ParameterizedTypeReference.class))).thenReturn(responseEntity);
+        when(validator.validate(any())).thenReturn(Set.of(createConstraintViolation()));
 
-        Assertions.assertThrows(ConstraintViolationException.class,
-                () -> defaultFetcher.fetchWithParam(exampleUrl, params, responseType));
+        Assertions.assertThrows(FetchException.class,
+                () -> defaultRestFetcher.fetchWithParam(exampleUrl, params, responseType));
     }
 
     @Test
-    void restTemplate_에러가_발생하면_예외를_발생시킨다() {
-        when(mockRestTemplate.exchange(
+    @DisplayName("restTemplate_예외가_발생하면_예외를_발생시킨다")
+    void shouldThrowFetchExceptionWhenRestTemplateThrowsException() {
+        when(restTemplate.exchange(
                 anyString(),
                 eq(HttpMethod.GET),
                 eq(null),
                 any(ParameterizedTypeReference.class))).thenThrow(RestClientException.class);
 
         Assertions.assertThrows(FetchException.class,
-                () -> defaultFetcher.fetchWithParam(exampleUrl, params, responseType));
+                () -> defaultRestFetcher.fetchWithParam(exampleUrl, params, responseType));
     }
 
     private MultiValueMap<String, String> createParams() {
@@ -109,8 +104,6 @@ public class DefaultFetcherTest {
     private String createUrl() {
         return exampleUrl + "?" + exampleParamName + "=" + exampleParamValue;
     }
-
-    private static class TestClass {}
 
     private ConstraintViolation<Object> createConstraintViolation() {
         return mock(ConstraintViolation.class);
