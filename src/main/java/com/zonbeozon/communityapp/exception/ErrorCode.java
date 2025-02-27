@@ -9,6 +9,8 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    //common
+    SERVER_ERROR(INTERNAL_SERVER_ERROR, "Internal Server Error"),
     // auth
     ILLEGAL_REGISTRATION_ID(NOT_ACCEPTABLE, "illegal registration id"),
     TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
@@ -20,16 +22,26 @@ public enum ErrorCode {
     DUPLICATE_EXCHANGE(BAD_REQUEST, "중복되는 거래소 명입니다."),
     EMPTY_MARKET_EXCHANGE(INTERNAL_SERVER_ERROR, "해당 거래소의 마켓이 존재하지 않습니다"),
 
-    //ticker
-    TICKER_NOT_FOUND(NOT_FOUND, "해당 조건에 해당하는 티커가 없습니다."),
+    //currency
+    DUPLICATE_CURRENCY_SYMBOL(BAD_REQUEST, "중복되는 심볼입니다"),
+    CURRENCY_NOT_FOUND(NOT_FOUND, "해당 조건에 맞는 Currency를 찾을 수 없습니다."),
 
-    //exchangeMarket
-    EXCHANGE_MARKET_NOT_FOUND(NOT_FOUND, "해당 조건에 맞는 ExchangeMarket엔터티를 찾을 수 없습니다"),
+    //market
+    MARKET_NOT_FOUND(NOT_FOUND, "해당 조건에 맞는 마켓을 찾을 수 없습니다."),
+    DUPLICATE_MARKET(BAD_REQUEST, "중복되는 마켓입니다."),
+    ILLEGAL_MARKET_STATUS(BAD_REQUEST, " 존재하지 않는 마켓 상태입니다."),
+    ILLEGAL_MARET_CODE(BAD_REQUEST, "지원하지 않는 마켓 코드입니다."),
 
     //fetch
-    CAST_FAILED(INTERNAL_SERVER_ERROR, "타입 케스트에 실패했습니다."),
-    EXTERNAL_SERVICE_COMMUNICATION_FAILED(BAD_GATEWAY, "외부 서비스와의 통신에 실패했습니다");
+    EXTERNAL_SERVICE_COMMUNICATION_FAILED(BAD_GATEWAY, "외부 서비스와의 통신에 실패했습니다"),
+    FETCH_VALIDATION_FAILED(BAD_GATEWAY, "데이터 검증에 실패했습니다."),
 
+    //exchange rate
+    EXCHANGE_RATE_NOT_AVAILABLE(INTERNAL_SERVER_ERROR, "환율 정보를 가져올 수 없습니다(휴장일)."),
+    EMPTY_EXCHANGE_RATE(INTERNAL_SERVER_ERROR, "등록된 환율 정보가 없습니다."),
+
+    //fiat
+    FIAT_TYPE_NOT_FOUND(NOT_FOUND, "해당 조건에 맞는 fiat을 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;
