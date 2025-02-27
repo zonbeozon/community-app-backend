@@ -1,16 +1,11 @@
 package com.zonbeozon.communityapp.crpyto.domain.market;
 
 import com.zonbeozon.communityapp.common.entity.BaseTimeEntity;
-import com.zonbeozon.communityapp.crpyto.domain.exchangemarket.ExchangeMarket;
-import com.zonbeozon.communityapp.crpyto.domain.market.dto.MarketRequest;
+import com.zonbeozon.communityapp.crpyto.domain.currency.Currency;
+import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
 import com.zonbeozon.communityapp.crpyto.domain.ticker.Ticker;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -23,18 +18,10 @@ public class Market extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String marketCode;
-    @Column(nullable = false)
-    private String koreanName;
-    @Column(nullable = false)
-    private String englishName;
 
-    @OneToMany(mappedBy = "market")
-    private Set<ExchangeMarket> exchangeMarkets = new HashSet<>();
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticker_id")
-    @Setter
-    private Ticker ticker;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exchange_id", nullable = false)
+    private Exchange exchange;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
@@ -42,28 +29,32 @@ public class Market extends BaseTimeEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    @Setter
     private MarketStatus marketStatus;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id", nullable = false)
+    private Currency currency;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticker_id")
+    @Setter
+    private Ticker ticker;
+
     @Builder
-    private Market(
+    public Market(
             String marketCode,
-            String koreanName,
-            String englishName,
-            MarketType marketType) {
+            Exchange exchange,
+            MarketType marketType,
+            Currency currency
+    ) {
         this.marketCode = marketCode;
-        this.koreanName = koreanName;
-        this.englishName = englishName;
+        this.exchange = exchange;
         this.marketType = marketType;
-        this.marketStatus = MarketStatus.ACTIVE;
+        this.marketStatus = MarketStatus.INACTIVE;
+        this.currency = currency;
     }
 
-    public static Market fromDto(MarketRequest marketRequest) {
-        return Market.builder()
-                .marketCode(marketRequest.marketCode())
-                .englishName(marketRequest.englishName())
-                .koreanName(marketRequest.koreanName())
-                .marketType(marketRequest.marketType())
-                .build();
+    public void updateMarketStatus(MarketStatus status) {
+        this.marketStatus = status;
     }
 }
