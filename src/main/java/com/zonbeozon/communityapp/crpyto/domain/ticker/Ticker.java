@@ -1,15 +1,15 @@
 package com.zonbeozon.communityapp.crpyto.domain.ticker;
 
 import com.zonbeozon.communityapp.common.entity.BaseTimeEntity;
-import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
+import com.zonbeozon.communityapp.common.utils.BigDecimalUtils;
 import com.zonbeozon.communityapp.crpyto.domain.market.Market;
-import com.zonbeozon.communityapp.crpyto.domain.ticker.dto.TickerRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticker extends BaseTimeEntity {
     @Id
@@ -17,61 +17,48 @@ public class Ticker extends BaseTimeEntity {
     @Column(name = "ticker_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String marketCode;
-    @Column(nullable = false)
-    private Double openingPrice;
-    @Column(nullable = false)
-    private Double highPrice;
-    @Column(nullable = false)
-    private Double lowPrice;
-    @Column(nullable = false)
-    private Double tradePrice;
-    @Column(nullable = false)
-    private Double signedChangePrice;
-    @Column(nullable = false)
-    private Double signedChangeRate;
-    @Column(nullable = false)
-    private Double accTradePrice;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "openingPrice", column = @Column(name = "opening_price_krw")),
+            @AttributeOverride(name = "highPrice", column = @Column(name = "high_price_krw")),
+            @AttributeOverride(name = "lowPrice", column = @Column(name = "low_price_krw")),
+            @AttributeOverride(name = "tradePrice", column = @Column(name = "trade_price_krw")),
+            @AttributeOverride(name = "signedChangePrice", column = @Column(name = "signed_change_price_krw")),
+            @AttributeOverride(name = "accTradePrice", column = @Column(name = "acc_trade_price_krw"))
+    })
+    private TickerPriceInfo tickerPriceInfoKrw;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exchange_id", nullable = false)
-    private Exchange exchange;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "openingPrice", column = @Column(name = "opening_price_usd")),
+            @AttributeOverride(name = "highPrice", column = @Column(name = "high_price_usd")),
+            @AttributeOverride(name = "lowPrice", column = @Column(name = "low_price_usd")),
+            @AttributeOverride(name = "tradePrice", column = @Column(name = "trade_price_usd")),
+            @AttributeOverride(name = "signedChangePrice", column = @Column(name = "signed_change_price_usd")),
+            @AttributeOverride(name = "accTradePrice", column = @Column(name = "acc_trade_price_usd"))
+    })
+    private TickerPriceInfo tickerPriceInfoUsd;
 
-    @OneToOne(mappedBy = "ticker")
+    @Column(nullable = false, scale = BigDecimalUtils.CRYPTO_SCALE, precision = BigDecimalUtils.SMALL_PRECISION)
+    private BigDecimal signedChangeRate;
+
+    @OneToOne(mappedBy = "ticker", cascade = CascadeType.REMOVE , orphanRemoval = true)
     private Market market;
 
     @Builder
-    private Ticker(
-            String marketCode,
-            Double openingPrice,
-            Double highPrice,
-            Double lowPrice,
-            Double tradePrice,
-            Double signedChangePrice,
-            Double signedChangeRate,
-            Double accTradePrice
+    public Ticker(
+            TickerPriceInfo tickerPriceInfoUsd,
+            TickerPriceInfo tickerPriceInfoKrw,
+            BigDecimal signedChangeRate
     ) {
-        this.marketCode = marketCode;
-        this.openingPrice = openingPrice;
-        this.highPrice = highPrice;
-        this.lowPrice = lowPrice;
-        this.tradePrice = tradePrice;
-        this.signedChangePrice = signedChangePrice;
+        this.tickerPriceInfoUsd = tickerPriceInfoUsd;
+        this.tickerPriceInfoKrw = tickerPriceInfoKrw;
         this.signedChangeRate = signedChangeRate;
-        this.accTradePrice = accTradePrice;
     }
 
-    public static Ticker fromDto(TickerRequest tickerRequest) {
-        return Ticker.builder()
-                .marketCode(tickerRequest.marketCode())
-                .openingPrice(tickerRequest.openingPrice())
-                .highPrice(tickerRequest.highPrice())
-                .lowPrice(tickerRequest.lowPrice())
-                .tradePrice(tickerRequest.tradePrice())
-                .signedChangePrice(tickerRequest.signedChangePrice())
-                .signedChangeRate(tickerRequest.signedChangeRate())
-                .accTradePrice(tickerRequest.accTradePrice())
-                .build();
+    public void update(Ticker ticker) {
+        this.tickerPriceInfoUsd = ticker.tickerPriceInfoUsd;
+        this.tickerPriceInfoKrw = ticker.tickerPriceInfoKrw;
+        this.signedChangeRate = ticker.signedChangeRate;
     }
 }
