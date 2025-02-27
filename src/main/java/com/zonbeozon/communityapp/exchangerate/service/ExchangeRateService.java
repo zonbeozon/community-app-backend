@@ -33,7 +33,7 @@ public class ExchangeRateService {
     public void updateExchangeRate() {
         try {
             LocalDateTime now = LocalDateTime.now();
-            ExchangeRateFetchResult exchangeRateFetchResult = exchangeRateFetcher.fetch(now.toLocalDate());
+            ExchangeRateFetchResult exchangeRateFetchResult = exchangeRateFetcher.fetch();
             exchangeRateFetchResult.exchangeRates().forEach(
                     exchangeRateDto -> {
                         ExchangeRate exchangeRate = getLatestExchangeRate(exchangeRateDto.code());

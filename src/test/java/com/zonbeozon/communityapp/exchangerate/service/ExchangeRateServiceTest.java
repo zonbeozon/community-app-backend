@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -36,10 +37,10 @@ public class ExchangeRateServiceTest {
     @Test
     @DisplayName("휴장일이면 업데이트 하지 않고 메서드가 종료된다")
     void updateExchangeRate_whenHoliday_thenDoNothing() {
-        when(exchangeRateFetcher.fetch(any(LocalDate.class)))
+        when(exchangeRateFetcher.fetch())
                 .thenThrow(new ExchangeRateException(ErrorCode.EXCHANGE_RATE_NOT_AVAILABLE));
         exchangeRateService.updateExchangeRate();
-        verify(exchangeRateRepository, times(1)).save(any(ExchangeRate.class));
+        verify(exchangeRateRepository, never()).save(any(ExchangeRate.class));
     }
 
     @Test
@@ -56,9 +57,9 @@ public class ExchangeRateServiceTest {
         List<ExchangeRateDto> exchangeRateDtoList = List.of(ExchangeRateDto.builder()
                 .rate(fetchedRate)
                 .code(ExchangeRateCode.USD).build());
-        when(exchangeRateFetcher.fetch(any(LocalDate.class)))
+        when(exchangeRateFetcher.fetch())
                 .thenReturn(new ExchangeRateFetchResult(exchangeRateDtoList));
-        when(exchangeRateService.getLatestExchangeRate(any(ExchangeRateCode.class))).thenReturn(exchangeRate);
+        when(exchangeRateRepository.findFirstByCodeOrderByUpdatedAtDesc(ExchangeRateCode.USD)).thenReturn(Optional.of(exchangeRate));
 
         exchangeRateService.updateExchangeRate();
 

@@ -16,15 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
 public class KoreaEximExchangeRateFetcher implements ExchangeRateFetcher {
     private static final String KOREA_EXIM_BASE_URL = "https://www.koreaexim.go.kr";
     private static final String KOREA_EXIM_EXCHANGE_RATE_RESOURCE_URL = "/site/program/financial/exchangeJSON";
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private final DefaultRestFetcher defaultRestFetcher;
     private final String authKey;
@@ -39,10 +36,10 @@ public class KoreaEximExchangeRateFetcher implements ExchangeRateFetcher {
     }
 
     @Override
-    public ExchangeRateFetchResult fetch(LocalDate searchDate) {
+    public ExchangeRateFetchResult fetch() {
         List<KoreanEximExchangeRateRequest> exchangeRateRequests = defaultRestFetcher.fetchWithParam(
                 KOREA_EXIM_BASE_URL + KOREA_EXIM_EXCHANGE_RATE_RESOURCE_URL,
-                createParamMap(authKey, searchDate),
+                createParamMap(authKey),
                 new ParameterizedTypeReference<>() {}
         );
         if(exchangeRateRequests.isEmpty()) {
@@ -56,16 +53,15 @@ public class KoreaEximExchangeRateFetcher implements ExchangeRateFetcher {
                 .filter(exchangeRateRequest -> ExchangeRateCode.isSupported(exchangeRateRequest.code()))
                 .map(exchangeRateRequest -> new ExchangeRateDto(
                         ExchangeRateCode.valueOf(exchangeRateRequest.code()),
-                        BigDecimalUtils.createBigDecimal(exchangeRateRequest.rate(), BigDecimalUtils.FIAT_SCALE)
+                        BigDecimalUtils.createBigDecimal(exchangeRateRequest.rate().replace(",", ""), BigDecimalUtils.FIAT_SCALE)
                 ))
                 .toList();
         return new ExchangeRateFetchResult(filteredExchangeRates);
     }
 
-    private static MultiValueMap<String,String> createParamMap(String authKey, LocalDate searchDate) {
+    private static MultiValueMap<String,String> createParamMap(String authKey) {
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("authkey", authKey);
-        params.add("searchdate", searchDate.format(formatter));
         params.add("data", "AP01");
         return params;
     }

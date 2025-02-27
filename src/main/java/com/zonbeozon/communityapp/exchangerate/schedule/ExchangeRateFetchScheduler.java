@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class ExchangeRateFetchScheduler {
     private final ExchangeRateService exchangeRateService;
 
-    @Scheduled(cron = "${scheduler.exchange-rate}")
+    @Scheduled(cron = "${scheduler.cron.exchange-rate}")
     public void updateExchangeRate() {
         exchangeRateService.updateExchangeRate();
     }

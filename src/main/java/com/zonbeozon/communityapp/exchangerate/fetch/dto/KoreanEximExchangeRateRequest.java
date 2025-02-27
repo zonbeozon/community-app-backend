@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 public record KoreanEximExchangeRateRequest(
-        @JsonProperty("DEAL_BAS_R")
+        @JsonProperty("deal_bas_r")
         @NotBlank(message = "rate cannot be blank")
         String rate,
 

@@ -9,6 +9,7 @@ import com.zonbeozon.communityapp.exchangerate.exception.ExchangeRateException;
 import com.zonbeozon.communityapp.exchangerate.fetch.dto.ExchangeRateFetchResult;
 import com.zonbeozon.communityapp.exchangerate.fetch.dto.KoreanEximExchangeRateRequest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,16 +26,21 @@ import static org.mockito.Mockito.*;
 public class KoreaEximExchangeRateFetcherTest {
     @Mock
     private DefaultRestFetcher defaultRestFetcher;
-    private KoreaEximExchangeRateFetcher koreaEximExchangeRateFetcher = new KoreaEximExchangeRateFetcher(defaultRestFetcher, "123");
+    private KoreaEximExchangeRateFetcher koreaEximExchangeRateFetcher;
+
+    @BeforeEach
+    void setup() {
+        koreaEximExchangeRateFetcher = new KoreaEximExchangeRateFetcher(defaultRestFetcher, "123");
+    }
 
     @Test
     @DisplayName("빈 리스트를 반환하면 예외를 던진다")
     void fetch_whenEmptyList_thenThrowExchangeRateException() {
-        when(defaultRestFetcher.fetchWithParam(any(), any(), any())).thenReturn(List.of());
+        when(defaultRestFetcher.fetchWithParam(anyString(), any(), any())).thenReturn(List.of());
 
         ExchangeRateException exception = Assertions.assertThrows(
                 ExchangeRateException.class,
-                () -> koreaEximExchangeRateFetcher.fetch(LocalDate.now()));
+                () -> koreaEximExchangeRateFetcher.fetch());
         Assertions.assertEquals(ErrorCode.EXCHANGE_RATE_NOT_AVAILABLE, exception.getErrorCode());
     }
 
@@ -43,9 +49,9 @@ public class KoreaEximExchangeRateFetcherTest {
     void fetch_whenSuccess_thenReturnExchangeRateFetchResult() {
         BigDecimal rate = BigDecimalUtils.createBigDecimal("1500", BigDecimalUtils.FIAT_SCALE);
         KoreanEximExchangeRateRequest request = new KoreanEximExchangeRateRequest(rate.toString(), "USD");
-        when(defaultRestFetcher.fetchWithParam(any(), any(), any())).thenReturn(List.of(request));
+        when(defaultRestFetcher.fetchWithParam(anyString(), any(), any())).thenReturn(List.of(request));
 
-        ExchangeRateFetchResult exchangeRateFetchResult = koreaEximExchangeRateFetcher.fetch(LocalDate.now());
+        ExchangeRateFetchResult exchangeRateFetchResult = koreaEximExchangeRateFetcher.fetch();
 
         Assertions.assertEquals(1, exchangeRateFetchResult.exchangeRates().size());
         ExchangeRateDto exchangeRateDto = exchangeRateFetchResult.exchangeRates().getFirst();
