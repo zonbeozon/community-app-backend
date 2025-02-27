@@ -1,36 +1,35 @@
-package com.zonbeozon.communityapp.crpyto.fetch.bithumb.dto;
+package com.zonbeozon.communityapp.crpyto.fetch.ticker.bithumb.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
-public class BithumbTickerRequest {
+import java.math.BigDecimal;
+
+public record BithumbTickerRequest(
     @NotBlank(message = "Market code cannot be blank")
     @JsonProperty("market")
-    private String marketCode;
+    String marketCode,
     @NotNull(message = "opening_price cannot be null")
     @JsonProperty("opening_price")
-    private Double openingPrice;
+    BigDecimal openingPrice,
     @NotNull(message = "high_price cannot be null")
     @JsonProperty("high_price")
-    private Double highPrice;
+    BigDecimal highPrice,
     @NotNull(message = "Low price cannot be null")
     @JsonProperty("low_price")
-    private Double lowPrice;
+    BigDecimal lowPrice,
     @NotNull(message = "Trade price cannot be null")
     @JsonProperty("trade_price")
-    private Double tradePrice;
+    BigDecimal tradePrice,
     @NotNull(message = "Signed change price cannot be null")
     @JsonProperty("signed_change_price")
-    private Double signedChangePrice;
+    BigDecimal signedChangePrice,
     @NotNull(message = "Signed change rate cannot be null")
     @JsonProperty("signed_change_rate")
-    private Double signedChangeRate;
+    BigDecimal signedChangeRate,
     @NotNull(message = "Accumulated trade price cannot be null")
-    @JsonProperty("acc_trade_price")
-    private Double accTradePrice;
-}
+    @JsonProperty("acc_trade_price_24h")
+    BigDecimal accTradePrice
+) {
+        }
