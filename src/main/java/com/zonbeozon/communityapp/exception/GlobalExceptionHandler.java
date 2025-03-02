@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class MvcExceptionHandler {
+public class GlobalExceptionHandler {
     public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 
     @ExceptionHandler(CustomException.class)

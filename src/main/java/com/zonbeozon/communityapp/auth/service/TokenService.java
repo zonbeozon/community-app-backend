@@ -28,12 +28,11 @@ public class TokenService {
     @Transactional(readOnly = true)
     public Token findByAccessTokenOrThrow(String accessToken) {
         return tokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new TokenException(ErrorCode.TOKEN_EXPIRED));
+                .orElseThrow(() -> new TokenException(ErrorCode.INVALID_TOKEN));
     }
 
     public void updatedAccessToken(String accessToken, Token token) {
         token.setAccessToken(accessToken);
-        tokenRepository.save(token);
     }
 
     public void deleteToken(String memberKey) {
