@@ -23,20 +23,29 @@ public class Exchange {
     private String englishName;
     @Column(nullable = false)
     private String koreanName;
-    @Column(nullable = false)
-    private String description;
+    @Lob
+    @Column(nullable = false, length = 100000)
+    private String englishDescription;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MarketType topPriorityMarketType;
+    @Column(nullable = false)
+    private String logo;
 
     @OneToMany(mappedBy = "exchange")
     private List<Market> markets = new LinkedList<>();
 
     @Builder
-    public Exchange(String englishName, String koreanName, String description, MarketType topPriorityMarketType) {
+    public Exchange(
+            String englishName,
+            String koreanName,
+            String englishDescription,
+            MarketType topPriorityMarketType,
+            String logo) {
         this.englishName = englishName;
         this.koreanName = koreanName;
-        this.description = description;
+        this.englishDescription = englishDescription;
         this.topPriorityMarketType = topPriorityMarketType;
+        this.logo = logo;
     }
 }
