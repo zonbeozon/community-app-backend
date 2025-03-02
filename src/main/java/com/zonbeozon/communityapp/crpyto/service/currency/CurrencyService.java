@@ -20,10 +20,12 @@ import com.zonbeozon.communityapp.exchangerate.domain.ExchangeRate;
 import com.zonbeozon.communityapp.exchangerate.domain.ExchangeRateCode;
 import com.zonbeozon.communityapp.exchangerate.domain.FiatType;
 import com.zonbeozon.communityapp.exchangerate.service.ExchangeRateService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class CurrencyService {
      * 자세한 설명은 프로젝트 notion의 backend logic의 inital add currecny를 참조
      */
     @Transactional
-    public void addCurrency(CurrencyRequest currencyRequest) {
+    public long addCurrency(CurrencyRequest currencyRequest) {
         if (isDuplicateSymbol(currencyRequest.symbol()))
             throw new CurrencyException(ErrorCode.DUPLICATE_CURRENCY_SYMBOL);
         CurrencyMetaData currencyMetaData = currencyMetaDataFetcher.fetch(Collections.singletonList(currencyRequest.symbol()))
@@ -54,6 +56,7 @@ public class CurrencyService {
                 .getFirst();
         Currency currency = currencyRepository.save(createCurrency(currencyRequest, currencyMetaData, currencyQuote));
         marketService.addMarkets(currencyRequest.markets(), currency);
+        return currency.getId();
     }
 
     @Transactional
@@ -220,6 +223,53 @@ public class CurrencyService {
                 .marketCap(ExchangeRateService.calculateOtherCurrencyToKrw(currencyQuote.marketCap(), usdExchangeRate))
                 .circulatingSupply(ExchangeRateService.calculateOtherCurrencyToKrw(currencyQuote.circulatingSupply(), usdExchangeRate))
                 .build();
+    }
+
+    @PostConstruct
+    @Transactional
+    public void addDefaultCurrencies() {
+        List<CurrencyRequest> defaultCurrencies = new ArrayList<>();
+        defaultCurrencies.add(new CurrencyRequest(
+                "BTC",
+                "비트코인",
+                List.of(
+                        new MarketRequest("upbit", List.of("KRW")),
+                        new MarketRequest("bithumb", List.of("KRW")),
+                        new MarketRequest("binance", List.of("USDT"))
+                )));
+        defaultCurrencies.add(new CurrencyRequest(
+                "ETH",
+                "이더리움",
+                List.of(
+                        new MarketRequest("upbit", List.of("KRW")),
+                        new MarketRequest("bithumb", List.of("KRW")),
+                        new MarketRequest("binance", List.of("USDT"))
+                )));
+        defaultCurrencies.add(new CurrencyRequest(
+                "SOL",
+                "솔라나",
+                List.of(
+                        new MarketRequest("upbit", List.of("KRW")),
+                        new MarketRequest("bithumb", List.of("KRW")),
+                        new MarketRequest("binance", List.of("USDT"))
+                )));
+        defaultCurrencies.add(new CurrencyRequest(
+                "PENGU",
+                "펏지팽귄",
+                List.of(
+                        new MarketRequest("bithumb", List.of("KRW")),
+                        new MarketRequest("binance", List.of("USDT"))
+                )));
+        defaultCurrencies.add(new CurrencyRequest(
+                "MEW",
+                "캣인독스월드",
+                List.of(
+                        new MarketRequest("upbit", List.of("KRW")),
+                        new MarketRequest("bithumb", List.of("KRW")),
+                        new MarketRequest("binance", List.of("USDT"))
+                )));
+
+        defaultCurrencies.forEach(this::addCurrency);
     }
 }
 
