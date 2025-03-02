@@ -5,8 +5,11 @@ import com.zonbeozon.communityapp.crpyto.controller.dto.currency.DescriptionUpda
 import com.zonbeozon.communityapp.crpyto.service.currency.CurrencyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,8 +19,8 @@ public class AdminCurrencyController {
 
     @PostMapping
     public ResponseEntity<Void> addCurrency(@RequestBody @Valid CurrencyRequest currencyRequest) {
-        currencyService.addCurrency(currencyRequest);
-        return ResponseEntity.ok().build();
+        long id = currencyService.addCurrency(currencyRequest);
+        return ResponseEntity.created(URI.create("/crypto/currency/" + id)).build();
     }
 
     @DeleteMapping("/{currencyId}")
@@ -43,5 +46,4 @@ public class AdminCurrencyController {
         currencyService.updateEnglishDescription(currencyId, descriptionUpdateRequest.description());
         return ResponseEntity.noContent().build();
     }
-
 }
