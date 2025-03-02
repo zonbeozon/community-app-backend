@@ -27,6 +27,7 @@ public class Token {
     @Column(nullable = false)
     private Date expiresAt;
 
+    @Builder
     public Token(String memberKey, String accessToken, String refreshToken, Date expiresAt) {
         this.memberKey = memberKey;
         this.accessToken = accessToken;
