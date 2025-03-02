@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,18 +26,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class TokenProvider {
+    private final TokenService tokenService;
+    private final String key;
 
-    @Value("${jwt.key}")
-    private String key;
     private SecretKey secretKey;
+
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 *30L;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7L;
     private static final String KEY_ROLE = "role";
 
-    private final TokenService tokenService;
+    @Autowired
+    public TokenProvider(
+            TokenService tokenService,
+            @Value("${jwt.key}") String key
+    ) {
+        this.tokenService = tokenService;
+        this.key = key;
+    }
 
     @PostConstruct
     private void setSecretKey() {
@@ -56,7 +64,7 @@ public class TokenProvider {
         tokenService.saveOrUpdate(authentication.getName(), accessToken, refreshToken, expiryDate);
     }
 
-    private String generateToken(Authentication authentication,Date now, Date expiryDate) {
+    private String generateToken(Authentication authentication, Date now, Date expiryDate) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining());
