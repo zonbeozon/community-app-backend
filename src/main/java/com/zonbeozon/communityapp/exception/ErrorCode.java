@@ -41,7 +41,7 @@ public enum ErrorCode {
     EMPTY_EXCHANGE_RATE(INTERNAL_SERVER_ERROR, "등록된 환율 정보가 없습니다."),
 
     //fiat
-    FIAT_TYPE_NOT_FOUND(NOT_FOUND, "해당 조건에 맞는 fiat을 찾을 수 없습니다.");
+    ILLEGAL_FIAT_TYPE(BAD_REQUEST, "존재하지 않는 통화입니다.");
 
 
     private final HttpStatus httpStatus;
