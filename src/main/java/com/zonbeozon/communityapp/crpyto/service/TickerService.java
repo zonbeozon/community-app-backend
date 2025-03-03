@@ -52,7 +52,6 @@ public class TickerService {
                         .highPrice(ExchangeRateService.calculateOtherCurrencyToKrw(tickerDto.highPrice(), usdExchangeRate))
                         .build();
             }
-            case BTC -> throw new ExchangeRateException(ErrorCode.EMPTY_EXCHANGE_RATE);
         };
     }
 
@@ -70,7 +69,6 @@ public class TickerService {
                         .build();
             }
             case USDT -> createTickerPriceInfo(tickerDto);
-            case BTC -> throw new ExchangeRateException(ErrorCode.EMPTY_EXCHANGE_RATE);
         };
     }
 
