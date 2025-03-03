@@ -152,30 +152,8 @@ public class MarketServiceTest {
         when(marketRepository.findById(eq(1L))).thenReturn(Optional.empty());
 
         MarketException marketException = Assertions.assertThrows(MarketException.class,
-                ()-> marketService.changeMarketStatus(1L, "active"));
+                ()-> marketService.changeMarketStatus(1L));
         Assertions.assertEquals(ErrorCode.MARKET_NOT_FOUND, marketException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("마켓 상태 변경시 요청이 동일 상태라면 메서드를 종료한다")
-    void shouldNotChangeMarketStatusWhenStatusIsSame() {
-        Market market = mock(Market.class);
-        when(market.getMarketStatus()).thenReturn(MarketStatus.INACTIVE);
-        when(marketRepository.findById(eq(1L))).thenReturn(Optional.of(market));
-
-        marketService.changeMarketStatus(1L, "inactive");
-
-        verify(market, never()).updateMarketStatus(any());
-    }
-
-    @Test
-    @DisplayName("마켓 상태 변경시 존재하지 않는 마켓 상태라면 예외를 던진다.")
-    void shouldThrowExceptionWhenInvalidMarketStatusRequested() {
-        Market market = mock(Market.class);
-        when(marketRepository.findById(eq(1L))).thenReturn(Optional.of(market));
-        MarketException marketException = Assertions.assertThrows(MarketException.class,
-                ()-> marketService.changeMarketStatus(1L, "notExistMarketStatus"));
-        Assertions.assertEquals(ErrorCode.ILLEGAL_MARKET_STATUS, marketException.getErrorCode());
     }
 
     @Test
@@ -184,7 +162,7 @@ public class MarketServiceTest {
         Market market = Market.builder().build();
         market.updateMarketStatus(MarketStatus.INACTIVE);
         when(marketRepository.findById(eq(1L))).thenReturn(Optional.of(market));
-        marketService.changeMarketStatus(1L, "active");
+        marketService.changeMarketStatus(1L);
         Assertions.assertEquals(MarketStatus.ACTIVE, market.getMarketStatus());
     }
 

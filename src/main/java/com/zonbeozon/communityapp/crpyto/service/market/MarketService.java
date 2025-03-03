@@ -1,9 +1,6 @@
 package com.zonbeozon.communityapp.crpyto.service.market;
 
-import com.zonbeozon.communityapp.crpyto.controller.dto.market.EntireMarketInfoResponse;
-import com.zonbeozon.communityapp.crpyto.controller.dto.market.MarketInfoResponse;
-import com.zonbeozon.communityapp.crpyto.controller.dto.market.MiniMarketInfoResponse;
-import com.zonbeozon.communityapp.crpyto.controller.dto.market.MarketRequest;
+import com.zonbeozon.communityapp.crpyto.controller.dto.market.*;
 import com.zonbeozon.communityapp.crpyto.controller.dto.ticker.TickerResponse;
 import com.zonbeozon.communityapp.crpyto.domain.currency.Currency;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
@@ -91,23 +88,14 @@ public class MarketService {
     }
 
     @Transactional
-    public void changeMarketStatus(Long marketId, String status) {
+    public MarketStatus changeMarketStatus(Long marketId) {
         Market market = marketRepository.findById(marketId).orElseThrow(() -> new MarketException(ErrorCode.MARKET_NOT_FOUND));
-        MarketStatus marketStatus = MarketStatus.parse(status);
-        //동일 상태 인지 체크(변경할 필요 없음)
-        if(marketStatus.equals(market.getMarketStatus())) return;
-        //active 상태로 바꿔야 할때
-        if(marketStatus.equals(MarketStatus.ACTIVE)) {
-            changeMarketStatusToActive(market);
-            return;
-        }
-        //inactive 상태로 바꿔야 할때
-        if(marketStatus.equals(MarketStatus.INACTIVE)) {
-            changeMarketStatusToInactive(market);
-            return;
-        }
-        //실행되면 안된다.
-        throw new MarketException(ErrorCode.ILLEGAL_MARKET_STATUS);
+        MarketStatus marketStatus = market.getMarketStatus();
+
+        return switch (marketStatus) {
+            case INACTIVE -> changeMarketStatusToActive(market);
+            case ACTIVE -> changeMarketStatusToInactive(market);
+        };
     }
 
     @Transactional(readOnly = true)
@@ -205,11 +193,13 @@ public class MarketService {
         };
     }
 
-    private void changeMarketStatusToActive(Market market) {
+    private MarketStatus changeMarketStatusToActive(Market market) {
         market.updateMarketStatus(MarketStatus.ACTIVE);
+        return MarketStatus.ACTIVE;
     }
 
-    private void changeMarketStatusToInactive(Market market) {
+    private MarketStatus changeMarketStatusToInactive(Market market) {
         market.updateMarketStatus(MarketStatus.INACTIVE);
+        return MarketStatus.INACTIVE;
     }
 }
