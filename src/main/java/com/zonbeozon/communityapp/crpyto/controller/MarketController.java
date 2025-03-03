@@ -26,9 +26,8 @@ public class MarketController {
     @GetMapping(value = "/{currencyId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> getMarket(
             @PathVariable("currencyId") Long currencyId,
-            @RequestParam("fiat") String fiatType,
-            @RequestParam("exchangeId") Long exchangeId
+            @RequestParam("fiat") String fiatType
     ) {
-        return ResponseEntity.ok(singleMarketEmitterService.createEmitter(currencyId, fiatType, exchangeId).getEmitter());
+        return ResponseEntity.ok(singleMarketEmitterService.createEmitter(currencyId, fiatType).getEmitter());
     }
 }

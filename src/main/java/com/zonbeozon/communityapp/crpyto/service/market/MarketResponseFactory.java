@@ -21,10 +21,10 @@ public class MarketResponseFactory {
     private final ExchangeService exchangeService;
     private final CurrencyService currencyService;
 
-    public Map<Exchange, Map<FiatType, EntireMarketInfoResponse>> createEntireMarketInfoResponsesMap() {
+    public Map<Long, Map<FiatType, EntireMarketInfoResponse>> createEntireMarketInfoResponsesMap() {
         return exchangeService.findAll().stream()
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Exchange::getId,
                         exchange -> Arrays.stream(FiatType.values())
                                 .collect(Collectors.toMap(
                                         Function.identity(),
@@ -33,10 +33,10 @@ public class MarketResponseFactory {
                 ));
     }
 
-    public Map<Currency, Map<FiatType, MarketInfoResponse>> createSingleMarketInfoResponsesMap() {
+    public Map<Long, Map<FiatType, MarketInfoResponse>> createSingleMarketInfoResponsesMap() {
         return currencyService.findAll().stream()
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Currency::getId,
                         currency -> Arrays.stream(FiatType.values())
                                 .collect(Collectors.toMap(
                                         Function.identity(),

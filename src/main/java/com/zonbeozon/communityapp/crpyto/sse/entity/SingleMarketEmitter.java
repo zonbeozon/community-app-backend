@@ -14,11 +14,9 @@ import java.util.function.Consumer;
 
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor
 public class SingleMarketEmitter {
     private final SseEmitter emitter;
-    private final Exchange exchange;
     private final FiatType fiatType;
     private final Currency currency;
 
@@ -38,7 +36,7 @@ public class SingleMarketEmitter {
         emitter.complete();
     }
 
-    public void send(Object object) throws IOException {
-        emitter.send(object);
+    public void send(SseEmitter.SseEventBuilder sseEventBuilder) throws IOException {
+        emitter.send(sseEventBuilder);
     }
 }

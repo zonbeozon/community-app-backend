@@ -25,10 +25,6 @@ public class SingleMarketEmitterServiceTest {
     @Mock
     private SingleMarketEmitterRepository singleMarketEmitterRepository;
     @Mock
-    private ExchangeService exchangeService;
-    @Mock
-    private Exchange exchange;
-    @Mock
     private Currency currency;
     @Mock
     private CurrencyService currencyService;
@@ -39,7 +35,6 @@ public class SingleMarketEmitterServiceTest {
     void setup() {
         singleMarketEmitterService  = new SingleMarketEmitterService(
                 singleMarketEmitterRepository,
-                exchangeService,
                 currencyService,
                 100L
         );
@@ -49,15 +44,12 @@ public class SingleMarketEmitterServiceTest {
     @DisplayName("emitter를 만들면 리포지토리에 저장하고 리턴한다")
     void createEmitter_SavesAndReturnsEmitter() {
         when(singleMarketEmitterRepository.save(any(SingleMarketEmitter.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(exchangeService.findById(eq(1L))).thenReturn(exchange);
         when(currencyService.findById(eq(1L))).thenReturn(currency);
         SingleMarketEmitter singleMarketEmitter = singleMarketEmitterService.createEmitter(
                 1L,
-                FiatType.USD.name(),
-                1L);
+                FiatType.USD.name());
 
         Assertions.assertEquals(FiatType.USD, singleMarketEmitter.getFiatType());
-        Assertions.assertEquals(exchange, singleMarketEmitter.getExchange());
         Assertions.assertEquals(currency, singleMarketEmitter.getCurrency());
     }
 }

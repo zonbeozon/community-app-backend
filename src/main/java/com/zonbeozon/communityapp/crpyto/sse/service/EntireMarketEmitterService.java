@@ -9,6 +9,7 @@ import com.zonbeozon.communityapp.exchangerate.domain.FiatType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -48,15 +49,18 @@ public class EntireMarketEmitterService {
         return entireMarketEmitter;
     }
 
-    public void sendToAll(Map<Exchange, Map<FiatType, EntireMarketInfoResponse>> map) {
+    @Async
+    public void sendToAll(Map<Long, Map<FiatType, EntireMarketInfoResponse>> map) {
         entireMarketEmitterRepository.findAll().forEach(emitter ->
-            send(map.get(emitter.getExchange()).get(emitter.getFiatType()), emitter)
+            send(map.get(emitter.getExchange().getId()).get(emitter.getFiatType()), emitter)
         );
     }
 
     private void send(Object data, EntireMarketEmitter emitter) {
         try {
-            emitter.send(SseEmitter.event().name("entireMarketInfo").data(data, MediaType.APPLICATION_JSON));
+            emitter.send(SseEmitter.event()
+                    .data(data, MediaType.APPLICATION_JSON)
+            );
         } catch (IOException e) {
             entireMarketEmitterRepository.delete(emitter);
         }

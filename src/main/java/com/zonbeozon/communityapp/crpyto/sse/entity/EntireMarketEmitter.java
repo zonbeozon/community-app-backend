@@ -36,7 +36,7 @@ public class EntireMarketEmitter {
         emitter.complete();
     }
 
-    public void send(Object object) throws IOException {
-        emitter.send(object);
+    public void send(SseEmitter.SseEventBuilder sseEventBuilder) throws IOException {
+        emitter.send(sseEventBuilder);
     }
 }
