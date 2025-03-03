@@ -176,6 +176,18 @@ public class MarketService {
         );
     }
 
+    public AdminMarketResponseWrapper createAdminMarketResponseWrapper(long currencyId) {
+        List<AdminMarketResponse> adminMarketResponses = marketRepository.findByCurrencyIdWithExchange(currencyId).stream()
+                .map(market -> AdminMarketResponse.builder()
+                        .marketId(market.getId())
+                        .marketType(market.getMarketType())
+                        .exchangeId(market.getExchange().getId())
+                        .marketCode(market.getMarketCode())
+                        .build())
+                .toList();
+        return new AdminMarketResponseWrapper(adminMarketResponses, adminMarketResponses.size());
+    }
+
     private List<MiniMarketInfoResponse> formatMiniMarketInfoResponse(FiatType fiatType, List<Market> markets) {
         return switch (fiatType) {
             case KRW -> markets.stream().map(m -> MiniMarketInfoResponse.builder()

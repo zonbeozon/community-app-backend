@@ -40,4 +40,10 @@ public interface MarketRepository extends JpaRepository<Market, Long> {
     """)
     List<Market> findActiveMarketsWithTickerByExchange(Exchange exchange);
 
+    @Query("""
+        SELECT m FROM Market m
+        JOIN FETCH m.exchange
+        WHERE m.currency.id = :currencyId
+    """)
+    List<Market> findByCurrencyIdWithExchange(Long currencyId);
 }
