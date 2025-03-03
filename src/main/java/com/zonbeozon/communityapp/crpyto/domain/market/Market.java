@@ -50,7 +50,7 @@ public class Market extends BaseTimeEntity {
         this.marketCode = marketCode;
         this.exchange = exchange;
         this.marketType = marketType;
-        this.marketStatus = MarketStatus.INACTIVE;
+        this.marketStatus = MarketStatus.ACTIVE;
         this.currency = currency;
     }
 
