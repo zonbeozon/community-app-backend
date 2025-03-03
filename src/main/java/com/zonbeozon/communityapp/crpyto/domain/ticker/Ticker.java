@@ -42,7 +42,7 @@ public class Ticker extends BaseTimeEntity {
     @Column(nullable = false, scale = BigDecimalUtils.CRYPTO_SCALE, precision = BigDecimalUtils.SMALL_PRECISION)
     private BigDecimal signedChangeRate;
 
-    @OneToOne(mappedBy = "ticker", cascade = CascadeType.REMOVE , orphanRemoval = true)
+    @OneToOne(mappedBy = "ticker")
     private Market market;
 
     @Builder
