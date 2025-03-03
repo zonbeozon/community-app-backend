@@ -1,5 +1,6 @@
 package com.zonbeozon.communityapp.crpyto.service;
 
+import com.zonbeozon.communityapp.crpyto.controller.dto.exchange.ExchangeResponseWrapper;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.Exchange;
 import com.zonbeozon.communityapp.crpyto.domain.exchange.repository.ExchangeRepository;
 import com.zonbeozon.communityapp.crpyto.domain.market.MarketType;
@@ -27,6 +28,21 @@ public class ExchangeService {
 
     private boolean isDuplicate(String exchangeName) {
         return exchangeRepository.existsByEnglishName(exchangeName);
+    }
+
+    public ExchangeResponseWrapper createEntireExchangesResponse() {
+        List<ExchangeResponseWrapper.ExchangeResponse> exchangeResponses = exchangeRepository.findAll().stream()
+                .map(exchange -> ExchangeResponseWrapper.ExchangeResponse.builder()
+                        .englishName(exchange.getEnglishName())
+                        .koreanName(exchange.getKoreanName())
+                        .englishDescription(exchange.getEnglishDescription())
+                        .logo(exchange.getLogo())
+                        .build())
+                .toList();
+        return ExchangeResponseWrapper.builder()
+                .exchanges(exchangeResponses)
+                .size(exchangeResponses.size())
+                .build();
     }
 
     @Transactional(readOnly = true)
