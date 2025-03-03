@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -98,8 +99,11 @@ public class CurrencyServiceTest {
     void shouldSaveCurrencyAndCallMarketServiceWhenFetchSucceeds() {
         ArgumentCaptor<Currency> captor = ArgumentCaptor.forClass(Currency.class);
         when(currencyRepository.existsBySymbol(anyString())).thenReturn(false);
-        when(currencyRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
-
+        when(currencyRepository.save(captor.capture())).thenAnswer(invocation -> {
+            Currency currency = invocation.getArgument(0);
+            ReflectionTestUtils.setField(currency, "id", 1L);  // ID 값 수동 설정
+            return currency;
+        });
         currencyService.addCurrency(currencyRequest);
 
         verify(marketService, times(1)).addMarkets(anyCollection(), any(Currency.class));
