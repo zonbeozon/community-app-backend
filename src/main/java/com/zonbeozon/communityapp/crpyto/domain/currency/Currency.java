@@ -58,7 +58,7 @@ public class Currency extends BaseTimeEntity {
     })
     private CurrencyStatsInfo currencyStatsInfoUsd;
 
-    @OneToMany(mappedBy = "currency")
+    @OneToMany(mappedBy = "currency", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Market> markets = new ArrayList<>();
 
     @Builder

@@ -35,7 +35,7 @@ public class Market extends BaseTimeEntity {
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "ticker_id")
     @Setter
     private Ticker ticker;
