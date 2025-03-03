@@ -6,15 +6,9 @@ import com.zonbeozon.communityapp.crpyto.controller.dto.currency.MiniCurrenciesR
 import com.zonbeozon.communityapp.crpyto.domain.currency.Currency;
 import com.zonbeozon.communityapp.crpyto.domain.currency.CurrencyStatsInfo;
 import com.zonbeozon.communityapp.crpyto.domain.currency.repository.CurrencyRepository;
-import com.zonbeozon.communityapp.crpyto.fetch.currency.CurrencyMetaDataFetcher;
-import com.zonbeozon.communityapp.crpyto.fetch.currency.CurrencyQuotesFetcher;
 import com.zonbeozon.communityapp.crpyto.service.currency.CurrencyService;
-import com.zonbeozon.communityapp.crpyto.service.market.MarketService;
 import com.zonbeozon.communityapp.exception.ErrorCode;
-import com.zonbeozon.communityapp.exchangerate.domain.ExchangeRate;
-import com.zonbeozon.communityapp.exchangerate.domain.ExchangeRateCode;
 import com.zonbeozon.communityapp.exchangerate.exception.FiatException;
-import com.zonbeozon.communityapp.exchangerate.service.ExchangeRateService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -122,7 +115,7 @@ public class CurrencyServiceResponseTest {
     void getAllMiniCurrenciesResponse_ShouldThrowException_WhenFiatTypeIsInvalid() {
         FiatException fiatException_1 = Assertions.assertThrows(FiatException.class, () -> currencyService.getAllMiniCurrenciesResponse(WRONG_FIAT_TYPE));
         FiatException fiatException_2 = Assertions.assertThrows(FiatException.class, () -> currencyService.getCurrencyResponse(1L, WRONG_FIAT_TYPE));
-        Assertions.assertEquals(ErrorCode.FIAT_TYPE_NOT_FOUND, fiatException_1.getErrorCode());
-        Assertions.assertEquals(ErrorCode.FIAT_TYPE_NOT_FOUND, fiatException_2.getErrorCode());
+        Assertions.assertEquals(ErrorCode.ILLEGAL_FIAT_TYPE, fiatException_1.getErrorCode());
+        Assertions.assertEquals(ErrorCode.ILLEGAL_FIAT_TYPE, fiatException_2.getErrorCode());
     }
 }
