@@ -1,0 +1,12 @@
+[
+  {
+    "symbol": "BTC",
+    "krName": "비트코인",
+    "krDescription": "디지털 금이라 불리는 대표적인 암호화폐"
+  },
+  {
+    "symbol": "ETH",
+    "krName": "이더리움",
+    "krDescription": "스마트 컨트랙트를 지원하는 플랫폼형 코인"
+  }
+]
