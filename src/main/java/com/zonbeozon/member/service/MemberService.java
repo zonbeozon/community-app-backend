@@ -18,8 +18,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
+    public Member getByEmailOrElseThrow(String email) {
+        return getByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException(email + "을 가진 member는 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Member> getByEmail(String email) {
         return memberRepository.findByEmail(email);
+
     }
 
     @Transactional(readOnly = true)
