@@ -10,6 +10,7 @@ import com.zonbeozon.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -45,8 +46,10 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .securityMatcher("/**")
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -83,39 +86,34 @@ public class SecurityConfig {
         request.requestMatchers(
                 "/oauth2/authorization/**",
                 "/auth/success",
-                "/crypto/**",
-                "/swagger-ui/**",
-                "/v3/api-docs/**"
+                "/crypto/**"
         ).permitAll();
 
         request.requestMatchers(HttpMethod.GET,
-                //Discussion Related
-                "/discussion/crypto/post/{postId}",
-                "/discussion/crypto/post"
-        ).permitAll();
+                //channel Related
+                "/channel",
+                "/channel/joined"
+        ).authenticated();
 
         // USER PROTECTION LEVEL
         request.requestMatchers(HttpMethod.POST,
-                //Discussion Related
-                "/discussion/crypto/post",
-                "/discussion/crypto/post/{postId}/comment",
-                "/discussion/crypto/post/{postId}/comment/{commentId}/reaction/like",
-                "/discussion/crypto/post/{postId}/comment/{commentId}/reaction/dislike",
-                "/discussion/crypto/post/{postId}/reaction/like",
-                "/discussion/crypto/post/{postId}/reaction/dislike"
-        ).hasRole("USER");
+                //channel Related
+                "/channel",
+                "/channel/*/member/kick/*",
+                "/channel/*/member/join"
+        ).authenticated();
+
         request.requestMatchers(HttpMethod.PATCH,
                 //Discussion Related
-                "/discussion/crypto/post/{postId}",
-                "/discussion/crypto/post/{postId}/comment/{commentId}"
-        ).hasRole("USER");
+                "/channel/*/openLevel",
+                "/channel/*/info",
+                "/channel/*/member/modifyRole"
+        ).authenticated();
         request.requestMatchers(HttpMethod.DELETE,
                 //Discussion Related
-                "/discussion/crypto/post/{postId}",
-                "/discussion/crypto/post/{postId}/comment/{commentId}",
-                "discussion/crypto/post/{postId}/comment/{commentId}/reaction",
-                "discussion/crypto/post/{postId}/reaction"
-        ).hasRole("USER");
+                "/channel/*/member",
+                "/channel/*"
+        ).authenticated();
 
 
         // ADMIN PROTECTION LEVEL
