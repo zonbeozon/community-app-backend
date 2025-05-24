@@ -1,7 +1,8 @@
 package com.zonbeozon.channel.controller;
 
-import com.zonbeozon.channel.ChannelContext;
+import com.zonbeozon.channel.entity.ChannelRole;
 import com.zonbeozon.channel.service.ChannelMemberService;
+import com.zonbeozon.channel.service.dto.InviteCodeResponse;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,14 +14,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/channel")
+@RequestMapping("/channel/{channelId}/member")
 public class ChannelMemberController {
     private final ChannelMemberService channelMemberService;
 
@@ -32,12 +30,12 @@ public class ChannelMemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
     })
-    @PostMapping("/{channelId}/join")
+    @PostMapping
     public ResponseEntity<Void> joinChannelAsMember(
             @PathVariable Long channelId,
             @Parameter(hidden = true) Member member
     ) {
-        channelMemberService.joinAsMember(ChannelContext.with(channelId), member);
+        channelMemberService.joinAsMember(member, channelId);
         return ResponseEntity.ok().build();
     }
 
@@ -50,13 +48,52 @@ public class ChannelMemberController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema())),
     })
-    @PostMapping("/{channelId}/kick/{targetId}")
+    @DeleteMapping("/{targetChannelMemberId}/kick")
     public ResponseEntity<Void> kickChannelMember(
             @Parameter(hidden = true) Member member,
             @PathVariable Long channelId,
-            @PathVariable Long targetId
+            @PathVariable Long targetChannelMemberId
     ) {
-        channelMemberService.kickMember(ChannelContext.with(channelId, member), targetId);
+        channelMemberService.kickMember(member, channelId, targetChannelMemberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "채널 떠나기",
+            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "만일 유저의 채널Role이 Owner라면 이전시키기 전에는 떠날 수 없다.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "성공", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "400", description = "유저가 Owner일때", content = @Content(schema = @Schema())),
+    })
+    @DeleteMapping
+    public ResponseEntity<Void> leaveChannel(
+            @Parameter(hidden = true) Member member,
+            @PathVariable Long channelId
+    ) {
+        channelMemberService.leaveChannel(member, channelId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "채널 맴버 Role 변경",
+            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE +
+                    "Owner만 호출가능하다\n" +
+                    "만일 변경시키고자하는 Role이 Owner라면 자신의 Owner Role이 이전되고 자신은 Admin으로 강등된다.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "성공", content = @Content(schema = @Schema())),
+    })
+    @PatchMapping("/{targetChannelMemberId}/role")
+    public ResponseEntity<Void> modifyRole(
+            @Parameter(hidden = true) Member member,
+            @PathVariable Long channelId,
+            @PathVariable Long targetChannelMemberId,
+            @RequestParam ChannelRole wantTo
+    ) {
+        channelMemberService.modifyChannelMemberRole(member, channelId, targetChannelMemberId, wantTo);
         return ResponseEntity.ok().build();
     }
 

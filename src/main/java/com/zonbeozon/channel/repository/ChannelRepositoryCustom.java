@@ -1,9 +1,10 @@
 package com.zonbeozon.channel.repository;
 
-import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
+import com.zonbeozon.channel.entity.ChannelJoinLevel;
+import com.zonbeozon.channel.entity.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-
 
 public interface ChannelRepositoryCustom {
     Page<ChannelWithMemberCount> searchByKeyword(
@@ -12,7 +13,8 @@ public interface ChannelRepositoryCustom {
             int size,
             ChannelSort sort,
             Sort.Direction direction,
-            Channel.Type type,
-            Channel.OpenLevel openLevel
+            ChannelType type,
+            ChannelContentOpenLevel contentOpenLevel,
+            ChannelJoinLevel joinLevel
     );
 }

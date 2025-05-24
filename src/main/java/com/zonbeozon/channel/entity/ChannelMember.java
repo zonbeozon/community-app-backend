@@ -1,5 +1,6 @@
 package com.zonbeozon.channel.entity;
 
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
@@ -15,7 +16,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SQLDelete(sql = "UPDATE channel_member SET status = DELETED WHERE id = ?")
 @SQLRestriction("status = ACTIVE")
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"member_id", "channel_id"})
@@ -44,11 +44,14 @@ public class ChannelMember extends BaseTimeEntity {
     private ChannelMemberStatus status;
 
     public void updateRole(ChannelRole role) {
+        if(this.role == role) {
+            throw new ChannelBadRequestException("변경할려는 Role과 현재 Role이 같습니다");
+        }
         this.role = role;
     }
 
-    public void updateStatus(ChannelMemberStatus status) {
-        this.status = status;
+    public void updateStatusToKicked() {
+        this.status = ChannelMemberStatus.KICKED;
     }
 
     public static ChannelMember create(Member member, Channel channel, ChannelRole role) {
@@ -60,4 +63,13 @@ public class ChannelMember extends BaseTimeEntity {
         return channelMember;
     }
 
+    public boolean isOwner() {
+        return role == ChannelRole.CHANNEL_OWNER;
+    }
+
+    public boolean canLeaveChannel() {
+        if(role == ChannelRole.CHANNEL_OWNER) return false;
+
+        return true;
+    }
 }

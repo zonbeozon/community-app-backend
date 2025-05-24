@@ -13,8 +13,4 @@ public enum ChannelRole {
     public boolean isHigherThan(ChannelRole other) {
         return this.level > other.level;
     }
-
-    public static boolean isPromote(ChannelRole from, ChannelRole to) {
-        return from.level < to.level;
-    }
 }

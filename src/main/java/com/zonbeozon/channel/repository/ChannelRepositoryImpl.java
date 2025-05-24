@@ -1,10 +1,13 @@
 package com.zonbeozon.channel.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
+import com.zonbeozon.channel.entity.ChannelJoinLevel;
+import com.zonbeozon.channel.entity.ChannelType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
@@ -19,6 +22,11 @@ import static com.zonbeozon.channel.entity.QChannelMember.*;
 class ChannelRepositoryImpl implements ChannelRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
+    private BooleanBuilder createDefaultBooleanBuilder() {
+        return new BooleanBuilder()
+                .and(channel.isDeleted.eq(false));
+    }
+
     @Override
     public Page<ChannelWithMemberCount> searchByKeyword(
             String keyword,
@@ -26,11 +34,18 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
             int size,
             ChannelSort sort,
             Sort.Direction direction,
-            Channel.Type type,
-            Channel.OpenLevel openLevel
+            ChannelType type,
+            ChannelContentOpenLevel contentOpenLevel,
+            ChannelJoinLevel joinLevel
     ) {
         OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sort, direction);
         long offset = (long) page * size;
+
+        BooleanBuilder whereClause = createDefaultBooleanBuilder()
+                .and(eqType(type))
+                .and(eqOpenLevel(contentOpenLevel))
+                .and(eqJoinLevel(joinLevel))
+                .and(containsKeyword(keyword));
 
         List<ChannelWithMemberCount> channels = queryFactory.select(Projections.constructor(
                 ChannelWithMemberCount.class
@@ -38,11 +53,7 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
                         channelMember.count()
                 ))
                 .from(channel)
-                .where(
-                        eqType(type),
-                        eqOpenLevel(openLevel),
-                        containsKeyword(keyword)
-                )
+                .where(whereClause)
                 .leftJoin(channelMember).on(channelMember.channel.id.eq(channel.id))
                 .groupBy(channel.id)
                 .orderBy(orderSpecifier)
@@ -53,11 +64,7 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
         // total count 조회
         Long total = queryFactory.select(channel.count())
                 .from(channel)
-                .where(
-                        eqType(type),
-                        eqOpenLevel(openLevel),
-                        containsKeyword(keyword)
-                )
+                .where(whereClause)
                 .fetchOne();
 
         //warning 제거
@@ -66,12 +73,16 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
         return new PageImpl<>(channels, PageRequest.of(page, size, Sort.by(direction, sort.name())), unboxedTotal);
     }
 
-    private BooleanExpression eqType(Channel.Type type) {
-        return type == null ? null : channel.channelType.eq(type);
+    private BooleanExpression eqType(ChannelType type) {
+        return type == null ? null : channel.type.eq(type);
     }
 
-    private BooleanExpression eqOpenLevel(Channel.OpenLevel openLevel) {
-        return openLevel == null ? null : channel.openLevel.eq(openLevel);
+    private BooleanExpression eqOpenLevel(ChannelContentOpenLevel contentOpenLevel) {
+        return contentOpenLevel == null ? null : channel.contentOpenLevel.eq(contentOpenLevel);
+    }
+
+    private BooleanExpression eqJoinLevel(ChannelJoinLevel joinLevel) {
+        return joinLevel == null ? null : channel.joinLevel.eq(joinLevel);
     }
 
     private BooleanExpression containsKeyword(String keyword) {

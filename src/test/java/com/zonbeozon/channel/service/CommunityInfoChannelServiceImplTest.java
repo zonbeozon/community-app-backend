@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
 @ExtendWith(MockitoExtension.class)
-public class CommunityInfoChannelServiceTest {
+public class CommunityInfoChannelServiceImplTest {
 //    @Autowired
 //    private CommunityInfoChannelRepository communityInfoChannelRepository;
 //    @MockitoBean
 //    private ChannelPermissionValidatorImpl channelPermissionValidator;
 //    @MockitoBean
-//    private ChannelMemberService channelMemberService;
+//    private ChannelMemberServiceImpl channelMemberService;
 //    @MockitoBean
 //    private ChannelInvitationService channelInvitationService;
 //    @InjectMocks

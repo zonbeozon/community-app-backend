@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT"
 )
 public class SwaggerConfig {
-    public static final String NEED_TO_AUTH_MESSAGE = "JWT 인증 필요";
+    public static final String NEED_TO_AUTH_MESSAGE = "JWT 인증 필요\n";
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()

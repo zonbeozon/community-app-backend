@@ -20,11 +20,4 @@ public class ChannelContext {
         context.member = member;
         return context;
     }
-
-    public static ChannelContext with(Long channelId) {
-        ChannelContext context = new ChannelContext();
-        context.channelId = channelId;
-        context.member = null;
-        return context;
-    }
 }

@@ -99,20 +99,20 @@ public class SecurityConfig {
         request.requestMatchers(HttpMethod.POST,
                 //channel Related
                 "/channel",
-                "/channel/*/member/kick/*",
-                "/channel/*/member/join"
+                "/channel/*/member"
         ).authenticated();
 
         request.requestMatchers(HttpMethod.PATCH,
                 //Discussion Related
-                "/channel/*/openLevel",
+                "/channel/*/contentOpenLevel",
                 "/channel/*/info",
-                "/channel/*/member/modifyRole"
+                "/channel/*/member/*/role"
         ).authenticated();
         request.requestMatchers(HttpMethod.DELETE,
                 //Discussion Related
                 "/channel/*/member",
-                "/channel/*"
+                "/channel/*",
+                "/channel/*/member/*/kick"
         ).authenticated();
 
 

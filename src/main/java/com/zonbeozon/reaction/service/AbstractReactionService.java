@@ -2,8 +2,8 @@ package com.zonbeozon.reaction.service;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.service.ChannelMemberService;
-import com.zonbeozon.channel.service.ChannelService;
+import com.zonbeozon.channel.service.ChannelEntityQueryService;
+import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.reaction.entity.Reaction;
 import com.zonbeozon.reaction.entity.ReactionType;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 abstract class AbstractReactionService<T, R extends Reaction> {
-    private final ChannelMemberService channelMemberService;
-    private final ChannelService channelService;
+    private final ChannelMemberEntityQueryService channelMemberEntityQueryService;
+    private final ChannelEntityQueryService channelEntityQueryService;
 
     @Transactional
     public void markAsLike(Long channelId, Long articleId, Member member) {
@@ -102,8 +102,8 @@ abstract class AbstractReactionService<T, R extends Reaction> {
     }
 
     private <RT> RT applyIfChannelMemberAndArticleExist(Long channelId, Member member, Long articleId, BiFunction<ChannelMember, T, RT> function) {
-        Channel channel = channelService.getChannelByIdOrThrow(channelId);
-        ChannelMember channelMember = channelMemberService.getByMemberAndChannelOrThrow(member, channel);
+        Channel channel = channelEntityQueryService.getChannelByIdOrThrow(channelId);
+        ChannelMember channelMember = channelMemberEntityQueryService.getByMemberAndChannelOrThrow(member, channel);
         T article = getArticleByIdOrThrow(articleId);
         return function.apply(channelMember, article);
     }

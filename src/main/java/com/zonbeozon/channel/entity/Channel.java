@@ -1,6 +1,7 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.controller.ChannelCreateRequest;
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,72 +15,144 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "channel_type")
 @SQLDelete(sql = "UPDATE channel SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
-public class Channel extends BaseTimeEntity {
+public abstract class Channel extends BaseTimeEntity {
+    public static final int MIN_TITLE_LENGTH = 4;
     public static final int MAX_TITLE_LENGTH = 30;
+    public static final int MIN_DESCRIPTION_LENGTH = 0;
     public static final int MAX_DESCRIPTION_LENGTH = 1000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotNull
+    @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH)
     @Column(unique = true, length = MAX_TITLE_LENGTH)
     private String title;
+
     @NotNull
-    @Size(max = MAX_DESCRIPTION_LENGTH)
+    @Size(min = MIN_DESCRIPTION_LENGTH, max = MAX_DESCRIPTION_LENGTH)
     @Column(columnDefinition = "TEXT")
     private String description;
+
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private Type channelType;
+    @Column(columnDefinition = "TEXT")
+    private String profile;
+
     @NotNull
     private boolean isDeleted;
+
     @NotNull
     @Enumerated(EnumType.STRING)
-    private OpenLevel openLevel;
+    private ChannelContentOpenLevel contentOpenLevel;
 
-    private Channel(String title, String description, OpenLevel openLevel, Type channelType) {
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ChannelJoinLevel joinLevel;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ChannelSearchLevel searchLevel;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ChannelType type;
+
+
+    protected Channel(
+            String title,
+            String description,
+            String profile,
+            ChannelContentOpenLevel contentOpenLevel,
+            ChannelJoinLevel joinLevel,
+            ChannelSearchLevel searchLevel
+    ) {
         this.title = title;
         this.description = description;
-        this.openLevel = openLevel;
-        this.channelType = channelType;
+        this.profile = profile;
+        this.contentOpenLevel = contentOpenLevel;
+        this.joinLevel = joinLevel;
+        this.searchLevel = searchLevel;
         this.isDeleted = false;
     }
 
-    public void updateInfo(String title, String description) {
-        this.title = title;
-        this.description = description;
+    public void updateInfo(ChannelMember requester, String title, String description, String profile) {
+        validateUpdateInfoPermission(requester);
+        if(title != null) {
+            this.title = title;
+        }
+        if(description != null) {
+            this.description = description;
+        }
+        if(profile != null) {
+            this.profile = profile;
+        }
     }
 
-    public void changeOpenLevel(OpenLevel openLevel) {
-        this.openLevel = openLevel;
+    public void updateContentOpenLevel(ChannelMember requester, ChannelContentOpenLevel contentOpenLevel) {
+        validateUpdateContentOpenLevelPermission(requester);
+        this.contentOpenLevel = contentOpenLevel;
     }
 
-
-    public enum Type {
-        /**
-         * 일반 유저가 생성하는 채널
-         * chat 패키지는 Community Info 채널이 사용하는 패키지이다.
-         */
-        COMMUNITY_INFO,
-        /**
-         * 서버 운영자가 생성하는 채널
-         * discussion 패키지는 Official Info 채널이 사용하는 패키지이다.
-         */
-        OFFICIAL_INFO;
+    public void kick(ChannelMember requester, ChannelMember target) {
+        if(requester.equals(target))
+            throw new ChannelBadRequestException("자기 자신을 강퇴할 수 없습니다.");
+        validateKickPermission(requester, target);
+        target.updateStatusToKicked();
     }
 
-    public enum OpenLevel {
-        PUBLIC, PRIVATE;
+    public void modifyRole(ChannelMember requester, ChannelMember target, ChannelRole wantTo) {
+        validateModifyRolePermission(requester, target, wantTo);
+        if(target.getRole() == wantTo)
+            throw new ChannelBadRequestException("변경할려는 Role과 현재 Role이 같습니다");
+        if(requester.equals(target))
+            throw new ChannelBadRequestException("자기 자신의 Role은 변경 할 수 없습니다.");
+        target.updateRole(wantTo);
+        //Owner는 채널 당 한명이기 때문에 Owner 권한 이전이 된다.
+        if(wantTo == ChannelRole.CHANNEL_OWNER)
+            requester.updateRole(ChannelRole.CHANNEL_ADMIN);
     }
 
-    public static Channel create(ChannelCreateRequest request) {
-        return new Channel(request.title(), request.description(), request.openLevel(), request.type());
+    protected void validateUpdateInfoPermission(ChannelMember channelMember) {
+        if(!channelMember.isOwner())
+            throw new ChannelAccessDeniedException("Owner만 ChannelInfo를 수정할 수 있습니다.");
     }
-    @Override
-    public String toString() {
-        return "Channel{" +
-                "id=" + id +
-                '}';
+
+    protected void validateUpdateContentOpenLevelPermission(ChannelMember channelMember) {
+        if(!channelMember.isOwner())
+            throw new ChannelAccessDeniedException("Owner만 contentOpenLevel을 수정할 수 있습니다.");
+    }
+
+    public void validateDeletePermission(ChannelMember channelMember) {
+        if(!channelMember.isOwner())
+            throw new ChannelAccessDeniedException("Owner만 채널을 삭제할 수 있습니다.");
+    }
+
+    protected void validateKickPermission(ChannelMember requester, ChannelMember target) {
+        if(!requester.getRole().isHigherThan(target.getRole()))
+            throw new ChannelAccessDeniedException("강퇴시킬려는 맴버보다 권한이 높아야합니다.");
+    }
+
+    public void validateInvitePermission(ChannelMember requester) {
+        if(!requester.getRole().isHigherThan(ChannelRole.CHANNEL_MEMBER))
+            throw new ChannelAccessDeniedException("채널 초대는 Admin이상 부터 할 수 있습니다.");
+        if(joinLevel == ChannelJoinLevel.DENY)
+            throw new ChannelAccessDeniedException("채널 초대는 해당 채널에서 막힌 상태입니다.");
+    }
+
+    public void validateJoinPermission() {
+        if(joinLevel != ChannelJoinLevel.OPEN) {
+            throw new ChannelAccessDeniedException("공개 가입 채널이 아닙니다");
+        }
+    }
+
+    protected void validateModifyRolePermission(ChannelMember requester, ChannelMember target, ChannelRole wantTo) {
+        if(!requester.isOwner()) {
+            throw new ChannelAccessDeniedException("Owner만 Role을 변경할 수 있습니다.");
+        }
     }
 }

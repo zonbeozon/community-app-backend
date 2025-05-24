@@ -3,8 +3,8 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.auth.exception.AuthException;
 import com.zonbeozon.channel.ChannelContext;
 import com.zonbeozon.channel.UseChannelContext;
-import com.zonbeozon.channel.service.ChannelMemberService;
-import com.zonbeozon.channel.service.ChannelService;
+import com.zonbeozon.channel.service.ChannelEntityQueryService;
+import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.exception.PostNotFoundException;
 import com.zonbeozon.post.repository.PostRepository;
@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @UseChannelContext
 public class PostService {
     private final PostRepository postRepository;
-    private final ChannelService channelService;
-    private final ChannelMemberService channelMemberService;
+    private final ChannelEntityQueryService channelEntityQueryService;
+    private final ChannelMemberEntityQueryService channelMemberEntityQueryService;
 
     @Transactional
     public Long addPost(PostAddCommand command, ChannelContext channelContext) {

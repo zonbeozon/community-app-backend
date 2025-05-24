@@ -1,10 +1,13 @@
 package com.zonbeozon.channel.controller;
 
-import com.zonbeozon.channel.ChannelContext;
-import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
+import com.zonbeozon.channel.entity.ChannelJoinLevel;
+import com.zonbeozon.channel.entity.ChannelType;
 import com.zonbeozon.channel.repository.ChannelSort;
+import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.channel.service.ChannelService;
-import com.zonbeozon.channel.service.dto.ChannelResponseWrapper;
+import com.zonbeozon.channel.service.dto.JoinedChannelResponseWrapper;
+import com.zonbeozon.channel.service.dto.SearchChannelResponseWrapper;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,11 +47,20 @@ public class ChannelController {
     public ResponseEntity<Long> addChannel(
             @Valid
             @Parameter(name = "Request Body")
-            ChannelCreateRequest channelCreateRequest,
+            ChannelCreateRequest request,
             @Parameter(hidden = true)
             Member member
     ) {
-        Long channelId = channelService.addChannel(channelCreateRequest, member);
+        Long channelId = channelService.addChannel(
+                new ChannelCreateCommand(
+                        request.title(),
+                        request.description(),
+                        request.profile(),
+                        request.contentOpenLevel(),
+                        request.channelType(),
+                        request.joinLevel(),
+                        request.searchLevel()),
+                member);
         return ResponseEntity.ok(channelId);
     }
 
@@ -63,7 +75,7 @@ public class ChannelController {
             @Valid ChannelInfoUpdateRequest channelInfoUpdateRequest,
             @PathVariable Long channelId
     ) {
-        channelService.updateChannelInfo(ChannelContext.with(channelId, member), channelInfoUpdateRequest);
+        channelService.updateChannelInfo(member, channelId, channelInfoUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -72,13 +84,13 @@ public class ChannelController {
             description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널 Owner만 호출 가능",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @PatchMapping("/{channelId}/openLevel")
-    public ResponseEntity<Void> updateChannelOpenLevel(
+    @PatchMapping("/{channelId}/contentOpenLevel")
+    public ResponseEntity<Void> updateChannelContentOpenLevel(
             @Parameter(hidden = true) Member member,
-            @RequestParam Channel.OpenLevel openLevel,
+            @RequestParam ChannelContentOpenLevel contentOpenLevel,
             @PathVariable Long channelId
     ) {
-        channelService.changeOpenLevel(ChannelContext.with(channelId, member), openLevel);
+        channelService.changeContentOpenLevel(member, channelId, contentOpenLevel);
         return ResponseEntity.ok().build();
     }
 
@@ -88,10 +100,10 @@ public class ChannelController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChannelResponseWrapper.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JoinedChannelResponseWrapper.class))),
     })
     @GetMapping("/joined")
-    public ResponseEntity<ChannelResponseWrapper> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
+    public ResponseEntity<JoinedChannelResponseWrapper> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
         return ResponseEntity.ok(channelService.createMemberJoinedChannelResponse(member));
     }
 
@@ -103,7 +115,7 @@ public class ChannelController {
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ChannelResponseWrapper.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = SearchChannelResponseWrapper.class))),
     })
     @GetMapping
     @Parameters({
@@ -111,15 +123,17 @@ public class ChannelController {
             @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             @Parameter(name = "size", description = "한 페이지당 아이템 수", example = "10")
     })
-    public ResponseEntity<ChannelResponseWrapper> getChannels(
+    public ResponseEntity<SearchChannelResponseWrapper> getChannels(
             @RequestParam(defaultValue = "") String searchParam,
-            @RequestParam(defaultValue = "COMMUNITY_INFO") Channel.Type type,
+            @RequestParam(required = false) ChannelType type,
+            @RequestParam(required = false) ChannelContentOpenLevel contentOpenLevel,
+            @RequestParam(required = false) ChannelJoinLevel joinLevel,
             @RequestParam(defaultValue = "MEMBER_COUNT") ChannelSort sort,
             @RequestParam(defaultValue = "DESC") Sort.Direction direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
             ) {
-        return ResponseEntity.ok(channelService.createChannelSearchResponse(searchParam, page, size, sort, direction, type));
+        return ResponseEntity.ok(channelService.createChannelSearchResponse(searchParam, page, size, sort, direction, type, contentOpenLevel, joinLevel));
     }
 
     @Operation(
@@ -132,7 +146,7 @@ public class ChannelController {
             @Parameter(hidden = true) Member member,
             @PathVariable Long channelId
             ) {
-        channelService.delete(ChannelContext.with(channelId, member));
+        channelService.deleteChannel(member, channelId);
         return ResponseEntity.noContent().build();
     }
 

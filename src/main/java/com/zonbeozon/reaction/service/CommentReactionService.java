@@ -1,8 +1,8 @@
 package com.zonbeozon.reaction.service;
 
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.service.ChannelMemberService;
-import com.zonbeozon.channel.service.ChannelService;
+import com.zonbeozon.channel.service.ChannelEntityQueryService;
+import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.service.CommentService;
 import com.zonbeozon.reaction.entity.CommentReaction;
@@ -19,12 +19,12 @@ public class CommentReactionService extends AbstractReactionService<Comment, Com
     private final CommentReactionRepository commentReactionRepository;
 
     public CommentReactionService(
-            ChannelMemberService channelMemberService,
+            ChannelMemberEntityQueryService channelMemberEntityQueryService,
             CommentService commentService,
             CommentReactionRepository commentReactionRepository,
-            ChannelService channelService
+            ChannelEntityQueryService channelEntityQueryService
     ) {
-        super(channelMemberService, channelService);
+        super(channelMemberEntityQueryService, channelEntityQueryService);
         this.commentService = commentService;
         this.commentReactionRepository = commentReactionRepository;
     }
