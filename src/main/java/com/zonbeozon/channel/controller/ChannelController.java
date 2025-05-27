@@ -47,6 +47,7 @@ public class ChannelController {
     public ResponseEntity<Long> addChannel(
             @Valid
             @Parameter(name = "Request Body")
+            @RequestBody
             ChannelCreateRequest request,
             @Parameter(hidden = true)
             Member member

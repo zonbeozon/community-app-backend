@@ -69,7 +69,8 @@ public abstract class Channel extends BaseTimeEntity {
             String profile,
             ChannelContentOpenLevel contentOpenLevel,
             ChannelJoinLevel joinLevel,
-            ChannelSearchLevel searchLevel
+            ChannelSearchLevel searchLevel,
+            ChannelType type
     ) {
         this.title = title;
         this.description = description;
@@ -77,6 +78,7 @@ public abstract class Channel extends BaseTimeEntity {
         this.contentOpenLevel = contentOpenLevel;
         this.joinLevel = joinLevel;
         this.searchLevel = searchLevel;
+        this.type = type;
         this.isDeleted = false;
     }
 

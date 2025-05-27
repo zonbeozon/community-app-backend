@@ -19,7 +19,8 @@ public class CommunityInfoChannel extends Channel {
                 command.profile(),
                 command.contentOpenLevel(),
                 command.joinLevel(),
-                command.searchLevel()
+                command.searchLevel(),
+                command.type()
         );
     }
 
