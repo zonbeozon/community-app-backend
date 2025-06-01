@@ -11,6 +11,7 @@ import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -78,8 +79,13 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<ChannelMember> getByMemberAndChannel(Member member, Channel channel) {
+        return channelMemberRepository.findByMemberAndChannel(member, channel);
+    }
+
+    @Transactional(readOnly = true)
     public ChannelMember getByMemberAndChannelOrThrow(Member member, Channel channel) {
-        return channelMemberRepository.findByMemberAndChannel(member, channel)
+        return getByMemberAndChannel(member, channel)
                 .orElseThrow(() -> new ChannelMemberNotFoundException(member + "는 채널: " + channel + "에 속해있지 않습니다."));
     }
 

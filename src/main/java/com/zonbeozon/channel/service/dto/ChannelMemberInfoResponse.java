@@ -11,7 +11,7 @@ public record ChannelMemberInfoResponse(
 ) {
     public static ChannelMemberInfoResponse fromEntity(ChannelMember chMember) {
         return new ChannelMemberInfoResponse(
-                chMember.getMember().getId(),
+                chMember.getId(),
                 chMember.getMember().getUsername(),
                 chMember.getMember().getProfile(),
                 chMember.getRole());

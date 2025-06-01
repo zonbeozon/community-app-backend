@@ -1,6 +1,7 @@
 package com.zonbeozon.post.service.dto;
 
-public record PostAddCommand(
+public record PostAddRequest(
+        String title,
         String content
 ) {
 }

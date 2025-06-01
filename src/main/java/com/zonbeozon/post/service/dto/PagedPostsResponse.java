@@ -13,7 +13,7 @@ public record PagedPostsResponse(
         long totalElements,
         boolean isLastPage
 ) {
-    public static PagedPostsResponse fromPagedEntity(final Page<Post> posts) {
+    public static PagedPostsResponse from(Page<Post> posts) {
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
                 .map(SimplifiedPostResponse::fromEntity)  // SimplifiedPostResponse로 변환
                 .toList();

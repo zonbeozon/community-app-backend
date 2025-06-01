@@ -73,18 +73,18 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
 
     @Override
     public void kickMember(Member member, Long channelId, Long targetChannelMemberId) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
-        ChannelMember actor = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
-        ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
-        channelMemberServiceImpl.kickMember(actor, target);
+        findChannelMemberThenConsume(member, channelId, actor -> {
+            ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
+            channelMemberServiceImpl.kickMember(actor, target);
+        });
     }
 
     @Override
     public void modifyChannelMemberRole(Member member, Long channelId, Long targetChannelMemberId, ChannelRole wantToChange) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
-        ChannelMember actor = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
-        ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
-        channelMemberServiceImpl.modifyChannelMemberRole(actor, target, wantToChange);
+        findChannelMemberThenConsume(member, channelId, actor -> {
+            ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
+            channelMemberServiceImpl.modifyChannelMemberRole(actor, target, wantToChange);
+        });
     }
 
     @Override

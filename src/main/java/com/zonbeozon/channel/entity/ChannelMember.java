@@ -69,7 +69,6 @@ public class ChannelMember extends BaseTimeEntity {
 
     public boolean canLeaveChannel() {
         if(role == ChannelRole.CHANNEL_OWNER) return false;
-
         return true;
     }
 }

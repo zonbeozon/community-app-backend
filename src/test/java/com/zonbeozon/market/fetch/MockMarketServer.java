@@ -41,7 +41,7 @@ public class MockMarketServer {
 
     private String createDummyJsonResponse(Exchange exchange) {
         MarketFetchResult marketFetchResult = marketFetchTestDataProvider.getMarketFetchResult(exchange);
-        List<UpbitMarketFetchResponse> marketFetchResponse = marketFetchResult.getData().stream().map(marketFetchData -> new UpbitMarketFetchResponse(
+        List<UpbitMarketFetchResponse> marketFetchResponse = marketFetchResult.data().stream().map(marketFetchData -> new UpbitMarketFetchResponse(
                 marketFetchData.marketCode(),
                 marketFetchData.openingPrice(),
                 marketFetchData.highPrice(),

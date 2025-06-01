@@ -2,7 +2,6 @@ package com.zonbeozon.market.fetch;
 
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.MarketFetchTestDataProvideRouter;
-import com.zonbeozon.market.MarketTestDataProvideRouter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +34,6 @@ abstract class AbstractMarketFetcherTest {
     void fetch_shouldReturnMappedMarketFetchResult_whenValidMarketCodesProvided() {
         MarketFetchResult marketFetchResult = fetcher.fetch(fetchDataProvider.getMarketCodes(exchange));
         Assertions.assertThat(marketFetchResult.getExchange()).isEqualTo(exchange);
-        Assertions.assertThat(marketFetchResult.getData()).isEqualTo(fetchDataProvider.getMarketFetchResult(exchange).getData());
+        Assertions.assertThat(marketFetchResult.data()).isEqualTo(fetchDataProvider.getMarketFetchResult(exchange).data());
     }
 }

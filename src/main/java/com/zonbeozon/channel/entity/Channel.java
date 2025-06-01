@@ -7,14 +7,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.Optional;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "channel_type")
 @SQLDelete(sql = "UPDATE channel SET is_deleted = true WHERE id = ?")
@@ -149,6 +153,15 @@ public abstract class Channel extends BaseTimeEntity {
     public void validateJoinPermission() {
         if(joinLevel != ChannelJoinLevel.OPEN) {
             throw new ChannelAccessDeniedException("공개 가입 채널이 아닙니다");
+        }
+    }
+
+    public void validateContentReadPermission(ChannelMember channelMember) {
+        if (contentOpenLevel == ChannelContentOpenLevel.PUBLIC) {
+            return;
+        }
+        if (contentOpenLevel == ChannelContentOpenLevel.PRIVATE && channelMember == null) {
+            throw new ChannelAccessDeniedException("채널 content를 읽을 권한이 없습니다");
         }
     }
 

@@ -1,6 +1,5 @@
 package com.zonbeozon.market.fetch;
 
-import com.zonbeozon.common.fetch.FetchManager;
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.MarketFetchTestDataProvideRouter;
 import com.zonbeozon.market.MarketTestDataProvideRouter;
