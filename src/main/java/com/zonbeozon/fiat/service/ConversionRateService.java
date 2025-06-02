@@ -22,6 +22,9 @@ public class ConversionRateService {
 
     @Transactional(readOnly = true)
     public BigDecimal getConversionRate(FiatType from, FiatType to) {
+        if(from == to) {
+            return BigDecimal.ONE;
+        }
         ConversionRateCode conversionRateCode = ConversionRateCode.parse(from, to);
         return conversionRateRepository.findFirstByCodeOrderByCreatedAtDesc(conversionRateCode)
                 .orElseThrow(() -> new ConversionRateException("등록된 환율 정보가 없습니다."))
