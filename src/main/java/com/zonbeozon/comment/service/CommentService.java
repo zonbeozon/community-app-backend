@@ -3,7 +3,7 @@ package com.zonbeozon.comment.service;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.exception.CommentNotFoundException;
 import com.zonbeozon.comment.repository.CommentRepository;
-import com.zonbeozon.post.service.PostService;
+import com.zonbeozon.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final PostService postService;
+    private final PostServiceImpl postServiceImpl;
     private final CommentRepository commentRepository;
 
 //    @Transactional

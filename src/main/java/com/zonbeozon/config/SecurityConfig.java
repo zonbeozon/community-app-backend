@@ -92,27 +92,32 @@ public class SecurityConfig {
         request.requestMatchers(HttpMethod.GET,
                 //channel Related
                 "/channel",
-                "/channel/joined"
+                "/channel/joined",
+                "channel/*/post"
         ).authenticated();
 
         // USER PROTECTION LEVEL
         request.requestMatchers(HttpMethod.POST,
                 //channel Related
                 "/channel",
-                "/channel/*/member"
+                "/channel/*/member",
+                "channel/*/post"
         ).authenticated();
 
         request.requestMatchers(HttpMethod.PATCH,
                 //Discussion Related
                 "/channel/*/contentOpenLevel",
                 "/channel/*/info",
-                "/channel/*/member/*/role"
+                "/channel/*/member/*/role",
+                "/channel/*/post/*"
+
         ).authenticated();
         request.requestMatchers(HttpMethod.DELETE,
                 //Discussion Related
                 "/channel/*/member",
                 "/channel/*",
-                "/channel/*/member/*/kick"
+                "/channel/*/member/*/kick",
+                "/channel/*/post/*"
         ).authenticated();
 
 

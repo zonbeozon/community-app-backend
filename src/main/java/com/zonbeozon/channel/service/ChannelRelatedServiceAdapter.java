@@ -11,15 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 @Service
 @RequiredArgsConstructor
 class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberService, ChannelInvitationService {
     private final ChannelServiceImpl channelServiceImpl;
     private final ChannelMemberServiceImpl channelMemberServiceImpl;
     private final ChannelInvitationServiceImpl channelInvitationServiceImpl;
+    private final ChannelMemberResolver channelMemberResolver;
 
 
     @Override
@@ -29,19 +27,19 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
 
     @Override
     public void updateChannelInfo(Member member, Long channelId, ChannelInfoUpdateRequest channelInfoUpdateRequest) {
-        findChannelMemberThenConsume(member, channelId,
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId,
                 channelMember -> channelServiceImpl.updateChannelInfo(channelMember, channelInfoUpdateRequest)
         );
     }
 
     @Override
     public void deleteChannel(Member member, Long channelId) {
-        findChannelMemberThenConsume(member, channelId, channelServiceImpl::deleteChannel);
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId, channelServiceImpl::deleteChannel);
     }
 
     @Override
     public void changeContentOpenLevel(Member member, Long channelId, ChannelContentOpenLevel openLevel) {
-        findChannelMemberThenConsume(member, channelId,
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId,
                 channelMember -> channelServiceImpl.changeContentOpenLevel(channelMember, openLevel)
         );
     }
@@ -73,7 +71,7 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
 
     @Override
     public void kickMember(Member member, Long channelId, Long targetChannelMemberId) {
-        findChannelMemberThenConsume(member, channelId, actor -> {
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId, actor -> {
             ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
             channelMemberServiceImpl.kickMember(actor, target);
         });
@@ -81,7 +79,7 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
 
     @Override
     public void modifyChannelMemberRole(Member member, Long channelId, Long targetChannelMemberId, ChannelRole wantToChange) {
-        findChannelMemberThenConsume(member, channelId, actor -> {
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId, actor -> {
             ChannelMember target = channelMemberServiceImpl.getByIdOrThrow(targetChannelMemberId);
             channelMemberServiceImpl.modifyChannelMemberRole(actor, target, wantToChange);
         });
@@ -89,12 +87,12 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
 
     @Override
     public void leaveChannel(Member member, Long channelId) {
-        findChannelMemberThenConsume(member, channelId, channelMemberServiceImpl::leaveChannel);
+        channelMemberResolver.findChannelMemberThenConsume(member, channelId, channelMemberServiceImpl::leaveChannel);
     }
 
     @Override
     public InviteCodeResponse publishInvite(Member member, Long channelId, Long inviteeId) {
-        return findChannelMemberThenApply(member, channelId,
+        return channelMemberResolver.findChannelMemberThenApply(member, channelId,
                 channelMember -> channelInvitationServiceImpl.publishInvite(channelMember, inviteeId));
     }
 
@@ -103,15 +101,4 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
         channelInvitationServiceImpl.inviteAcceptJoinAsMember(member, code);
     }
 
-    private void findChannelMemberThenConsume(Member member, Long channelId,  Consumer<ChannelMember> consumer) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
-        ChannelMember channelMember = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
-        consumer.accept(channelMember);
-    }
-
-    private <R> R findChannelMemberThenApply(Member member, Long channelId,  Function<ChannelMember, R> function) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
-        ChannelMember channelMember = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
-        return function.apply(channelMember);
-    }
 }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record SimplifiedPostResponse(
         long postId,
-        String title,
+        String content,
         ChannelMemberInfoResponse author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -15,7 +15,7 @@ public record SimplifiedPostResponse(
     public static SimplifiedPostResponse fromEntity(Post post) {
         return new SimplifiedPostResponse(
                 post.getId(),
-                post.getTitle(),
+                post.getContent(),
                 ChannelMemberInfoResponse.fromEntity(post.getAuthor()),
                 post.getCreatedAt(),
                 post.getModifiedAt()

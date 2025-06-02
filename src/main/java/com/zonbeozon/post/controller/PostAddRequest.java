@@ -1,6 +1,6 @@
 package com.zonbeozon.post.controller;
 
-public record PostUpdateRequest(
+public record PostAddRequest(
         String content
 ) {
 }

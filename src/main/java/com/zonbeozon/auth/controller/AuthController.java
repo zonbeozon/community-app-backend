@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final TokenService tokenService;
 
-    @GetMapping("/auth/success")
-    public ResponseEntity<AccessTokenIncludedResponse> loginSuccess(@Valid AccessTokenIncludedResponse loginResponse) {
-        return ResponseEntity.ok(loginResponse);
-    }
-
     @DeleteMapping("/auth/logout")
     public ResponseEntity<Void> logout(Authentication authentication) {
         tokenService.deleteTokenByMemberId(Long.parseLong(authentication.getName()));

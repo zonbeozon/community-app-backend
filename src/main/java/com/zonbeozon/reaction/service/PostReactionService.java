@@ -4,7 +4,7 @@ import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.service.ChannelEntityQueryService;
 import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.service.PostService;
+import com.zonbeozon.post.service.PostServiceImpl;
 import com.zonbeozon.reaction.entity.PostReaction;
 import com.zonbeozon.reaction.entity.ReactionType;
 import com.zonbeozon.reaction.repository.PostReactionRepository;
@@ -15,23 +15,23 @@ import java.util.Optional;
 
 @Service
 public class PostReactionService extends AbstractReactionService<Post, PostReaction> {
-    private final PostService postService;
+    private final PostServiceImpl postServiceImpl;
     private final PostReactionRepository postReactionRepository;
 
     public PostReactionService(
             ChannelMemberEntityQueryService channelMemberEntityQueryService,
-            PostService postService,
+            PostServiceImpl postServiceImpl,
             PostReactionRepository postReactionRepository,
             ChannelEntityQueryService channelEntityQueryService
     ) {
         super(channelMemberEntityQueryService, channelEntityQueryService);
-        this.postService = postService;
+        this.postServiceImpl = postServiceImpl;
         this.postReactionRepository = postReactionRepository;
     }
 
     @Override
     protected Post getArticleByIdOrThrow(Long articleId) {
-        return postService.getPostByIdOrThrow(articleId);
+        return postServiceImpl.getPostByIdOrThrow(articleId);
     }
 
     @Override
