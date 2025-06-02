@@ -5,7 +5,6 @@ import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.entity.Market;
 import com.zonbeozon.market.entity.MarketFiatMetric;
 import com.zonbeozon.market.fetch.MarketFetchData;
-import com.zonbeozon.market.fetch.MarketFetchResult;
 
 import java.util.ArrayList;
 import java.util.List;

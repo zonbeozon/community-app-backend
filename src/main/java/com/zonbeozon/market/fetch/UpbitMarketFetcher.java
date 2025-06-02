@@ -2,6 +2,7 @@ package com.zonbeozon.market.fetch;
 
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.fiat.entity.FiatType;
+import com.zonbeozon.market.MarketHolder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -45,8 +46,8 @@ class UpbitMarketFetcher
     }
 
     @Override
-    protected MultiValueMap<String, String> getMarketCodeParams(Set<String> marketCodes) {
-        String joinedName = String.join(",", marketCodes);
+    protected MultiValueMap<String, String> convertMarketToParam(MarketHolder marketHolder) {
+        String joinedName = String.join(",", marketHolder.toMarketCodeSet());
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("markets", joinedName);
         return params;

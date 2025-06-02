@@ -1,7 +1,6 @@
 package com.zonbeozon.market;
 
 import com.zonbeozon.exchange.Exchange;
-import com.zonbeozon.market.fetch.MarketFetchResult;
 
 import java.util.HashMap;
 import java.util.Map;

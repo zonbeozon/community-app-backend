@@ -33,18 +33,4 @@ record BithumbMarketFetchResponse(
         @JsonProperty("acc_trade_price_24h")
         BigDecimal accTradePrice
 ) implements MarketFetchResponse {
-    @Override
-    public MarketFetchData getResult(FiatType fiatType) {
-        return new MarketFetchData(
-                this.marketCode(),
-                fiatType,
-                this.openingPrice(),
-                this.highPrice(),
-                this.lowPrice(),
-                this.tradePrice(),
-                this.signedChangePrice(),
-                this.signedChangeRate(),
-                this.accTradePrice()
-        );
-    }
 }

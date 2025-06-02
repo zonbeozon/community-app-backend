@@ -3,7 +3,6 @@ package com.zonbeozon.market.update;
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.*;
 import com.zonbeozon.market.entity.Market;
-import com.zonbeozon.market.fetch.MarketFetchResult;
 import com.zonbeozon.market.service.MarketService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ class MarketUpdaterTest {
     @Test
     void shouldAddMarketIfNotRegistered() {
         MultiExchangeMarketHolder multiExchangeMarketHolder = getBasicMarketHolder();
-        MarketUpdater marketUpdater = new MarketUpdaterImpl(fetchManager, () -> multiExchangeMarketHolder, marketService);
+        MarketUpdater marketUpdater = new DefaultMarketUpdater(fetchManager, () -> multiExchangeMarketHolder, marketService);
         MarketFetchResult marketFetchResult = fetchTestDataProvider.getMarketFetchResult(Exchange.UPBIT);
         MarketFetchResultWrapper marketFetchResultWrapper = new MarketFetchResultWrapper(List.of(marketFetchResult));
         Mockito.when(fetchManager.fetch(multiExchangeMarketHolder)).thenReturn(marketFetchResultWrapper);

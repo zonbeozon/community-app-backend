@@ -33,18 +33,4 @@ record BinanceMarketFetchResponse (
         @NotNull(message = "Accumulated trade price cannot be null")
         BigDecimal accTradePrice
 ) implements MarketFetchResponse {
-    @Override
-    public MarketFetchData getResult(FiatType fiatType) {
-        return new MarketFetchData(
-                this.marketCode(),
-                fiatType,
-                this.openingPrice(),
-                this.highPrice(),
-                this.lowPrice(),
-                this.tradePrice(),
-                this.signedChangePrice(),
-                this.signedChangeRate(),
-                this.accTradePrice()
-        );
-    }
 }

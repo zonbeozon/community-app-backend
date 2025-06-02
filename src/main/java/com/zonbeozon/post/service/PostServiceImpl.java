@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-class PostServiceImpl {
+class PostServiceImpl implements PostEntityQueryService {
     private final PostRepository postRepository;
     private final ChannelEntityQueryService channelEntityQueryService;
     private final ChannelMemberEntityQueryService channelMemberEntityQueryService;

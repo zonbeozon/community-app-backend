@@ -2,6 +2,15 @@ package com.zonbeozon.market.fetch;
 
 import com.zonbeozon.fiat.entity.FiatType;
 
-interface MarketFetchResponse {
-    MarketFetchData getResult(FiatType fiatType);
+import java.math.BigDecimal;
+
+public interface MarketFetchResponse {
+    String marketCode();
+    BigDecimal openingPrice();
+    BigDecimal highPrice();
+    BigDecimal lowPrice();
+    BigDecimal tradePrice();
+    BigDecimal signedChangePrice();
+    BigDecimal signedChangeRate();
+    BigDecimal accTradePrice();
 }

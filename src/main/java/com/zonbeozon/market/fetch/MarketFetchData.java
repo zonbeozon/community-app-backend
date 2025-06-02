@@ -7,8 +7,9 @@ import com.zonbeozon.market.entity.MarketFiatMetric;
 import java.math.BigDecimal;
 
 public record MarketFetchData(
-        String marketCode,
+        Long marketId,
         FiatType fiatType,
+        String marketCode,
         BigDecimal openingPrice,
         BigDecimal highPrice,
         BigDecimal lowPrice,
@@ -17,7 +18,22 @@ public record MarketFetchData(
         BigDecimal signedChangeRate,
         BigDecimal accTradePrice
 ) {
-    public MarketFiatMetric createMarketFiatMetric(Market market) {
+    public static MarketFetchData from(Market market, MarketFetchResponse marketFetchResponse, FiatType fiatType) {
+        return new MarketFetchData(
+                market.getId(),
+                fiatType,
+                market.getMarketCode(),
+                marketFetchResponse.openingPrice(),
+                marketFetchResponse.highPrice(),
+                marketFetchResponse.lowPrice(),
+                marketFetchResponse.tradePrice(),
+                marketFetchResponse.signedChangePrice(),
+                marketFetchResponse.signedChangeRate(),
+                marketFetchResponse.accTradePrice()
+        );
+    }
+
+    public MarketFiatMetric toMarketFiatMetric(Market market) {
         return MarketFiatMetric.create(
                 market,
                 fiatType,

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class MarketService {
+public class MarketService implements MarketEntityQueryService {
     private final MarketRepository marketRepository;
     private final EntityValidator validator;
     private final MarketFiatMetricService marketFiatMetricService;
@@ -51,11 +51,12 @@ public class MarketService {
     @Transactional(readOnly = true)
     public MarketResponse getMarketResponse(Long marketId, FiatType fiatType) {
         Market market = getMarketByIdOrThrow(marketId);
-        List<MarketFiatMetric> marketFiatMetrics = marketFiatMetricService.getMarketFiatMetricsByMarketAndFiatType(market, fiatType);
+        List<MarketFiatMetric> marketFiatMetrics = marketFiatMetricService.getMarketFiatMetricsByMarket(market);
         return MarketResponse.from(market, marketFiatMetrics);
     }
 
-    private Market getMarketByIdOrThrow(Long marketId) {
+    @Transactional(readOnly = true)
+    public Market getMarketByIdOrThrow(Long marketId) {
         return marketRepository.findById(marketId)
                 .orElseThrow(() -> new MarketNotFoundException(marketId + "는 존재하지 않는 id입니다."));
     }
