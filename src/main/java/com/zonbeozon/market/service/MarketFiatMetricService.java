@@ -4,7 +4,6 @@ import com.zonbeozon.common.EntityValidator;
 import com.zonbeozon.fiat.entity.FiatType;
 import com.zonbeozon.market.entity.Market;
 import com.zonbeozon.market.entity.MarketFiatMetric;
-import com.zonbeozon.market.exception.MarketFiatMetricNotFoundException;
 import com.zonbeozon.market.repository.MarketFiatMetricRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

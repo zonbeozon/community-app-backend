@@ -1,7 +1,6 @@
 package com.zonbeozon.market.fetch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.zonbeozon.fiat.entity.FiatType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

@@ -1,7 +1,5 @@
 package com.zonbeozon.market.fetch;
 
-import com.zonbeozon.fiat.entity.FiatType;
-
 import java.math.BigDecimal;
 
 public interface MarketFetchResponse {

@@ -7,8 +7,8 @@ import com.zonbeozon.market.entity.Market;
 import java.util.List;
 import java.util.Optional;
 
-class MarketFetchDataMapper <T extends MarketFetchResponse> {
-    public List<MarketFetchData> map(MarketHolder marketHolder, List<T> response, FiatType fiatType) {
+class MarketFetchDataMapper {
+    public <T extends MarketFetchResponse> List<MarketFetchData> map(MarketHolder marketHolder, List<T> response, FiatType fiatType) {
         return response.stream().map(item -> {
             Market matched = Optional.ofNullable(marketHolder.toMarketCodeMap().get(item.marketCode()))
                     .orElseThrow(() -> new IllegalArgumentException("Market not found"));

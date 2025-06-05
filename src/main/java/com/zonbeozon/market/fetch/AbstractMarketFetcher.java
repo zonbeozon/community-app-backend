@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 abstract class AbstractMarketFetcher<T extends MarketFetchResponse> implements MarketFetcher {
     private final RestClient restClient;
     private final ParameterizedTypeReference<List<T>> responseType;
-    private final MarketFetchDataMapper<T> mapper = new MarketFetchDataMapper<>();
+    private final MarketFetchDataMapper mapper = new MarketFetchDataMapper();
 
     public AbstractMarketFetcher(RestClient.Builder restClientBuilder, ParameterizedTypeReference<List<T>> responseType) {
         this.restClient = restClientBuilder.build();

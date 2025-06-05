@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,21 +24,18 @@ public class MarketService implements MarketEntityQueryService {
     private final MarketFiatMetricService marketFiatMetricService;
 
     public void addMarkets(List<Market> markets) {
-        validator.validate(markets);
-        List<Market> filteredMarkets = filterDuplicateMarketsByMarketCode(markets);
-        marketRepository.saveAll(filteredMarkets);
+        markets.forEach(this::addMarket);
     }
 
-    private List<Market> filterDuplicateMarketsByMarketCode(List<Market> markets) {
-        Set<String> duplicateMarketCodes = marketRepository.findByMarketCodeIn(getMarketCodes(markets)).stream()
-                .map(Market::getMarketCode).collect(Collectors.toCollection(HashSet::new));
-        return markets.stream()
-                .filter(market -> !duplicateMarketCodes.contains(market.getMarketCode()))
-                .collect(Collectors.toList());
+    public void addMarket(Market market) {
+        validator.validate(market);
+        if(isDuplicateMarketExist(market)) return;
+        marketRepository.save(market);
     }
 
-    private List<String> getMarketCodes(List<Market> markets) {
-        return markets.stream().map(Market::getMarketCode).toList();
+    private boolean isDuplicateMarketExist(Market market) {
+        Optional<Market> optMarket = marketRepository.findByMarketCodeAndExchange(market.getMarketCode(), market.getExchange());
+        return optMarket.isPresent();
     }
 
     public void deleteMarket(Long marketId) {

@@ -40,32 +40,29 @@ abstract public class MarketTestUtils {
     }
 
     public static Market copyMarket(Market market) {
-        Market copiedMarket = createMarket(
+        return createMarket(
                 market.getMarketCode(),
                 market.getExchange(),
                 market.getMarketType(),
                 market.getSignedChangeRate()
         );
-        Set<MarketFiatMetric> copiedMarketFiatMetric = copyMarketFiatMetrics(market.getMarketFiatMetrics(), copiedMarket);
-        setMarketFiatMetrics(copiedMarket, copiedMarketFiatMetric);
-        return copiedMarket;
     }
 
-    private static Set<MarketFiatMetric> copyMarketFiatMetrics(Set<MarketFiatMetric> marketFiatMetrics, Market market) {
-        return marketFiatMetrics.stream().map(marketFiatMetric -> MarketFiatMetric.create(
-                market,
-                marketFiatMetric.getFiatType(),
-                marketFiatMetric.getOpeningPrice(),
-                marketFiatMetric.getHighPrice(),
-                marketFiatMetric.getLowPrice(),
-                marketFiatMetric.getTradePrice(),
-                marketFiatMetric.getSignedChangePrice(),
-                marketFiatMetric.getAccTradePrice()
-        )).collect(Collectors.toSet());
-    }
+//    private static Set<MarketFiatMetric> copyMarketFiatMetrics(Set<MarketFiatMetric> marketFiatMetrics, Market market) {
+//        return marketFiatMetrics.stream().map(marketFiatMetric -> MarketFiatMetric.create(
+//                market,
+//                marketFiatMetric.getFiatType(),
+//                marketFiatMetric.getOpeningPrice(),
+//                marketFiatMetric.getHighPrice(),
+//                marketFiatMetric.getLowPrice(),
+//                marketFiatMetric.getTradePrice(),
+//                marketFiatMetric.getSignedChangePrice(),
+//                marketFiatMetric.getAccTradePrice()
+//        )).collect(Collectors.toSet());
+//    }
 
     public static void setId(
-            String id,
+            Long id,
             Market market
     ) {
         setField(market, "id", id);
