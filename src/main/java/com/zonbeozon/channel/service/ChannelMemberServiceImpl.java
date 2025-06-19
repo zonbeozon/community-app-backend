@@ -79,18 +79,18 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ChannelMember> getByMemberAndChannel(Member member, Channel channel) {
+    public Optional<ChannelMember> getChannelMember(Member member, Channel channel) {
         return channelMemberRepository.findByMemberAndChannel(member, channel);
     }
 
     @Transactional(readOnly = true)
-    public ChannelMember getByMemberAndChannelOrThrow(Member member, Channel channel) {
-        return getByMemberAndChannel(member, channel)
+    public ChannelMember getChannelMemberOrThrow(Member member, Channel channel) {
+        return getChannelMember(member, channel)
                 .orElseThrow(() -> new ChannelMemberNotFoundException(member + "는 채널: " + channel + "에 속해있지 않습니다."));
     }
 
     @Transactional(readOnly = true)
-    public List<ChannelMember> getByMember(Member member) {
+    public List<ChannelMember> getChannelMembersByMember(Member member) {
         return channelMemberRepository.findByMember(member);
     }
 

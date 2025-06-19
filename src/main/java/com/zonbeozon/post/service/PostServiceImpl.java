@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 class PostServiceImpl implements PostEntityQueryService {
     private final PostRepository postRepository;
     private final ChannelEntityQueryService channelEntityQueryService;
-    private final ChannelMemberEntityQueryService channelMemberEntityQueryService;
 
     @Transactional
     public Long addPost(PostAddCommand command, ChannelMember channelMember) {

@@ -8,26 +8,17 @@ import com.zonbeozon.comment.service.CommentService;
 import com.zonbeozon.reaction.entity.CommentReaction;
 import com.zonbeozon.reaction.entity.ReactionType;
 import com.zonbeozon.reaction.repository.CommentReactionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentReactionService extends AbstractReactionService<Comment, CommentReaction> {
     private final CommentService commentService;
     private final CommentReactionRepository commentReactionRepository;
-
-    public CommentReactionService(
-            ChannelMemberEntityQueryService channelMemberEntityQueryService,
-            CommentService commentService,
-            CommentReactionRepository commentReactionRepository,
-            ChannelEntityQueryService channelEntityQueryService
-    ) {
-        super(channelMemberEntityQueryService, channelEntityQueryService);
-        this.commentService = commentService;
-        this.commentReactionRepository = commentReactionRepository;
-    }
 
     @Override
     protected Comment getArticleByIdOrThrow(Long articleId) {
@@ -35,12 +26,12 @@ public class CommentReactionService extends AbstractReactionService<Comment, Com
     }
 
     @Override
-    protected Optional<CommentReaction> findReactionByArticleAndAuthor(Comment article, ChannelMember channelMember) {
+    protected Optional<CommentReaction> getReactionByArticleAndAuthor(Comment article, ChannelMember channelMember) {
         return commentReactionRepository.findByCommentAndAuthor(article, channelMember);
     }
 
     @Override
-    protected List<CommentReaction> findReactionByArticle(Comment article) {
+    protected List<CommentReaction> getReactionByArticle(Comment article) {
         return commentReactionRepository.findByComment(article);
     }
 

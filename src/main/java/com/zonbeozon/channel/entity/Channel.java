@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.Optional;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,10 +22,10 @@ import java.util.Optional;
 @SQLDelete(sql = "UPDATE channel SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 public abstract class Channel extends BaseTimeEntity {
-    public static final int MIN_TITLE_LENGTH = 4;
+    public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 30;
     public static final int MIN_DESCRIPTION_LENGTH = 0;
-    public static final int MAX_DESCRIPTION_LENGTH = 1000;
+    public static final int MAX_DESCRIPTION_LENGTH = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

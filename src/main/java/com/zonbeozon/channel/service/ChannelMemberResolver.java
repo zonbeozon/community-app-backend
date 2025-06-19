@@ -12,23 +12,15 @@ import java.util.function.Function;
 @Component
 @RequiredArgsConstructor
 public class ChannelMemberResolver {
-    private final ChannelServiceImpl channelServiceImpl;
-    private final ChannelMemberServiceImpl channelMemberServiceImpl;
+    private final ChannelEntityQueryService channelEntityQueryService;
+    private final ChannelMemberEntityQueryService channelMemberEntityQueryService;
 
     public void findChannelMemberThenConsume(Member member, Long channelId, Consumer<ChannelMember> consumer) {
         findChannelMemberThenConsume(member, channelId, consumer, false);
     }
 
     public void findChannelMemberThenConsume(Member member, Long channelId, Consumer<ChannelMember> consumer, boolean nullable) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
-
-        ChannelMember channelMember;
-        if(nullable) {
-            channelMember = channelMemberServiceImpl.getByMemberAndChannel(member, channel).orElse(null);
-        } else {
-            channelMember = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
-        }
-        consumer.accept(channelMember);
+        consumer.accept(findChannelMember(member, channelId, nullable));
     }
 
     public  <R> R findChannelMemberThenApply(Member member, Long channelId,  Function<ChannelMember, R> function) {
@@ -36,14 +28,14 @@ public class ChannelMemberResolver {
     }
 
     public <R> R findChannelMemberThenApply(Member member, Long channelId, Function<ChannelMember, R> function, boolean nullable) {
-        Channel channel = channelServiceImpl.getChannelByIdOrThrow(channelId);
+        return function.apply(findChannelMember(member, channelId, nullable));
+    }
 
-        ChannelMember channelMember;
+    private ChannelMember findChannelMember(Member member, Long channelId, boolean nullable) {
+        Channel channel = channelEntityQueryService.getChannelByIdOrThrow(channelId);
         if(nullable) {
-            channelMember = channelMemberServiceImpl.getByMemberAndChannel(member, channel).orElse(null);
-        } else {
-            channelMember = channelMemberServiceImpl.getByMemberAndChannelOrThrow(member, channel);
+            return channelMemberEntityQueryService.getChannelMember(member, channel).orElse(null);
         }
-        return function.apply(channelMember);
+        return channelMemberEntityQueryService.getChannelMemberOrThrow(member, channel);
     }
 }

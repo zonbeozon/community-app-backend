@@ -70,7 +70,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
     }
 
     public JoinedChannelResponseWrapper createMemberJoinedChannelResponse(Member member) {
-        List<JoinedChannelResponse> channels = channelMemberServiceImpl.getByMember(member).stream()
+        List<JoinedChannelResponse> channels = channelMemberServiceImpl.getChannelMembersByMember(member).stream()
                 .map(ChannelMember::getChannel)
                 .map(JoinedChannelResponse::from)
                 .toList();
