@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ChannelCreateRequest(
-        @NotBlank String title,
+        @NotBlank(message = "하") String title,
         @NotBlank String description,
         @NotBlank String profile,
         @NotNull ChannelContentOpenLevel contentOpenLevel,

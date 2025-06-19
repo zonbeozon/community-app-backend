@@ -11,6 +11,7 @@ import com.zonbeozon.channel.service.dto.*;
 import com.zonbeozon.common.EntityValidator;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Service
+@Slf4j
 class ChannelServiceImpl implements ChannelEntityQueryService {
     private final ChannelMemberServiceImpl channelMemberServiceImpl;
     private final ChannelRepository channelRepository;
@@ -32,6 +34,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
         Channel channel = channelFactory.createChannel(command, requester);
         entityValidator.validate(channel);
         channelRepository.save(channel);
+        log.info("{} channel Id", channel.getId());
         channelMemberServiceImpl.joinAsOwner(requester, channel);
         return channel.getId();
     }

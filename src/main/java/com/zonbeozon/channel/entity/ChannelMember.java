@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -17,21 +18,19 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @SQLRestriction("status = 'ACTIVE'")
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_id", "channel_id"})
-})
+@Slf4j
 public class ChannelMember extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
@@ -56,6 +55,7 @@ public class ChannelMember extends BaseTimeEntity {
 
     public static ChannelMember create(Member member, Channel channel, ChannelRole role) {
         ChannelMember channelMember = new ChannelMember();
+        log.info("channelId = {}, memberId = {}", channel.getId(), member.getId());
         channelMember.member = member;
         channelMember.channel = channel;
         channelMember.role = role;
