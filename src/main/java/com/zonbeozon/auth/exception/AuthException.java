@@ -1,11 +1,13 @@
 package com.zonbeozon.auth.exception;
 
-public class AuthException extends RuntimeException {
-    public AuthException(String message) {
-        super(message);
-    }
+import lombok.Getter;
 
-    public AuthException(String message, Throwable cause) {
-        super(message, cause);
+@Getter
+public class AuthException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    public AuthException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 }

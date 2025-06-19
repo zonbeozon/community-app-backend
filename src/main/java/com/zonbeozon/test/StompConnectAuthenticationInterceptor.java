@@ -2,7 +2,7 @@ package com.zonbeozon.test;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
 import com.zonbeozon.auth.exception.AuthException;
-import com.zonbeozon.auth.exception.InvalidTokenException;
+import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ChannelSubscribeAuthenticationInterceptor implements ChannelInterceptor {
+public class StompConnectAuthenticationInterceptor implements ChannelInterceptor {
     private final TokenProvider tokenProvider;
 
     @Override
@@ -28,7 +28,7 @@ public class ChannelSubscribeAuthenticationInterceptor implements ChannelInterce
             if(token == null) return message;
 
             if(!tokenProvider.validateToken(token)) {
-                throw new InvalidTokenException(InvalidTokenException.EXPIRED_MESSAGE);
+                throw new AuthException(ErrorCode.EXPIRED_TOKEN);
             }
             Authentication authentication = tokenProvider.getAuthentication(token);
             accessor.setUser(authentication);

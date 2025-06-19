@@ -1,7 +1,8 @@
 package com.zonbeozon.auth.filter;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
-import com.zonbeozon.auth.exception.InvalidTokenException;
+import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,7 @@ public class reissueAccessTokenFilter extends OncePerRequestFilter {
         String accessToken = AuthenticationTokenUtils.resolveAuthHeader(request.getHeader(HttpHeaders.AUTHORIZATION));
         //accessToken이 없기 때문에 다음 필터 호출
         if(accessToken == null) {
-            throw new InvalidTokenException("Authorization 헤더가 존재하지 않거나 잘못된 형식입니다.");
+            throw new AuthException(ErrorCode.MISSING_AUTH_HEADER);
         }
         String reissueToken = tokenProvider.reissueAccessToken(accessToken);
         response.setHeader(HttpHeaders.AUTHORIZATION, AuthenticationTokenUtils.createAuthHeader(reissueToken));

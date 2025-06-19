@@ -1,6 +1,7 @@
 package com.zonbeozon.auth.dto;
 
 import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.auth.exception.ErrorCode;
 import lombok.Builder;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ public record OAuth2UserInfo(
         return switch (registrationId) {
             case "google" -> ofGoogle(attributes);
             case "kakao" -> ofKakao(attributes);
-            default -> throw new AuthException("등록되지 않은 registrationClient 입니다.");
+            default -> throw new AuthException(ErrorCode.UNREGISTERED_OAUTH_CLIENT);
         };
     }
 

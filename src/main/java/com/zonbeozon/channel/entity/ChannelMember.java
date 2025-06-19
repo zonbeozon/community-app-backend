@@ -16,7 +16,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SQLRestriction("status = ACTIVE")
+@SQLRestriction("status = 'ACTIVE'")
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"member_id", "channel_id"})
 })

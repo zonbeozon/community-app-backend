@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final ChannelSubscribeAuthenticationInterceptor channelSubscribeAuthenticationInterceptor;
+    private final StompConnectAuthenticationInterceptor stompConnectAuthenticationInterceptor;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
@@ -27,6 +27,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(channelSubscribeAuthenticationInterceptor);
+        registration.interceptors(stompConnectAuthenticationInterceptor);
     }
 }

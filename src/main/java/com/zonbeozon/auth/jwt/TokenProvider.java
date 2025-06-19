@@ -2,7 +2,8 @@ package com.zonbeozon.auth.jwt;
 
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.auth.entity.Token;
-import com.zonbeozon.auth.exception.InvalidTokenException;
+import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.service.TokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import javax.crypto.SecretKey;
 import java.util.Collections;
@@ -95,12 +95,12 @@ public class TokenProvider {
         }
         //refresh token이 만료된 경우
         tokenService.deleteToken(token);
-        throw new InvalidTokenException("RefreshToken Expired");
+        throw new AuthException(ErrorCode.EXPIRED_REFRESH_TOKEN);
 
     }
 
     /**
-     * @throws InvalidTokenException 잘못된 토큰일때 하지만 토큰만료는 예외 대신 false를 리턴한다.
+     * @throws AuthException 잘못된 토큰일때 하지만 토큰만료는 예외 대신 false를 리턴한다.
      */
     public boolean validateToken(String token) {
         return parseClaims(token).getExpiration().after(new Date());
@@ -113,7 +113,7 @@ public class TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
-            throw new InvalidTokenException();
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }
     }
 
