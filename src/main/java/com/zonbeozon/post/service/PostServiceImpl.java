@@ -53,6 +53,7 @@ class PostServiceImpl implements PostEntityQueryService {
      * @throws com.zonbeozon.channel.exception.ChannelNotFoundException
      * channelId가 존재하지 않을때
      */
+    @Transactional(readOnly = true)
     public PagedPostsResponse createPagedPostResponse(
             ChannelMember channelMember,
             Long channelId,
