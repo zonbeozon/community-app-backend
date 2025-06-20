@@ -1,9 +1,7 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
-import com.zonbeozon.channel.exception.ChannelMemberNotFoundException;
+import com.zonbeozon.channel.exception.*;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void joinAsOwner(Member member, Channel channel) {
         if(channelMemberRepository.existsByChannelAndRole(channel, ChannelRole.CHANNEL_OWNER))
-            throw new ChannelBadRequestException("Owner는 채널당 한명만 존재 가능합니다");
+            throw new ChannelException("Owner는 이미 채널에 존재한다, 로직 상 이 예외는 발생되면 안된다.");
         join(member, channel, ChannelRole.CHANNEL_OWNER);
     }
 
@@ -41,7 +39,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
 
     private void join(Member member, Channel channel, ChannelRole role) {
         if(channelMemberRepository.existsByMemberAndChannel(member, channel))
-            throw new ChannelBadRequestException("이미 해당 유저는 채널에 가입했습니다");
+            throw new ChannelBadRequestException(ErrorCode.ALREADY_JOINED);
         ChannelMember chMember = ChannelMember.create(member, channel, role);
         channelMemberRepository.save(chMember);
     }
@@ -49,14 +47,14 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void kickMember(ChannelMember actor, ChannelMember target) {
         if(!actor.getChannel().equals(target.getChannel()))
-            throw new ChannelBadRequestException("타겟맴버가 다른 채널의 맴버입니다");
+            throw new ChannelBadRequestException(ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
         actor.getChannel().kick(actor, target);
     }
 
     @Transactional
     public void modifyChannelMemberRole(ChannelMember actor, ChannelMember target, ChannelRole wantToChange) {
         if(!actor.getChannel().equals(target.getChannel()))
-            throw new ChannelBadRequestException("타겟맴버가 다른 채널의 맴버입니다");
+            throw new ChannelBadRequestException(ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
         actor.getChannel().modifyRole(actor, target, wantToChange);
     }
 
@@ -68,7 +66,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void leaveChannel(ChannelMember actor) {
         if(actor.canLeaveChannel()) {
-            throw new ChannelBadRequestException("채널을 탈퇴할 수 없습니다");
+            throw new ChannelBadRequestException(ErrorCode.CHANNEL_LEAVE_NOT_ALLOWED);
         }
         channelMemberRepository.delete(actor);
     }

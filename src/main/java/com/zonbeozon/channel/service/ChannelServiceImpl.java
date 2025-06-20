@@ -2,8 +2,10 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.controller.ChannelInfoUpdateRequest;
 import com.zonbeozon.channel.entity.*;
+import com.zonbeozon.channel.exception.ChannelAddBadRequestException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.exception.ChannelNotFoundException;
+import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.repository.ChannelWithMemberCount;
@@ -34,14 +36,13 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
         Channel channel = channelFactory.createChannel(command, requester);
         entityValidator.validate(channel);
         channelRepository.save(channel);
-        log.info("{} channel Id", channel.getId());
         channelMemberServiceImpl.joinAsOwner(requester, channel);
         return channel.getId();
     }
 
     private void validateDuplicateTitle(String title) {
         if(channelRepository.existsByTitle(title)) {
-            throw new ChannelBadRequestException("중복되는 타이틀입니다.");
+            throw new ChannelAddBadRequestException(ChannelAddBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
         }
     }
 

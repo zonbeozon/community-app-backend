@@ -2,6 +2,7 @@ package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ import org.hibernate.annotations.SQLRestriction;
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 30;
+    public static final String TITLE_LENGTH_ = "채널 타이틀의 글자수는 2~30자입니다.";
     public static final int MIN_DESCRIPTION_LENGTH = 0;
     public static final int MAX_DESCRIPTION_LENGTH = 300;
 
@@ -104,7 +106,7 @@ public abstract class Channel extends BaseTimeEntity {
 
     public void kick(ChannelMember requester, ChannelMember target) {
         if(requester.equals(target))
-            throw new ChannelBadRequestException("자기 자신을 강퇴할 수 없습니다.");
+            throw new ChannelBadRequestException(ErrorCode.CANNOT_TARGET_SELF);
         validateKickPermission(requester, target);
         target.updateStatusToKicked();
     }
@@ -112,9 +114,9 @@ public abstract class Channel extends BaseTimeEntity {
     public void modifyRole(ChannelMember requester, ChannelMember target, ChannelRole wantTo) {
         validateModifyRolePermission(requester, target, wantTo);
         if(target.getRole() == wantTo)
-            throw new ChannelBadRequestException("변경할려는 Role과 현재 Role이 같습니다");
+            throw new ChannelBadRequestException(ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
         if(requester.equals(target))
-            throw new ChannelBadRequestException("자기 자신의 Role은 변경 할 수 없습니다.");
+            throw new ChannelBadRequestException(ErrorCode.CANNOT_TARGET_SELF);
         target.updateRole(wantTo);
         //Owner는 채널 당 한명이기 때문에 Owner 권한 이전이 된다.
         if(wantTo == ChannelRole.CHANNEL_OWNER)

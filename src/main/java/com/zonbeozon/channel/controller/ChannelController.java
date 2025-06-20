@@ -3,11 +3,14 @@ package com.zonbeozon.channel.controller;
 import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
 import com.zonbeozon.channel.entity.ChannelJoinLevel;
 import com.zonbeozon.channel.entity.ChannelType;
+import com.zonbeozon.channel.exception.ChannelAddBadRequestException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.channel.service.ChannelService;
 import com.zonbeozon.channel.service.dto.JoinedChannelResponseWrapper;
 import com.zonbeozon.channel.service.dto.SearchChannelResponseWrapper;
+import com.zonbeozon.common.exception.ArgumentValidationErrorResponse;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -41,7 +45,10 @@ public class ChannelController {
                     description = "성공",
                     content = @Content(schema = @Schema(type = "integer", format = "int64", description = "채널 ID"))
             ),
-            @ApiResponse(responseCode = "400", description = "요청 body가 잘못되었을 때")
+            @ApiResponse(responseCode = "400", description = "필드에 형식이 잘못된 값이 존재할때",
+                    content =  @Content(schema = @Schema(implementation = ArgumentValidationErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "채널 생성 규칙과 충돌되는 값이 존재할때",
+                    content =  @Content(schema = @Schema(implementation = ChannelAddBadRequestException.Response.class)))
     })
     @PostMapping
     public ResponseEntity<Long> addChannel(

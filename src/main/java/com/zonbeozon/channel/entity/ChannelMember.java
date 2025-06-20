@@ -1,6 +1,7 @@
 package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
@@ -44,7 +45,7 @@ public class ChannelMember extends BaseTimeEntity {
 
     public void updateRole(ChannelRole role) {
         if(this.role == role) {
-            throw new ChannelBadRequestException("변경할려는 Role과 현재 Role이 같습니다");
+            throw new ChannelBadRequestException(ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
         }
         this.role = role;
     }
@@ -55,7 +56,6 @@ public class ChannelMember extends BaseTimeEntity {
 
     public static ChannelMember create(Member member, Channel channel, ChannelRole role) {
         ChannelMember channelMember = new ChannelMember();
-        log.info("channelId = {}, memberId = {}", channel.getId(), member.getId());
         channelMember.member = member;
         channelMember.channel = channel;
         channelMember.role = role;

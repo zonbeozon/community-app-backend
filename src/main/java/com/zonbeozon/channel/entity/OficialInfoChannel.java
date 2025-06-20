@@ -1,5 +1,6 @@
 package com.zonbeozon.channel.entity;
 
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.member.domain.Member;
@@ -26,7 +27,7 @@ public class OficialInfoChannel extends Channel {
     }
 
     public static OficialInfoChannel create(ChannelCreateCommand command, Member member) {
-        if (!member.isAdmin()) throw new ChannelBadRequestException("어드민만 OfficialInfoChannel를 생성할 수 있습니다.");
+        if (!member.isAdmin()) throw new ChannelAccessDeniedException("어드민만 OfficialInfoChannel를 생성할 수 있습니다.");
         return new OficialInfoChannel(command);
     }
 }

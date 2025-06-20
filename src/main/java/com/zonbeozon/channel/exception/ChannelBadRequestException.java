@@ -1,7 +1,14 @@
 package com.zonbeozon.channel.exception;
 
+
+import lombok.Getter;
+
+@Getter
 public class ChannelBadRequestException extends ChannelException {
-  public ChannelBadRequestException(String message) {
-    super(message);
+  private final String code;
+
+  public ChannelBadRequestException(ErrorCode errorCode) {
+    super(errorCode.getMessage());
+    this.code = errorCode.getCode();
   }
 }
