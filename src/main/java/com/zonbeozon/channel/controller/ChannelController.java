@@ -3,8 +3,7 @@ package com.zonbeozon.channel.controller;
 import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
 import com.zonbeozon.channel.entity.ChannelJoinLevel;
 import com.zonbeozon.channel.entity.ChannelType;
-import com.zonbeozon.channel.exception.ChannelAddBadRequestException;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.exception.ChannelAddException;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.channel.service.ChannelService;
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -48,7 +46,7 @@ public class ChannelController {
             @ApiResponse(responseCode = "400", description = "필드에 형식이 잘못된 값이 존재할때",
                     content =  @Content(schema = @Schema(implementation = ArgumentValidationErrorResponse.class))),
             @ApiResponse(responseCode = "400", description = "채널 생성 규칙과 충돌되는 값이 존재할때",
-                    content =  @Content(schema = @Schema(implementation = ChannelAddBadRequestException.Response.class)))
+                    content =  @Content(schema = @Schema(implementation = ChannelAddException.Response.class)))
     })
     @PostMapping
     public ResponseEntity<Long> addChannel(

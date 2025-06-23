@@ -10,9 +10,11 @@ import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberService, ChannelInvitationService {
     private final ChannelServiceImpl channelServiceImpl;
     private final ChannelMemberServiceImpl channelMemberServiceImpl;
@@ -44,11 +46,13 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JoinedChannelResponseWrapper createMemberJoinedChannelResponse(Member member) {
         return channelServiceImpl.createMemberJoinedChannelResponse(member);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SearchChannelResponseWrapper createChannelSearchResponse(
             String searchParam,
             int page,

@@ -2,21 +2,21 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.controller.ChannelInfoUpdateRequest;
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAddBadRequestException;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.exception.ChannelAddException;
 import com.zonbeozon.channel.exception.ChannelNotFoundException;
-import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.repository.ChannelWithMemberCount;
 import com.zonbeozon.channel.service.dto.*;
 import com.zonbeozon.common.EntityValidator;
 import com.zonbeozon.member.domain.Member;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,7 +42,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
 
     private void validateDuplicateTitle(String title) {
         if(channelRepository.existsByTitle(title)) {
-            throw new ChannelAddBadRequestException(ChannelAddBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
+            throw new ChannelAddException(ChannelAddException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
         }
     }
 
@@ -63,7 +63,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
     public void deleteChannel(ChannelMember requester) {
         Channel channel = requester.getChannel();
         channel.validateDeletePermission(requester);
-        channelRepository.delete(channel);
+        channelRepository.softDeleteById(channel.getId());
     }
 
     public void changeContentOpenLevel(

@@ -2,11 +2,13 @@ package com.zonbeozon.channel.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
-public class ChannelAddBadRequestException extends ChannelException {
+@Getter
+public class ChannelDeleteException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    public ChannelAddBadRequestException(ErrorCode errorCode) {
+    public ChannelDeleteException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
@@ -14,7 +16,9 @@ public class ChannelAddBadRequestException extends ChannelException {
     @RequiredArgsConstructor
     @Getter
     public enum ErrorCode {
-        DUPLICATE_CHANNEL_TITLE("해당 채널 명이 이미 존재합니다.");
+        ACCESS_DENIED(HttpStatus.FORBIDDEN,"해당 채널을 삭제할 권한이 없습니다.");
+
+        private final HttpStatus httpStatus;
         private final String message;
     }
 

@@ -2,6 +2,7 @@ package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.exception.ChannelDeleteException;
 import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -20,8 +21,7 @@ import org.hibernate.annotations.SQLRestriction;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "channel_type")
-@SQLDelete(sql = "UPDATE channel SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = 'false'")
+@SQLRestriction("is_deleted = false")
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 30;
@@ -135,7 +135,7 @@ public abstract class Channel extends BaseTimeEntity {
 
     public void validateDeletePermission(ChannelMember channelMember) {
         if(!channelMember.isOwner())
-            throw new ChannelAccessDeniedException("Owner만 채널을 삭제할 수 있습니다.");
+            throw new ChannelDeleteException(ChannelDeleteException.ErrorCode.ACCESS_DENIED);
     }
 
     protected void validateKickPermission(ChannelMember requester, ChannelMember target) {
