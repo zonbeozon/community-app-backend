@@ -18,7 +18,7 @@ public class ChannelAddException extends ChannelException {
     public enum ErrorCode {
         DUPLICATE_CHANNEL_TITLE(HttpStatus.BAD_REQUEST, "해당 채널 명이 이미 존재합니다."),
         ACCESS_DENIED(HttpStatus.FORBIDDEN,"해당 채널을 만들 권한이 없습니다."),
-        OPEN_LEVEL_MISMATCH(HttpStatus.BAD_REQUEST, "검색 가능 여부가 비공개라면 열람 설정은 비공개만 허용됩니다.");
+        INVALID_CHANNEL_SETTING_COMBINATION(HttpStatus.BAD_REQUEST, "채널 설정 값들의 조합이 유효하지 않습니다.");
 
         private final HttpStatus httpStatus;
         private final String message;

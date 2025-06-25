@@ -1,6 +1,6 @@
 package com.zonbeozon.post.controller;
 
-import com.zonbeozon.channel.service.dto.SearchChannelResponseWrapper;
+import com.zonbeozon.channel.service.dto.PagedChannelResponse;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.repository.PostSort;
 import com.zonbeozon.post.service.PostService;
@@ -88,7 +88,7 @@ public class PostController {
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = SearchChannelResponseWrapper.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PagedChannelResponse.class))),
     })
     @Parameters({
             @Parameter(name = "searchParam", description = "POST 글의 일부", example = "Wen?"),

@@ -6,7 +6,7 @@ import com.zonbeozon.channel.entity.ChannelJoinLevel;
 import com.zonbeozon.channel.entity.ChannelType;
 import com.zonbeozon.channel.repository.ChannelWithMemberCount;
 
-public record SearchChannelResponse(
+public record ChannelResponse(
         Long channelId,
         String title,
         String profile,
@@ -17,9 +17,9 @@ public record SearchChannelResponse(
         int memberCount
 ) {
 
-    public static SearchChannelResponse from(ChannelWithMemberCount channelWithMemberCount) {
+    public static ChannelResponse from(ChannelWithMemberCount channelWithMemberCount) {
         Channel channel = channelWithMemberCount.getChannel();
-        return new SearchChannelResponse(
+        return new ChannelResponse(
                 channel.getId(),
                 channel.getTitle(),
                 channel.getProfile(),

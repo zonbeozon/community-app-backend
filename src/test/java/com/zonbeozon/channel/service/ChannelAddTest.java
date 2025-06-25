@@ -12,12 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.*;
 
 public class ChannelAddTest extends ChannelServiceTest {
-
-    @Autowired
-    public ChannelAddTest(MemberService memberService) {
-        super(memberService);
-    }
-
     @Autowired
     private ChannelService channelService;
     @Autowired
@@ -25,33 +19,28 @@ public class ChannelAddTest extends ChannelServiceTest {
     @Autowired
     private ChannelRepository channelRepository;
 
-    ChannelCreateCommand command = new ChannelCreateCommand(
-            "title",
-            "description",
-            "emtpyProfile",
-            ChannelContentOpenLevel.PUBLIC,
-            ChannelType.COMMUNITY_INFO,
-            ChannelJoinLevel.DENY,
-            ChannelSearchLevel.PUBLIC
-    );
+    @Autowired
+    public ChannelAddTest(MemberService memberService) {
+        super(memberService);
+    }
 
     @Test
     @DisplayName("command로 부터 정상적으로 채널이 생성되어야 한다.")
     void createsChannelSuccessfullyFromCommand() {
-       Long id = channelService.addChannel(command, serverUser);
+       Long id = channelService.addChannel(validChannelCreateCommand_1, serverUser_1);
        Channel channel = channelRepository.findById(id).orElseThrow(() -> new RuntimeException("해당 Id와 맞는 채널이 없습니다"));
 
-       ChannelMember channelMember = channelMemberRepository.findByMemberAndChannel(serverUser, channel)
+       ChannelMember channelMember = channelMemberRepository.findByMemberAndChannel(serverUser_1, channel)
                .orElseThrow(() -> new RuntimeException("해당 조건에 해당하는 채널 맴버가 없습니다."));
 
-       assertThat(channel.getTitle()).isEqualTo(command.title());
-       assertThat(channel.getDescription()).isEqualTo(command.description());
-       assertThat(channel.getProfile()).isEqualTo(command.profile());
-       assertThat(channel.getContentOpenLevel()).isEqualTo(command.contentOpenLevel());
-       assertThat(channel.getType()).isEqualTo(command.type());
-       assertThat(channel.getJoinLevel()).isEqualTo(command.joinLevel());
-       assertThat(channel.getSearchLevel()).isEqualTo(command.searchLevel());
-       assertThat(channelMember.getMember()).isEqualTo(serverUser);
+       assertThat(channel.getTitle()).isEqualTo(validChannelCreateCommand_1.title());
+       assertThat(channel.getDescription()).isEqualTo(validChannelCreateCommand_1.description());
+       assertThat(channel.getProfile()).isEqualTo(validChannelCreateCommand_1.profile());
+       assertThat(channel.getContentOpenLevel()).isEqualTo(validChannelCreateCommand_1.contentOpenLevel());
+       assertThat(channel.getType()).isEqualTo(validChannelCreateCommand_1.type());
+       assertThat(channel.getJoinLevel()).isEqualTo(validChannelCreateCommand_1.joinLevel());
+       assertThat(channel.getSearchLevel()).isEqualTo(validChannelCreateCommand_1.searchLevel());
+       assertThat(channelMember.getMember()).isEqualTo(serverUser_1);
     }
 
     @Test
@@ -67,7 +56,7 @@ public class ChannelAddTest extends ChannelServiceTest {
                 ChannelSearchLevel.PUBLIC
         );
 
-        assertThatThrownBy(()-> channelService.addChannel(officialInfoChannelCreateCommand, serverUser))
+        assertThatThrownBy(()-> channelService.addChannel(officialInfoChannelCreateCommand, serverUser_1))
                 .isInstanceOf(ChannelAddException.class)
                 .satisfies(e -> {
                     ChannelAddException exception = (ChannelAddException) e;
@@ -79,10 +68,10 @@ public class ChannelAddTest extends ChannelServiceTest {
     @DisplayName("중복 채널명은 예외를 발생시킨다.")
     void throwsExceptionWhenCreatingChannelWithDuplicateTitle() {
         //first time create
-        channelService.addChannel(command, serverUser);
+        channelService.addChannel(validChannelCreateCommand_1, serverUser_1);
 
         //second time create with same title
-        assertThatThrownBy(()-> channelService.addChannel(command, serverUser))
+        assertThatThrownBy(()-> channelService.addChannel(validChannelCreateCommand_1, serverUser_1))
                 .isInstanceOf(ChannelAddException.class)
                 .satisfies(e -> {
                     ChannelAddException exception = (ChannelAddException) e;
@@ -93,7 +82,7 @@ public class ChannelAddTest extends ChannelServiceTest {
     @Test
     @DisplayName("검색 가능 여부가 Private이지만 열람 설정이 Public이라면 예외를 발생시킨다.")
     void throwExceptionWhenSearchIsPrivateAndContentIsPublic() {
-        ChannelCreateCommand command = new ChannelCreateCommand(
+        ChannelCreateCommand invalidCommand = new ChannelCreateCommand(
                 "title",
                 "description",
                 "emtpyProfile",
@@ -103,11 +92,11 @@ public class ChannelAddTest extends ChannelServiceTest {
                 ChannelSearchLevel.PRIVATE
         );
 
-        assertThatThrownBy(()-> channelService.addChannel(command, serverUser))
+        assertThatThrownBy(()-> channelService.addChannel(invalidCommand, serverUser_1))
                 .isInstanceOf(ChannelAddException.class)
                 .satisfies(e -> {
                     ChannelAddException exception = (ChannelAddException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAddException.ErrorCode.OPEN_LEVEL_MISMATCH);
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAddException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
                 });
     }
 }

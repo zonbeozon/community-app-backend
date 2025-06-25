@@ -7,8 +7,8 @@ import com.zonbeozon.channel.exception.ChannelAddException;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.channel.service.ChannelService;
-import com.zonbeozon.channel.service.dto.JoinedChannelResponseWrapper;
-import com.zonbeozon.channel.service.dto.SearchChannelResponseWrapper;
+import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
+import com.zonbeozon.channel.service.dto.PagedChannelResponse;
 import com.zonbeozon.common.exception.ArgumentValidationErrorResponse;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
@@ -43,10 +43,11 @@ public class ChannelController {
                     description = "성공",
                     content = @Content(schema = @Schema(type = "integer", format = "int64", description = "채널 ID"))
             ),
-            @ApiResponse(responseCode = "400", description = "필드에 형식이 잘못된 값이 존재할때",
-                    content =  @Content(schema = @Schema(implementation = ArgumentValidationErrorResponse.class))),
-            @ApiResponse(responseCode = "400", description = "채널 생성 규칙과 충돌되는 값이 존재할때",
-                    content =  @Content(schema = @Schema(implementation = ChannelAddException.Response.class)))
+            @ApiResponse(responseCode = "400", description = "필드 형식 오류 또는 채널 생성 규칙 위반",
+                    content =  @Content(schema = @Schema(anyOf = {
+                            ChannelAddException.Response.class,
+                            ArgumentValidationErrorResponse.class
+                    }))),
     })
     @PostMapping
     public ResponseEntity<Long> addChannel(
@@ -75,30 +76,16 @@ public class ChannelController {
             description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널 Owner만 호출 가능",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @PatchMapping("/{channelId}/info")
-    public ResponseEntity<Void> updateChannelInfo(
+    @PatchMapping("/{channelId}")
+    public ResponseEntity<Void> updateChannel(
             @Parameter(hidden = true) Member member,
-            @Valid ChannelInfoUpdateRequest channelInfoUpdateRequest,
+            @Valid ChannelUpdateRequest channelUpdateRequest,
             @PathVariable Long channelId
     ) {
-        channelService.updateChannelInfo(member, channelId, channelInfoUpdateRequest);
+        channelService.updateChannel(member, channelId, channelUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "채널 OpenLevel 변경",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널 Owner만 호출 가능",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @PatchMapping("/{channelId}/contentOpenLevel")
-    public ResponseEntity<Void> updateChannelContentOpenLevel(
-            @Parameter(hidden = true) Member member,
-            @RequestParam ChannelContentOpenLevel contentOpenLevel,
-            @PathVariable Long channelId
-    ) {
-        channelService.changeContentOpenLevel(member, channelId, contentOpenLevel);
-        return ResponseEntity.ok().build();
-    }
 
     @Operation(
             summary = "사용자가 속한 모든 채널 정보 가져오기",
@@ -106,10 +93,10 @@ public class ChannelController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JoinedChannelResponseWrapper.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JoinedChannelListResponse.class))),
     })
     @GetMapping("/joined")
-    public ResponseEntity<JoinedChannelResponseWrapper> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
+    public ResponseEntity<JoinedChannelListResponse> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
         return ResponseEntity.ok(channelService.createMemberJoinedChannelResponse(member));
     }
 
@@ -121,7 +108,7 @@ public class ChannelController {
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = SearchChannelResponseWrapper.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PagedChannelResponse.class))),
     })
     @GetMapping
     @Parameters({
@@ -129,7 +116,7 @@ public class ChannelController {
             @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
             @Parameter(name = "size", description = "한 페이지당 아이템 수", example = "10")
     })
-    public ResponseEntity<SearchChannelResponseWrapper> getChannels(
+    public ResponseEntity<PagedChannelResponse> getChannels(
             @RequestParam(defaultValue = "") String searchParam,
             @RequestParam(required = false) ChannelType type,
             @RequestParam(required = false) ChannelContentOpenLevel contentOpenLevel,

@@ -1,11 +1,11 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.controller.ChannelInfoUpdateRequest;
+import com.zonbeozon.channel.controller.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.*;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.dto.InviteCodeResponse;
-import com.zonbeozon.channel.service.dto.JoinedChannelResponseWrapper;
-import com.zonbeozon.channel.service.dto.SearchChannelResponseWrapper;
+import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
+import com.zonbeozon.channel.service.dto.PagedChannelResponse;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -27,9 +27,9 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
     }
 
     @Override
-    public void updateChannelInfo(Member member, Long channelId, ChannelInfoUpdateRequest channelInfoUpdateRequest) {
+    public void updateChannel(Member member, Long channelId, ChannelUpdateRequest channelUpdateRequest) {
         channelMemberResolver.findChannelMemberThenConsume(member, channelId,
-                channelMember -> channelServiceImpl.updateChannelInfo(channelMember, channelInfoUpdateRequest)
+                channelMember -> channelServiceImpl.updateChannel(channelMember, channelUpdateRequest)
         );
     }
 
@@ -39,21 +39,14 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
     }
 
     @Override
-    public void changeContentOpenLevel(Member member, Long channelId, ChannelContentOpenLevel openLevel) {
-        channelMemberResolver.findChannelMemberThenConsume(member, channelId,
-                channelMember -> channelServiceImpl.changeContentOpenLevel(channelMember, openLevel)
-        );
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public JoinedChannelResponseWrapper createMemberJoinedChannelResponse(Member member) {
+    public JoinedChannelListResponse createMemberJoinedChannelResponse(Member member) {
         return channelServiceImpl.createMemberJoinedChannelResponse(member);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SearchChannelResponseWrapper createChannelSearchResponse(
+    public PagedChannelResponse createChannelSearchResponse(
             String searchParam,
             int page,
             int size,

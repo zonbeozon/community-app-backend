@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public record SearchChannelResponseWrapper (
-    List<SearchChannelResponse> content,
+public record PagedChannelResponse(
+    List<ChannelResponse> content,
     int page,
     int size,
     int totalPages,
@@ -16,9 +16,9 @@ public record SearchChannelResponseWrapper (
     boolean hasNext,
     boolean hasPrevious
 ){
-    public static SearchChannelResponseWrapper from(Page<ChannelWithMemberCount> pageData) {
-        return new SearchChannelResponseWrapper(
-                pageData.getContent().stream().map(SearchChannelResponse::from).toList(),
+    public static PagedChannelResponse from(Page<ChannelWithMemberCount> pageData) {
+        return new PagedChannelResponse(
+                pageData.getContent().stream().map(ChannelResponse::from).toList(),
                 pageData.getNumber(),
                 pageData.getSize(),
                 pageData.getTotalPages(),

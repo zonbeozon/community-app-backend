@@ -1,9 +1,6 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
-import com.zonbeozon.channel.exception.ChannelDeleteException;
-import com.zonbeozon.channel.exception.ErrorCode;
+import com.zonbeozon.channel.exception.*;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -50,7 +46,7 @@ public abstract class Channel extends BaseTimeEntity {
     @NotNull
     private boolean isDeleted;
 
-    @NotNull
+    @NotNull(message = "contentOpenLevel을")
     @Enumerated(EnumType.STRING)
     private ChannelContentOpenLevel contentOpenLevel;
 
@@ -86,22 +82,26 @@ public abstract class Channel extends BaseTimeEntity {
         this.isDeleted = false;
     }
 
-    public void updateInfo(ChannelMember requester, String title, String description, String profile) {
-        validateUpdateInfoPermission(requester);
-        if(title != null) {
-            this.title = title;
-        }
-        if(description != null) {
-            this.description = description;
-        }
-        if(profile != null) {
-            this.profile = profile;
-        }
+    public void updateTitle(String title) {
+        this.title = title;
     }
 
-    public void updateContentOpenLevel(ChannelMember requester, ChannelContentOpenLevel contentOpenLevel) {
-        validateUpdateContentOpenLevelPermission(requester);
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateProfile(String profile) {
+        this.profile = profile;
+    }
+
+    public void updateSettings(
+            ChannelContentOpenLevel contentOpenLevel,
+            ChannelJoinLevel joinLevel,
+            ChannelSearchLevel searchLevel
+    ) {
         this.contentOpenLevel = contentOpenLevel;
+        this.joinLevel = joinLevel;
+        this.searchLevel = searchLevel;
     }
 
     public void kick(ChannelMember requester, ChannelMember target) {
@@ -123,14 +123,13 @@ public abstract class Channel extends BaseTimeEntity {
             requester.updateRole(ChannelRole.CHANNEL_ADMIN);
     }
 
-    protected void validateUpdateInfoPermission(ChannelMember channelMember) {
-        if(!channelMember.isOwner())
-            throw new ChannelAccessDeniedException("Owner만 ChannelInfo를 수정할 수 있습니다.");
+    public boolean isValidSettingCombination() {
+        //channelSearchLevel이 Private 이지만 ContentOpenLevel은 Public일 수 없다.
+        return searchLevel != ChannelSearchLevel.PRIVATE || contentOpenLevel != ChannelContentOpenLevel.PUBLIC;
     }
 
-    protected void validateUpdateContentOpenLevelPermission(ChannelMember channelMember) {
-        if(!channelMember.isOwner())
-            throw new ChannelAccessDeniedException("Owner만 contentOpenLevel을 수정할 수 있습니다.");
+    public boolean hasUpdatePermission(ChannelMember channelMember) {
+        return channelMember.isOwner();
     }
 
     public void validateDeletePermission(ChannelMember channelMember) {
