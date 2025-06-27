@@ -88,7 +88,7 @@ public class PostController {
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PagedChannelResponse.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PagedPostsResponse.class))),
     })
     @Parameters({
             @Parameter(name = "searchParam", description = "POST 글의 일부", example = "Wen?"),
