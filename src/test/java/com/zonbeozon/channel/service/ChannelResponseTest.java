@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ChannelResponseTest extends ChannelServiceTest {
+public class ChannelResponseTest extends BaseChannelTest {
 
     @Autowired
     private ChannelService channelService;
@@ -26,34 +26,25 @@ public class ChannelResponseTest extends ChannelServiceTest {
     @Autowired
     private PostRepository postRepository;
 
-    @Autowired
-    public ChannelResponseTest(MemberService memberService) {
-        super(memberService);
-    }
-
     @Test
     @DisplayName("member가 속한 채널만 가져와야 한다.")
-    void d() {
-        channelService.addChannel(validChannelCreateCommand_1, serverUser_1);
-        channelService.addChannel(validChannelCreateCommand_2, serverUser_2);
-
-        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(serverUser_1);
+    void returnsOnlyChannelsJoinedByMember() {
+        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
         assertThat(response.channels()).hasSize(1);
-        assertChannelMetadataEquals(response.channels().get(0), validChannelCreateCommand_1);
+        assertChannelMetadataEquals(response.channels().get(0), ChannelFixture.channelCreateCommand_1);
     }
 
 
     @Test
     @DisplayName("최근 Post 작성일 기준 Desc Order로 가져와야 한다.")
-    void djlj() {
-        Long channelId = channelService.addChannel(validChannelCreateCommand_1, serverUser_1);
+    void sortsChannelsByLatestPostCreatedAtInDescOrder() {
         PostAddCommand postAddCommand_1 = new PostAddCommand("post_1");
         PostAddCommand postAddCommand_2 = new PostAddCommand("post_2");
         PostAddCommand postAddCommand_3 = new PostAddCommand("post_3");
 
-        Long postId_1 = postService.addPost(serverUser_1, channelId, postAddCommand_1);
-        Long postId_2 = postService.addPost(serverUser_1, channelId, postAddCommand_2);
-        Long postId_3 = postService.addPost(serverUser_1, channelId, postAddCommand_3);
+        Long postId_1 = postService.addPost(channel_1_owner, channel_1_id, postAddCommand_1);
+        Long postId_2 = postService.addPost(channel_1_owner, channel_1_id, postAddCommand_2);
+        Long postId_3 = postService.addPost(channel_1_owner, channel_1_id, postAddCommand_3);
 
         Post post_1 = postRepository.findById(postId_1).get();
         Post post_2 = postRepository.findById(postId_2).get();
@@ -70,7 +61,7 @@ public class ChannelResponseTest extends ChannelServiceTest {
         postRepository.save(post_2);
         postRepository.save(post_3);
 
-        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(serverUser_1);
+        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
 
         assertThat(response.channels()).hasSize(1);
         assertThat(response.channels().get(0).latestPostContent()).isEqualTo(postAddCommand_1.content());
@@ -84,6 +75,5 @@ public class ChannelResponseTest extends ChannelServiceTest {
         assertThat(response.channelType()).isEqualTo(command.type());
         assertThat(response.channelJoinLevel()).isEqualTo(command.joinLevel());
         assertThat(response.contentOpenLevel()).isEqualTo(command.contentOpenLevel());
-        // channelId는 비교 안 하거나, 필요 시 별도로 비교
     }
 }

@@ -4,26 +4,19 @@ import com.zonbeozon.channel.controller.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.*;
 import com.zonbeozon.channel.exception.ChannelUpdateException;
 import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ChannelUpdateTest extends ChannelServiceTest {
+public class ChannelUpdateTest extends BaseChannelTest {
     @Autowired
     private ChannelService channelService;
     @Autowired
     private ChannelMemberService channelMemberService;
     @Autowired
     private ChannelRepository channelRepository;
-
-    private Long createdChannelId;
-    private Member owner;
-    private Member notOwner;
 
     private ChannelUpdateRequest validUpdateRequest = new ChannelUpdateRequest(
             "otherName",
@@ -34,23 +27,11 @@ public class ChannelUpdateTest extends ChannelServiceTest {
             ChannelSearchLevel.PRIVATE
     );
 
-    @Autowired
-    public ChannelUpdateTest(MemberService memberService) {
-        super(memberService);
-    }
-
-    @BeforeEach
-    void setup() {
-        owner = serverUser_1;
-        notOwner = serverUser_2;
-        createdChannelId = channelService.addChannel(validChannelCreateCommand_1, owner);
-    }
-
     @Test
     @DisplayName("채널 Owner가 아니라면 채널 업데이트를 호출시 예외가 발생한다")
     void throwExceptionWhenNonOwnerTriesToUpdateChannel() {
-        channelMemberService.joinAsMember(notOwner, createdChannelId);
-        assertThatThrownBy(() -> channelService.updateChannel(notOwner, createdChannelId, validUpdateRequest))
+        channelMemberService.joinAsMember(member_2, channel_1_id);
+        assertThatThrownBy(() -> channelService.updateChannel(member_2, channel_1_id, validUpdateRequest))
                 .isInstanceOf(ChannelUpdateException.class)
                 .satisfies((e) -> {
                     ChannelUpdateException exception = (ChannelUpdateException) e;
@@ -70,9 +51,9 @@ public class ChannelUpdateTest extends ChannelServiceTest {
                 ChannelJoinLevel.OPEN,
                 ChannelSearchLevel.PUBLIC
         );
-        channelService.addChannel(validChannelCreateCommand, owner);
+        channelService.addChannel(validChannelCreateCommand, channel_1_owner);
 
-        assertThatThrownBy(() -> channelService.updateChannel(owner, createdChannelId, validUpdateRequest))
+        assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest))
                 .isInstanceOf(ChannelUpdateException.class)
                 .satisfies((e) -> {
                     ChannelUpdateException exception = (ChannelUpdateException) e;
@@ -84,7 +65,7 @@ public class ChannelUpdateTest extends ChannelServiceTest {
     @DisplayName("채널 Setting조합이 잘못된 조합(SearchLevel이 Private, ContentOpenLevel이 Public)이라면 예외가 발생한다.")
     void throwExceptionWhenInvalidSettingCombinationProvided() {
         ChannelUpdateRequest invalidCombinationUpdateRequest = new ChannelUpdateRequest(
-                validChannelCreateCommand_1.title(),
+                ChannelFixture.channelCreateCommand_1.title(),
                 "description",
                 "emtpyProfile",
                 ChannelContentOpenLevel.PUBLIC,
@@ -92,7 +73,7 @@ public class ChannelUpdateTest extends ChannelServiceTest {
                 ChannelSearchLevel.PRIVATE
         );
 
-        assertThatThrownBy(() -> channelService.updateChannel(owner, createdChannelId, invalidCombinationUpdateRequest))
+        assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, invalidCombinationUpdateRequest))
                 .isInstanceOf(ChannelUpdateException.class)
                 .satisfies((e) -> {
                     ChannelUpdateException exception = (ChannelUpdateException) e;
@@ -103,8 +84,8 @@ public class ChannelUpdateTest extends ChannelServiceTest {
     @Test
     @DisplayName("업데이트가 정상적으로 수행되어야 한다.")
     void updateChannelSuccessfullyWhenValidRequestAndOwner() {
-        channelService.updateChannel(owner, createdChannelId, validUpdateRequest);
-        Channel channel = channelRepository.findById(createdChannelId)
+        channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest);
+        Channel channel = channelRepository.findById(channel_1_id)
                 .orElseThrow(() -> new RuntimeException("채널 Id에 맞는 채널이 존재하지 않습니다."));
 
         assertThat(channel.getTitle()).isEqualTo(validUpdateRequest.title());
