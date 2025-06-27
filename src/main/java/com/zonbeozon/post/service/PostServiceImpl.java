@@ -7,9 +7,9 @@ import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.exception.PostNotFoundException;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.repository.PostSort;
-import com.zonbeozon.post.service.dto.PagedPostsResponse;
-import com.zonbeozon.post.service.dto.PostAddCommand;
+import com.zonbeozon.post.service.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,17 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 class PostServiceImpl implements PostEntityQueryService {
     private final PostRepository postRepository;
     private final ChannelEntityQueryService channelEntityQueryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long addPost(PostAddCommand command, ChannelMember channelMember) {
         Post post = Post.create(command.content(), channelMember);
-        return postRepository.save(post).getId();
+        postRepository.save(post);
+        eventPublisher.publishEvent(new PostCreatedEvent(channelMember.getChannel().getId(), post.getId()));
+        return post.getId();
     }
 
     @Transactional
     public void deletePost(Long postId, ChannelMember channelMember) {
         Post post = getPostByIdOrThrow(postId);
         post.validateDeletePermission(channelMember);
+        eventPublisher.publishEvent(new PostDeletedEvent(channelMember.getChannel().getId(), postId));
         postRepository.delete(post);
     }
 
@@ -39,6 +43,7 @@ class PostServiceImpl implements PostEntityQueryService {
         Post post = getPostByIdOrThrow(postId);
         post.validateUpdateContentPermission(channelMember);
         post.updateContent(content);
+        eventPublisher.publishEvent(new PostUpdatedEvent(channelMember.getChannel().getId(), postId));
     }
 
     @Transactional(readOnly = true)

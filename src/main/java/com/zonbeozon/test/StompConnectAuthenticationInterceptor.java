@@ -2,7 +2,6 @@ package com.zonbeozon.test;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
 import com.zonbeozon.auth.exception.AuthException;
-import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +21,16 @@ public class StompConnectAuthenticationInterceptor implements ChannelInterceptor
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String authHeader = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
             String token = AuthenticationTokenUtils.resolveAuthHeader(authHeader);
-            if(token == null) return message;
+            if(token == null)
+                throw new ChannelConnectionException(ChannelConnectionException.ErrorCode.UNAUTHORIZED);
 
-            if(!tokenProvider.validateToken(token)) {
-                throw new AuthException(ErrorCode.EXPIRED_TOKEN);
-            }
+            if(!tokenProvider.validateToken(token))
+                throw new AuthException(AuthException.ErrorCode.EXPIRED_TOKEN);
+
             Authentication authentication = tokenProvider.getAuthentication(token);
             accessor.setUser(authentication);
         }

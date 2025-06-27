@@ -1,21 +1,22 @@
 package com.zonbeozon.post.service.dto;
 
+import com.zonbeozon.channel.service.dto.ChannelMemberInfoResponse;
 import com.zonbeozon.post.entity.Post;
 
 import java.time.LocalDateTime;
 
-public record SimplifiedPostResponse(
+public record PostResponse(
         long postId,
         String content,
-        Long authorId,
+        ChannelMemberInfoResponse author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static SimplifiedPostResponse fromEntity(Post post) {
-        return new SimplifiedPostResponse(
+    public static PostResponse fromEntity(Post post) {
+        return new PostResponse(
                 post.getId(),
                 post.getContent(),
-                post.getAuthor().getId(),
+                ChannelMemberInfoResponse.fromEntity(post.getAuthor()),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );

@@ -36,13 +36,14 @@ public class MemberService {
 
     @Transactional
     public Member createMemberWithRandomUsername(String email, String profile, ServerRole role) {
-        if(isExistEmail(email)) throw new MemberException(email + "는 이미 존재하는 이메일입니다.");
         String username = UUIDUsernameGenerator.generate();
-        if(isExistUsername(username)) throw new MemberException(username + "는 이미 존재하는 username 입니다.");
-        return create(username, email, profile, role);
+        return createMember(username, email, profile, role);
     }
 
-    private Member create(String username, String email, String profile, ServerRole role) {
+    @Transactional
+    public Member createMember(String username, String email, String profile, ServerRole role) {
+        if(isExistEmail(email)) throw new MemberException(email + "는 이미 존재하는 이메일입니다.");
+        if(isExistUsername(username)) throw new MemberException(username + "는 이미 존재하는 username 입니다.");
         Member member = new Member(username, email, profile, role);
         memberRepository.save(member);
         return member;

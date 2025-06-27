@@ -2,7 +2,6 @@ package com.zonbeozon.auth.service;
 
 import com.zonbeozon.auth.entity.Token;
 import com.zonbeozon.auth.exception.AuthException;
-import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.repository.TokenRepository;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberService;
@@ -26,7 +25,7 @@ public class TokenService {
     @Transactional(readOnly = true)
     public Token getByAccessTokenOrThrow(String accessToken) {
         return tokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_TOKEN));
+                .orElseThrow(() -> new AuthException(AuthException.ErrorCode.INVALID_TOKEN));
     }
 
     public void deleteTokenByMemberId(Long memberId) {

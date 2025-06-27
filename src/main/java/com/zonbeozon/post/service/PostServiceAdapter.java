@@ -19,7 +19,6 @@ public class PostServiceAdapter implements PostService {
     private final ChannelMemberResolver channelMemberResolver;
 
 
-
     @Override
     public Long addPost(Member member, Long channelId, PostAddCommand command) {
         return channelMemberResolver.findChannelMemberThenApply(member, channelId,

@@ -3,7 +3,6 @@ package com.zonbeozon.auth.jwt;
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.auth.entity.Token;
 import com.zonbeozon.auth.exception.AuthException;
-import com.zonbeozon.auth.exception.ErrorCode;
 import com.zonbeozon.auth.service.TokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -32,17 +31,23 @@ public class TokenProvider {
 
     private SecretKey secretKey;
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 *30L;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7L;
+    private final long accessTokenExpireTime;
+    private final long refreshTokenExpireTime;
+
     private static final String KEY_ROLE = "role";
 
     @Autowired
     public TokenProvider(
             TokenService tokenService,
-            @Value("${jwt.key}") String key
+            @Value("${jwt.key}") String key,
+            @Value("${jwt.access-token-expire-ms}") long accessTokenExpireTime,
+            @Value("${jwt.refresh-token-expire-ms}") long refreshTokenExpireTime
     ) {
         this.tokenService = tokenService;
         this.key = key;
+        this.accessTokenExpireTime = accessTokenExpireTime;
+        this.refreshTokenExpireTime = refreshTokenExpireTime;
+
     }
 
     @PostConstruct
@@ -52,13 +57,13 @@ public class TokenProvider {
 
     public String generateAccessToken(Authentication authentication) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+        Date expiryDate = new Date(now.getTime() + accessTokenExpireTime);
         return generateToken(authentication, now, expiryDate);
     }
 
     public void generateRefreshToken(Authentication authentication, String accessToken) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        Date expiryDate = new Date(now.getTime() + refreshTokenExpireTime);
         String refreshToken = generateToken(authentication, now, expiryDate);
         tokenService.save(authentication.getName(), accessToken, refreshToken);
     }
@@ -95,7 +100,7 @@ public class TokenProvider {
         }
         //refresh token이 만료된 경우
         tokenService.deleteToken(token);
-        throw new AuthException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        throw new AuthException(AuthException.ErrorCode.EXPIRED_REFRESH_TOKEN);
 
     }
 
@@ -113,7 +118,7 @@ public class TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
-            throw new AuthException(ErrorCode.INVALID_TOKEN);
+            throw new AuthException(AuthException.ErrorCode.INVALID_TOKEN);
         }
     }
 
