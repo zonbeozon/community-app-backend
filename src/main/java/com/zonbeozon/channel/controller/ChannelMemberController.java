@@ -2,8 +2,6 @@ package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.entity.ChannelRole;
 import com.zonbeozon.channel.service.ChannelMemberService;
-import com.zonbeozon.channel.service.dto.InviteCodeResponse;
-import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel/{channelId}/member")
+@Tag(name = "채널 맴버", description = "채널에 속해 있는 맴버 관련 엔드포인트.")
 public class ChannelMemberController {
     private final ChannelMemberService channelMemberService;
 
     @Operation(
             summary = "채널 참가",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널의 OpenLevel이 public일때만 가입 가능",
+            description = "채널의 OpenLevel이 public일때만 가입 가능",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
@@ -41,7 +41,7 @@ public class ChannelMemberController {
 
     @Operation(
             summary = "채널 유저 강퇴",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "강퇴시킬려는 유저가 당하는 유저보다 ChannelRole이 높아야 한다.",
+            description = "강퇴시킬려는 유저가 당하는 유저보다 ChannelRole이 높아야 한다.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
@@ -60,7 +60,7 @@ public class ChannelMemberController {
 
     @Operation(
             summary = "채널 떠나기",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "만일 유저의 채널Role이 Owner라면 이전시키기 전에는 떠날 수 없다.",
+            description = "만일 유저의 채널Role이 Owner라면 이전시키기 전에는 떠날 수 없다.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
@@ -78,7 +78,7 @@ public class ChannelMemberController {
 
     @Operation(
             summary = "채널 맴버 Role 변경",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE +
+            description =
                     "Owner만 호출가능하다\n" +
                     "만일 변경시키고자하는 Role이 Owner라면 자신의 Owner Role이 이전되고 자신은 Admin으로 강등된다.",
             security = @SecurityRequirement(name = "bearerAuth")

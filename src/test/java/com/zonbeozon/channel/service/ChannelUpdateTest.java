@@ -2,7 +2,8 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.controller.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelUpdateException;
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,10 +33,10 @@ public class ChannelUpdateTest extends BaseChannelTest {
     void throwExceptionWhenNonOwnerTriesToUpdateChannel() {
         channelMemberService.joinAsMember(member_2, channel_1_id);
         assertThatThrownBy(() -> channelService.updateChannel(member_2, channel_1_id, validUpdateRequest))
-                .isInstanceOf(ChannelUpdateException.class)
+                .isInstanceOf(ChannelAccessDeniedException.class)
                 .satisfies((e) -> {
-                    ChannelUpdateException exception = (ChannelUpdateException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelUpdateException.ErrorCode.ACCESS_DENIED);
+                    ChannelAccessDeniedException exception = (ChannelAccessDeniedException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAccessDeniedException.ErrorCode.MODIFY_CHANNEL_METADATA_FORBIDDEN);
                 });
     }
 
@@ -54,10 +55,10 @@ public class ChannelUpdateTest extends BaseChannelTest {
         channelService.addChannel(validChannelCreateCommand, channel_1_owner);
 
         assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest))
-                .isInstanceOf(ChannelUpdateException.class)
+                .isInstanceOf(ChannelBadRequestException.class)
                 .satisfies((e) -> {
-                    ChannelUpdateException exception = (ChannelUpdateException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelUpdateException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
+                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
                 });
     }
 
@@ -74,10 +75,10 @@ public class ChannelUpdateTest extends BaseChannelTest {
         );
 
         assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, invalidCombinationUpdateRequest))
-                .isInstanceOf(ChannelUpdateException.class)
+                .isInstanceOf(ChannelBadRequestException.class)
                 .satisfies((e) -> {
-                    ChannelUpdateException exception = (ChannelUpdateException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelUpdateException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
+                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
                 });
     }
 

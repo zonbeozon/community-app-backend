@@ -46,7 +46,7 @@ public abstract class Channel extends BaseTimeEntity {
     @NotNull
     private boolean isDeleted;
 
-    @NotNull(message = "contentOpenLevel을")
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ChannelContentOpenLevel contentOpenLevel;
 
@@ -106,7 +106,7 @@ public abstract class Channel extends BaseTimeEntity {
 
     public void kick(ChannelMember requester, ChannelMember target) {
         if(requester.equals(target))
-            throw new ChannelBadRequestException(ErrorCode.CANNOT_TARGET_SELF);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.CANNOT_TARGET_SELF);
         validateKickPermission(requester, target);
         target.updateStatusToKicked();
     }
@@ -114,44 +114,47 @@ public abstract class Channel extends BaseTimeEntity {
     public void modifyRole(ChannelMember requester, ChannelMember target, ChannelRole wantTo) {
         validateModifyRolePermission(requester, target, wantTo);
         if(target.getRole() == wantTo)
-            throw new ChannelBadRequestException(ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
         if(requester.equals(target))
-            throw new ChannelBadRequestException(ErrorCode.CANNOT_TARGET_SELF);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.CANNOT_TARGET_SELF);
         target.updateRole(wantTo);
         //Owner는 채널 당 한명이기 때문에 Owner 권한 이전이 된다.
         if(wantTo == ChannelRole.CHANNEL_OWNER)
             requester.updateRole(ChannelRole.CHANNEL_ADMIN);
     }
 
-    public boolean isValidSettingCombination() {
+    public void validateSettingCombination() {
         //channelSearchLevel이 Private 이지만 ContentOpenLevel은 Public일 수 없다.
-        return searchLevel != ChannelSearchLevel.PRIVATE || contentOpenLevel != ChannelContentOpenLevel.PUBLIC;
+        if(searchLevel == ChannelSearchLevel.PRIVATE && contentOpenLevel == ChannelContentOpenLevel.PUBLIC)
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
     }
 
-    public boolean hasUpdatePermission(ChannelMember channelMember) {
-        return channelMember.isOwner();
+    public void validateUpdatePermission(ChannelMember channelMember) {
+        if(!channelMember.isOwner()) {
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.MODIFY_CHANNEL_METADATA_FORBIDDEN);
+        }
     }
 
     public void validateDeletePermission(ChannelMember channelMember) {
         if(!channelMember.isOwner())
-            throw new ChannelDeleteException(ChannelDeleteException.ErrorCode.ACCESS_DENIED);
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.CHANNEL_DELETION_FORBIDDEN);
     }
 
     protected void validateKickPermission(ChannelMember requester, ChannelMember target) {
         if(!requester.getRole().isHigherThan(target.getRole()))
-            throw new ChannelAccessDeniedException("강퇴시킬려는 맴버보다 권한이 높아야합니다.");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.KICK_FORBIDDEN);
     }
 
     public void validateInvitePermission(ChannelMember requester) {
         if(!requester.getRole().isHigherThan(ChannelRole.CHANNEL_MEMBER))
-            throw new ChannelAccessDeniedException("채널 초대는 Admin이상 부터 할 수 있습니다.");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.INVITE_FORBIDDEN);
         if(joinLevel == ChannelJoinLevel.DENY)
-            throw new ChannelAccessDeniedException("채널 초대는 해당 채널에서 막힌 상태입니다.");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.INVITE_FORBIDDEN_BY_CHANNEL_SETTING);
     }
 
     public void validateJoinPermission() {
         if(joinLevel != ChannelJoinLevel.OPEN) {
-            throw new ChannelAccessDeniedException("공개 가입 채널이 아닙니다");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.JOIN_FORBIDDEN);
         }
     }
 
@@ -160,13 +163,13 @@ public abstract class Channel extends BaseTimeEntity {
             return;
         }
         if (contentOpenLevel == ChannelContentOpenLevel.PRIVATE && channelMember == null) {
-            throw new ChannelAccessDeniedException("채널 content를 읽을 권한이 없습니다");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.CONTENT_READ_FORBIDDEN);
         }
     }
 
     protected void validateModifyRolePermission(ChannelMember requester, ChannelMember target, ChannelRole wantTo) {
         if(!requester.isOwner()) {
-            throw new ChannelAccessDeniedException("Owner만 Role을 변경할 수 있습니다.");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.MODIFY_CHANNEL_ROLE_FORBIDDEN);
         }
     }
 }

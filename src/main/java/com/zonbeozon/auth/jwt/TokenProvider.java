@@ -100,7 +100,7 @@ public class TokenProvider {
         }
         //refresh token이 만료된 경우
         tokenService.deleteToken(token);
-        throw new AuthException(AuthException.ErrorCode.EXPIRED_REFRESH_TOKEN);
+        throw new AuthException(AuthException.ErrorCode.INVALID_TOKEN);
 
     }
 

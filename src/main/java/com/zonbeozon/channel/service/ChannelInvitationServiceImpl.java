@@ -2,6 +2,7 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.entity.*;
 import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelInviteCodeRepository;
 import com.zonbeozon.channel.service.dto.InviteCodeResponse;
 import com.zonbeozon.member.domain.Member;
@@ -37,7 +38,7 @@ class ChannelInvitationServiceImpl {
     private Channel consumeInvite(String code, Member requester) {
         ChannelInviteCode inviteCode = channelInviteCodeRepository.findByCode(code)
                 .filter(optCode -> optCode.isApplicable(requester))
-                .orElseThrow(() -> new ChannelAccessDeniedException("기한이 만료되었거나 잘못된 초대 코드 입니다."));
+                .orElseThrow(() -> new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.INVITATION_CODE_INVALID));
         Channel channel = inviteCode.getChannel();
         channelInviteCodeRepository.delete(inviteCode);
         return channel;

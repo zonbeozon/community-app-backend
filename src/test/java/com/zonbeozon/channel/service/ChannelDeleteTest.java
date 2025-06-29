@@ -1,6 +1,6 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.exception.ChannelDeleteException;
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelMemberNotFoundException;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +30,10 @@ public class ChannelDeleteTest extends BaseChannelTest {
         channelMemberService.joinAsMember(member_2, channel_1_id);
 
         assertThatThrownBy(() -> channelService.deleteChannel(member_2, channel_1_id))
-                .isInstanceOf(ChannelDeleteException.class)
+                .isInstanceOf(ChannelAccessDeniedException.class)
                 .satisfies(e -> {
-                    ChannelDeleteException exception = (ChannelDeleteException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelDeleteException.ErrorCode.ACCESS_DENIED);
+                    ChannelAccessDeniedException exception = (ChannelAccessDeniedException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAccessDeniedException.ErrorCode.CHANNEL_DELETION_FORBIDDEN);
                 });
     }
 

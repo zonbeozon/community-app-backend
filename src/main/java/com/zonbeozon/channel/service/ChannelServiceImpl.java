@@ -2,9 +2,9 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.controller.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAddException;
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.exception.ChannelNotFoundException;
-import com.zonbeozon.channel.exception.ChannelUpdateException;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.repository.ChannelWithMemberCount;
@@ -31,7 +31,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
 
     public Long addChannel(ChannelCreateCommand command, Member requester) {
         if(isDuplicateTitle(command.title()))
-            throw new ChannelAddException(ChannelAddException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
         Channel channel = channelFactory.createChannel(command, requester);
         channelRepository.save(channel);
         channelMemberServiceImpl.joinAsOwner(requester, channel);
@@ -47,12 +47,10 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
             ChannelUpdateRequest request
     ) {
         Channel channel = requester.getChannel();
-        if(!channel.hasUpdatePermission(requester))
-            throw new ChannelUpdateException(ChannelUpdateException.ErrorCode.ACCESS_DENIED);
-
+        channel.validateUpdatePermission(requester);
         if(!channel.getTitle().equals(request.title())) {
             if(isDuplicateTitle(request.title()))
-                throw new ChannelUpdateException(ChannelUpdateException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
+                throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
             channel.updateTitle(request.title());
         }
 
@@ -70,8 +68,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
                 || channel.getSearchLevel() != request.searchLevel();
         if(isSettingChanged) {
             channel.updateSettings(request.contentOpenLevel(), request.joinLevel(), request.searchLevel());
-            if(!channel.isValidSettingCombination())
-                throw new ChannelUpdateException(ChannelUpdateException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
+            channel.validateSettingCombination();
         }
     }
 

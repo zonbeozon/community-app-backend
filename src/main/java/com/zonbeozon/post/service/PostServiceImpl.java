@@ -22,6 +22,9 @@ class PostServiceImpl implements PostEntityQueryService {
     private final ChannelEntityQueryService channelEntityQueryService;
     private final ApplicationEventPublisher eventPublisher;
 
+    /**
+     * todo: 채널 생성 권한 검사 추가
+     */
     @Transactional
     public Long addPost(PostAddCommand command, ChannelMember channelMember) {
         Post post = Post.create(command.content(), channelMember);

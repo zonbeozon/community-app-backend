@@ -3,7 +3,7 @@ package com.zonbeozon.channel.controller;
 import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
 import com.zonbeozon.channel.entity.ChannelJoinLevel;
 import com.zonbeozon.channel.entity.ChannelType;
-import com.zonbeozon.channel.exception.ChannelAddException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.ChannelCreateCommand;
 import com.zonbeozon.channel.service.ChannelService;
@@ -16,36 +16,89 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel")
+@Tag(name = "채널", description = "채널 관련 엔드포인트")
 public class ChannelController {
     private final ChannelService channelService;
 
     @Operation(
             summary = "채널 추가",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE,
-            security = @SecurityRequirement(name = "bearerAuth")
+            description = """
+                    채널을 추가한다.
+                    
+                    일부 채널은 서버 권한에 따라 생성이 가능하다.
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공",
-                    content = @Content(schema = @Schema(type = "integer", format = "int64", description = "채널 ID"))
+                    description = "성공 - 채널 id 반환",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(type = "integer", format = "int64", description = "채널 ID")
+                    )
             ),
             @ApiResponse(responseCode = "400", description = "필드 형식 오류 또는 채널 생성 규칙 위반",
-                    content =  @Content(schema = @Schema(anyOf = {
-                            ChannelAddException.Response.class,
+                    content =  @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "잘못된 필드 값 전달",
+                                            summary = "필수 필드 누락하거나 길이 등 규칙을 위배한 경우",
+                                            value = """
+                                                        {
+                                                          "code": "INVALID_ARGUMENT",
+                                                          "errors": [
+                                                            {
+                                                              "field": "title",
+                                                              "message": "채널 이름은 2자 이상 30자 이하여야 합니다."
+                                                            },
+                                                            {
+                                                              "field": "description",
+                                                              "message": "채널 설명은 300자 이하여야 합니다."
+                                                            }
+                                                          ]
+                                                        }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "중복 채널 명일때",
+                                            value = """
+                                                        {
+                                                          "code": "DUPLICATE_CHANNEL_TITLE",
+                                                          "message": "해당 채널 명이 이미 존재합니다."
+                                                        }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "허용되지 않는 문자를 사용시",
+                                            description = "입력값에 보안상 허용되지 않는 특수 문자 혹은 문자열이 포함된 경우.",
+                                            value = """
+                                                        {
+                                                          "code": "INVALID_CHARACTERS",
+                                                          "message": "입력값에 허용되지 않는 문자가 포함되어 있습니다."
+                                                        }
+                                                    """
+                                    )
+                            },
+                            schema = @Schema(anyOf = {
+                            ChannelBadRequestException.Response.class,
                             ArgumentValidationErrorResponse.class
                     }))),
     })
@@ -73,8 +126,8 @@ public class ChannelController {
 
     @Operation(
             summary = "채널 정보 업데이트",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널 Owner만 호출 가능",
-            security = @SecurityRequirement(name = "bearerAuth")
+            description = "채널 Owner만 호출 가능하다",
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @PatchMapping("/{channelId}")
     public ResponseEntity<Void> updateChannel(
@@ -89,11 +142,18 @@ public class ChannelController {
 
     @Operation(
             summary = "사용자가 속한 모든 채널 정보 가져오기",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE,
-            security = @SecurityRequirement(name = "bearerAuth")
+            description = """
+                    사용자가 속한 모든 채널 정보 가져온다.
+                    가장 최근 post가 작성된 시간 기준 DESC순이며 
+                    post가 없는 채널은 순서가 보장되지 않는다. 
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = JoinedChannelListResponse.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = JoinedChannelListResponse.class))
+            ),
     })
     @GetMapping("/joined")
     public ResponseEntity<JoinedChannelListResponse> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
@@ -104,24 +164,42 @@ public class ChannelController {
             summary = "채널 검색",
             description = """
                     채널 title중 searchParam이 포함된 채널을 찾는다.
+                    
                     정렬 순서는 채널 구독자 DESC순이다.
+                    
+                    채널 설정에서 검색 허용을 PRIVATE으로 설정시 검색되지 않는다.
                     """
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PagedChannelResponse.class))),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PagedChannelResponse.class))
+            ),
     })
     @GetMapping
-    @Parameters({
-            @Parameter(name = "searchParam", description = "채널 명", example = "좋은 채널"),
-            @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
-            @Parameter(name = "size", description = "한 페이지당 아이템 수", example = "10")
-    })
     public ResponseEntity<PagedChannelResponse> getChannels(
+            @Parameter(
+                    name = "채널 명",
+                    description = """
+                            채널 명, 입력 안할시 빈 문자열로 적용
+                            
+                            채널 명의 일부로도 검색할 수 있다.(대소문자 구분안함)
+                            """,
+                    example = "좋은 채널"
+            )
             @RequestParam(defaultValue = "") String searchParam,
+            @Parameter(name = "채널 타입")
             @RequestParam(required = false) ChannelType type,
+            @Parameter(name = "채널 컨텐츠 공개 수준")
             @RequestParam(required = false) ChannelContentOpenLevel contentOpenLevel,
+            @Parameter(name = "채널 검색 허용 수준")
             @RequestParam(required = false) ChannelJoinLevel joinLevel,
+            @Parameter(name = "정렬 기준")
             @RequestParam(defaultValue = "MEMBER_COUNT") ChannelSort sort,
+            @Parameter(name = "정렬 순서")
             @RequestParam(defaultValue = "DESC") Sort.Direction direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -131,9 +209,12 @@ public class ChannelController {
 
     @Operation(
             summary = "채널 삭제",
-            description = SwaggerConfig.NEED_TO_AUTH_MESSAGE + "채널 Owner만 허용",
+            description = "채널 Owner만 허용",
             security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "삭제 성공시"),
+    })
     @DeleteMapping("/{channelId}")
     public ResponseEntity<Void> deleteChannel(
             @Parameter(hidden = true) Member member,

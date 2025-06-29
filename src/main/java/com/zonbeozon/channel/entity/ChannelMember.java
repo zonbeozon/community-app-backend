@@ -1,7 +1,6 @@
 package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
-import com.zonbeozon.channel.exception.ErrorCode;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
@@ -11,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -45,7 +43,7 @@ public class ChannelMember extends BaseTimeEntity {
 
     public void updateRole(ChannelRole role) {
         if(this.role == role) {
-            throw new ChannelBadRequestException(ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.SAME_ROLE_CANNOT_BE_UPDATED);
         }
         this.role = role;
     }

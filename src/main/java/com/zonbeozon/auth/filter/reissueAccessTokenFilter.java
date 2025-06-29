@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,6 +28,14 @@ public class reissueAccessTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
+            // 잘못된 메서드일 경우 405 Method Not Allowed 응답
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"code\": \"METHOD_NOT_ALLOWED\", \"message\": \"POST 메서드만 지원합니다.\"}");
+            return;
+        }
+
         String accessToken = AuthenticationTokenUtils.resolveAuthHeader(request.getHeader(HttpHeaders.AUTHORIZATION));
         //accessToken이 없기 때문에 다음 필터 호출
         if(accessToken == null) {

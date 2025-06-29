@@ -19,7 +19,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void joinAsOwner(Member member, Channel channel) {
         if(channelMemberRepository.existsByChannelAndRole(channel, ChannelRole.CHANNEL_OWNER))
-            throw new ChannelException("Owner는 이미 채널에 존재한다, 로직 상 이 예외는 발생되면 안된다.");
+            throw new IllegalStateException("Owner는 이미 채널에 존재한다, 로직 상 이 예외는 발생되면 안된다.");
         join(member, channel, ChannelRole.CHANNEL_OWNER);
     }
 
@@ -27,7 +27,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     public void joinAsMember(Member member, Channel channel) {
         channel.validateJoinPermission();
         if(channelMemberRepository.isKicked(member, channel)) {
-            throw new ChannelAccessDeniedException("이전에 Kick당한 맴버는 초대를 통해서만 재가입할 수 있습니다.");
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.KICKED_MEMBER_CANNOT_JOIN_DIRECTLY);
         }
         join(member, channel, ChannelRole.CHANNEL_MEMBER);
     }
@@ -39,7 +39,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
 
     private void join(Member member, Channel channel, ChannelRole role) {
         if(channelMemberRepository.existsByMemberAndChannel(member, channel))
-            throw new ChannelBadRequestException(ErrorCode.ALREADY_JOINED);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.ALREADY_JOINED);
         ChannelMember chMember = ChannelMember.create(member, channel, role);
         channelMemberRepository.save(chMember);
     }
@@ -47,14 +47,14 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void kickMember(ChannelMember actor, ChannelMember target) {
         if(!actor.getChannel().equals(target.getChannel()))
-            throw new ChannelBadRequestException(ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
         actor.getChannel().kick(actor, target);
     }
 
     @Transactional
     public void modifyChannelMemberRole(ChannelMember actor, ChannelMember target, ChannelRole wantToChange) {
         if(!actor.getChannel().equals(target.getChannel()))
-            throw new ChannelBadRequestException(ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.TARGET_NOT_IN_SAME_CHANNEL);
         actor.getChannel().modifyRole(actor, target, wantToChange);
     }
 
@@ -66,7 +66,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional
     public void leaveChannel(ChannelMember actor) {
         if(actor.canLeaveChannel()) {
-            throw new ChannelBadRequestException(ErrorCode.CHANNEL_LEAVE_NOT_ALLOWED);
+            throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.CHANNEL_LEAVE_NOT_ALLOWED);
         }
         channelMemberRepository.delete(actor);
     }

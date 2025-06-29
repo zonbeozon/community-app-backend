@@ -1,7 +1,8 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAddException;
+import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
+import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.member.BaseMemberTest;
@@ -38,10 +39,10 @@ public class ChannelAddTest extends BaseMemberTest {
     @DisplayName("USER_ROLE 유저가 Community채널이 아닌 채널을 만든다면 예외를 발생시킨다")
     void throwsAccessDeniedWhenUserRoleCreatesNonCommunityChannel() {
         assertThatThrownBy(()-> channelService.addChannel(channelCreateCommand_3, member_1))
-                .isInstanceOf(ChannelAddException.class)
+                .isInstanceOf(ChannelAccessDeniedException.class)
                 .satisfies(e -> {
-                    ChannelAddException exception = (ChannelAddException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAddException.ErrorCode.ACCESS_DENIED);
+                    ChannelAccessDeniedException exception = (ChannelAccessDeniedException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAccessDeniedException.ErrorCode.CHANNEL_CREATION_FORBIDDEN);
                 });
     }
 
@@ -53,10 +54,10 @@ public class ChannelAddTest extends BaseMemberTest {
 
         //second time create with same title
         assertThatThrownBy(()-> channelService.addChannel(channelCreateCommand_1, member_1))
-                .isInstanceOf(ChannelAddException.class)
+                .isInstanceOf(ChannelBadRequestException.class)
                 .satisfies(e -> {
-                    ChannelAddException exception = (ChannelAddException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAddException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
+                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
                 });
     }
 
@@ -74,15 +75,12 @@ public class ChannelAddTest extends BaseMemberTest {
         );
 
         assertThatThrownBy(()-> channelService.addChannel(invalidCommand, member_1))
-                .isInstanceOf(ChannelAddException.class)
+                .isInstanceOf(ChannelBadRequestException.class)
                 .satisfies(e -> {
-                    ChannelAddException exception = (ChannelAddException) e;
-                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAddException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
+                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
                 });
     }
-
-    @Test
-    @DisplayName("post")
 
     static void assertChannelMetadataEquals(Channel channel, ChannelCreateCommand command) {
         assertThat(channel.getTitle()).isEqualTo(command.title());
