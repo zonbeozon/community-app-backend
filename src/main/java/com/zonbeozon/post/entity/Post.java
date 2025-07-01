@@ -2,6 +2,7 @@ package com.zonbeozon.post.entity;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.entity.PostSupportedChannel;
 import com.zonbeozon.common.entity.BaseTimeEntity;
 import com.zonbeozon.post.exception.PostAccessDeniedException;
 import jakarta.persistence.*;
@@ -35,18 +36,18 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
-    private Channel channel;
+    private PostSupportedChannel channel;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private ChannelMember author;
 
-    public static Post create(String content, ChannelMember author) {
+    public static Post create(String content, PostSupportedChannel channel, ChannelMember author) {
         Post post = new Post();
         post.content = content;
         post.author = author;
-        post.channel = author.getChannel();
+        post.channel = channel;
         post.isDeleted = false;
         return post;
     }
@@ -61,23 +62,5 @@ public class Post extends BaseTimeEntity {
 
     public boolean isInChannel(Channel channel) {
         return this.channel.equals(channel);
-    }
-
-    /**
-     * 작성자나 작성자보다 높은 권한을 가진 채널 맴버만 게시글을 삭제할 수 있다.
-     */
-    public void validateDeletePermission(ChannelMember channelMember) {
-        if(!isInChannel(channelMember.getChannel()))
-            throw new PostAccessDeniedException("해당 채널 멤버는 Post의 채널의 맴버가 아닙니다");
-        if (!(isAuthor(channelMember) || channelMember.getRole().isHigherThan(author.getRole())))
-            throw new PostAccessDeniedException("해당 Post를 삭제할 권한이 없습니다.");
-    }
-
-    public void validateUpdateContentPermission(ChannelMember channelMember) {
-        if(!isInChannel(channelMember.getChannel()))
-            throw new PostAccessDeniedException("해당 채널 멤버는 Post의 채널의 맴버가 아닙니다");
-        if(!isAuthor(channelMember)) {
-            throw new PostAccessDeniedException("해당 Post를 삭제할 권한이 없습니다.");
-        }
     }
 }

@@ -10,18 +10,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @DiscriminatorValue("COMMUNITY_INFO")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommunityInfoChannel extends Channel {
+public class CommunityInfoChannel extends PostSupportedChannel {
 
     private CommunityInfoChannel(ChannelCreateCommand command) {
-        super(
-                command.title(),
-                command.description(),
-                command.profile(),
-                command.contentOpenLevel(),
-                command.joinLevel(),
-                command.searchLevel(),
-                command.type()
-        );
+        super(command);
     }
 
     public static CommunityInfoChannel create(ChannelCreateCommand command, Member member) {

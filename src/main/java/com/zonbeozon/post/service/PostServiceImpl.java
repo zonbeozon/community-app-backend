@@ -4,6 +4,8 @@ import com.zonbeozon.channel.entity.*;
 import com.zonbeozon.channel.service.ChannelEntityQueryService;
 import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.exception.PostAccessDeniedException;
+import com.zonbeozon.post.exception.PostBadRequestException;
 import com.zonbeozon.post.exception.PostNotFoundException;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.repository.PostSort;
@@ -22,29 +24,33 @@ class PostServiceImpl implements PostEntityQueryService {
     private final ChannelEntityQueryService channelEntityQueryService;
     private final ApplicationEventPublisher eventPublisher;
 
-    /**
-     * todo: 채널 생성 권한 검사 추가
-     */
     @Transactional
     public Long addPost(PostAddCommand command, ChannelMember channelMember) {
-        Post post = Post.create(command.content(), channelMember);
-        postRepository.save(post);
-        eventPublisher.publishEvent(new PostCreatedEvent(channelMember.getChannel().getId(), post.getId()));
-        return post.getId();
+        if(channelMember.getChannel() instanceof PostSupportedChannel postSupportedChannel) {
+            postSupportedChannel.validatePostCreation(channelMember);
+            Post post = Post.create(command.content(), postSupportedChannel, channelMember);
+            postRepository.save(post);
+            eventPublisher.publishEvent(new PostCreatedEvent(channelMember.getChannel().getId(), post.getId()));
+            return post.getId();
+        } else {
+            throw new PostBadRequestException(PostBadRequestException.ErrorCode.POST_NOT_SUPPORTED_CHANNEL);
+        }
     }
 
     @Transactional
     public void deletePost(Long postId, ChannelMember channelMember) {
         Post post = getPostByIdOrThrow(postId);
-        post.validateDeletePermission(channelMember);
-        eventPublisher.publishEvent(new PostDeletedEvent(channelMember.getChannel().getId(), postId));
+        PostSupportedChannel channel = post.getChannel();
+        channel.validatePostDeletePermission(post, channelMember);
+        eventPublisher.publishEvent(new PostDeletedEvent(channel.getId(), postId));
         postRepository.delete(post);
     }
 
     @Transactional
     public void updatePostContent(Long postId, ChannelMember channelMember, String content) {
         Post post = getPostByIdOrThrow(postId);
-        post.validateUpdateContentPermission(channelMember);
+        PostSupportedChannel channel = post.getChannel();
+        channel.validatePostUpdatePermission(post, channelMember);
         post.updateContent(content);
         eventPublisher.publishEvent(new PostUpdatedEvent(channelMember.getChannel().getId(), postId));
     }

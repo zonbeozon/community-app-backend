@@ -2,6 +2,7 @@ package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.*;
 import com.zonbeozon.common.entity.BaseTimeEntity;
+import com.zonbeozon.post.exception.PostAccessDeniedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -171,5 +172,10 @@ public abstract class Channel extends BaseTimeEntity {
         if(!requester.isOwner()) {
             throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.MODIFY_CHANNEL_ROLE_FORBIDDEN);
         }
+    }
+
+    protected void validateChannelMemberMatch(ChannelMember channelMember) {
+        if(!this.equals(channelMember.getChannel()))
+            throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.CHANNEL_MEMBER_MISMATCH);
     }
 }

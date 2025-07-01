@@ -1,9 +1,6 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
 import com.zonbeozon.channel.service.ChannelMemberResolver;
-import com.zonbeozon.channel.service.ChannelMemberService;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.repository.PostSort;
 import com.zonbeozon.post.service.dto.PagedPostsResponse;

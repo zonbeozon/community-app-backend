@@ -26,7 +26,8 @@ public class ChannelAccessDeniedException extends ChannelException {
         MODIFY_CHANNEL_ROLE_FORBIDDEN("채널 멤버의 권한을 수정할 수 있는 권한이 없습니다."),
         MODIFY_CHANNEL_METADATA_FORBIDDEN("채널 메타데이터를 변경할 권한이 없습니다."),
         KICKED_MEMBER_CANNOT_JOIN_DIRECTLY("강퇴당한 멤버는 초대를 통해서만 재가입할 수 있습니다."),
-        CHANNEL_DELETION_FORBIDDEN("해당 채널을 삭제할 권한이 없습니다.");
+        CHANNEL_DELETION_FORBIDDEN("해당 채널을 삭제할 권한이 없습니다."),
+        CHANNEL_MEMBER_MISMATCH("요청한 맴버는 해당 채널에 속해있지 않습니다.");;
 
         private final String message;
     }

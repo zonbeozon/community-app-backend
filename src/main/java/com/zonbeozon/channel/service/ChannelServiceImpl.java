@@ -2,7 +2,6 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.controller.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.exception.ChannelNotFoundException;
 import com.zonbeozon.channel.repository.ChannelRepository;
