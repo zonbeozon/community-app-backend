@@ -108,8 +108,7 @@ public class SecurityConfig {
 
         request.requestMatchers(HttpMethod.PATCH,
                 //Discussion Related
-                "/channel/*/contentOpenLevel",
-                "/channel/*/info",
+                "/channel/*",
                 "/channel/*/member/*/role",
                 "/channel/*/post/*"
 
