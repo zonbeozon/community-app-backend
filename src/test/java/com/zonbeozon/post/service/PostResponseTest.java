@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.*;
 
-@Import(NoOpEventPublisherTestConfig.class)
 public class PostResponseTest extends BasePostTest {
     @Autowired
     private PostService postService;

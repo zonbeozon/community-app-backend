@@ -3,6 +3,7 @@ package com.zonbeozon.member;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.ServerRole;
 import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@SpringBootTest
+@SpringBootTest(classes = NoOpEventPublisherTestConfig.class)
 public abstract class BaseMemberTest {
     @Autowired
     private MemberService memberService;
@@ -34,10 +35,5 @@ public abstract class BaseMemberTest {
         member_3 = memberService.createMember("member_3", "member_3@gmail.com", "profileOfMember_3", ServerRole.USER);
 
         admin_1 = memberService.createMember("admin_1", "admin_1@gmail.com", "profileOfAdmin_1", ServerRole.ADMIN);
-    }
-
-    @Test
-    void printEventPublisher() {
-        System.out.println("publisher = " + applicationEventPublisher.getClass().getName());
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 
-@Import(NoOpEventPublisherTestConfig.class)
 public class PostUpdateTest extends BasePostTest {
     @Autowired
     private PostService postService;
