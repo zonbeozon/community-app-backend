@@ -2,11 +2,9 @@ package com.zonbeozon.post.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class PostAccessDeniedException extends PostException {
-    public static final HttpStatus HTTP_STATUS = HttpStatus.FORBIDDEN;
     private final ErrorCode errorCode;
 
     public PostAccessDeniedException(ErrorCode errorCode) {

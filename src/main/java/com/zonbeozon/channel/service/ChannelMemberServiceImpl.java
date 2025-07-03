@@ -84,7 +84,7 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional(readOnly = true)
     public ChannelMember getChannelMemberOrThrow(Member member, Channel channel) {
         return getChannelMember(member, channel)
-                .orElseThrow(() -> new ChannelMemberNotFoundException(member + "는 채널: " + channel + "에 속해있지 않습니다."));
+                .orElseThrow(ChannelMemberNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
@@ -95,6 +95,6 @@ class ChannelMemberServiceImpl implements ChannelMemberEntityQueryService {
     @Transactional(readOnly = true)
     public ChannelMember getByIdOrThrow(Long id) {
         return channelMemberRepository.findById(id)
-                .orElseThrow(() -> new ChannelMemberNotFoundException(id + "를 가진 channelMember는 존재하지 않습니다."));
+                .orElseThrow(ChannelMemberNotFoundException::new);
     }
 }

@@ -6,16 +6,16 @@ import com.zonbeozon.channel.entity.ChannelSearchLevel;
 import com.zonbeozon.channel.entity.ChannelType;
 
 public class ChannelFixture {
-    public static final ChannelCreateCommand channelCreateCommand_1 = new ChannelCreateCommand(
+    public static final ChannelAddCommand CHANNEL_ADD_COMMAND_1 = new ChannelAddCommand(
             "title1",
             "description",
             "emtpyProfile",
-            ChannelContentOpenLevel.PUBLIC,
+            ChannelContentOpenLevel.PRIVATE,
             ChannelType.COMMUNITY_INFO,
             ChannelJoinLevel.OPEN,
             ChannelSearchLevel.PUBLIC
     );
-    public static final ChannelCreateCommand channelCreateCommand_2 = new ChannelCreateCommand(
+    public static final ChannelAddCommand CHANNEL_ADD_COMMAND_2 = new ChannelAddCommand(
             "title2",
             "description",
             "emtpyProfile",
@@ -25,7 +25,7 @@ public class ChannelFixture {
             ChannelSearchLevel.PUBLIC
     );
 
-    public static final ChannelCreateCommand channelCreateCommand_3 = new ChannelCreateCommand(
+    public static final ChannelAddCommand CHANNEL_ADD_COMMAND_3 = new ChannelAddCommand(
             "title3",
             "description",
             "emtpyProfile",

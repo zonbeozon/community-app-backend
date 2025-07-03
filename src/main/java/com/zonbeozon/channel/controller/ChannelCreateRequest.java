@@ -9,11 +9,11 @@ import jakarta.validation.constraints.Size;
 import static com.zonbeozon.channel.entity.Channel.*;
 
 public record ChannelCreateRequest(
-        @Schema(description = "채널 이름", minLength = 2, maxLength = 30, example = "My Channel")
-        @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH, message = "채널 이름은 2자 이상 30자 이하여야 합니다.")
+        @Schema(description = "채널 이름", minLength = MIN_TITLE_LENGTH, maxLength = MAX_TITLE_LENGTH, example = "My Channel")
+        @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH, message = "{channel.title.length}")
         String title,
-        @Schema(description = "채널 설명", maxLength = 300, example = "이 채널은...")
-        @Size(min = MIN_DESCRIPTION_LENGTH, max = MAX_DESCRIPTION_LENGTH, message = "채널 설명은 300자 이하여야 합니다.")
+        @Schema(description = "채널 설명", maxLength = MAX_DESCRIPTION_LENGTH, example = "이 채널은...")
+        @Size(max = MAX_DESCRIPTION_LENGTH, message = "{channel.description.length}")
         String description,
         @Schema(description = "채널 프로필 이미지 URL", example = "https://example.com/profile.png")
         @NotBlank(message = "채널 프로필 이미지는 필수입니다.")

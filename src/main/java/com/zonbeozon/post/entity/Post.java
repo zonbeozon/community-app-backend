@@ -1,25 +1,22 @@
 package com.zonbeozon.post.entity;
 
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.entity.PostSupportedChannel;
 import com.zonbeozon.common.entity.BaseTimeEntity;
-import com.zonbeozon.post.exception.PostAccessDeniedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
+@ToString
 public class Post extends BaseTimeEntity {
-    public static final int MAX_CONTENT_LENGTH = 1500;
+    public static final int MAX_CONTENT_LENGTH = 2048;
     public static final int MIN_CONTENT_LENGTH = 1;
 
     @Id
@@ -60,7 +57,7 @@ public class Post extends BaseTimeEntity {
         return author.equals(channelMember);
     }
 
-    public boolean isInChannel(Channel channel) {
-        return this.channel.equals(channel);
+    public void delete() {
+        isDeleted = true;
     }
 }

@@ -1,10 +1,8 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.service.ChannelEntityQueryService;
-import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
+import com.zonbeozon.channel.repository.PostSupportedChannelRepository;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.exception.PostAccessDeniedException;
 import com.zonbeozon.post.exception.PostBadRequestException;
 import com.zonbeozon.post.exception.PostNotFoundException;
 import com.zonbeozon.post.repository.PostRepository;
@@ -21,20 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 class PostServiceImpl implements PostEntityQueryService {
     private final PostRepository postRepository;
-    private final ChannelEntityQueryService channelEntityQueryService;
+    private final PostSupportedChannelRepository postSupportedChannelRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long addPost(PostAddCommand command, ChannelMember channelMember) {
-        if(channelMember.getChannel() instanceof PostSupportedChannel postSupportedChannel) {
-            postSupportedChannel.validatePostCreation(channelMember);
-            Post post = Post.create(command.content(), postSupportedChannel, channelMember);
-            postRepository.save(post);
-            eventPublisher.publishEvent(new PostCreatedEvent(channelMember.getChannel().getId(), post.getId()));
-            return post.getId();
-        } else {
-            throw new PostBadRequestException(PostBadRequestException.ErrorCode.POST_NOT_SUPPORTED_CHANNEL);
-        }
+        PostSupportedChannel channel = postSupportedChannelRepository.findById(channelMember.getChannel().getId())
+                .orElseThrow(() -> new PostBadRequestException(PostBadRequestException.ErrorCode.POST_NOT_SUPPORTED_CHANNEL));
+        channel.validatePostCreation(channelMember);
+        Post post = Post.create(command.content(), channel, channelMember);
+        postRepository.save(post);
+        eventPublisher.publishEvent(new PostCreatedEvent(channelMember.getChannel().getId(), post.getId()));
+        return post.getId();
     }
 
     @Transactional
@@ -42,8 +38,8 @@ class PostServiceImpl implements PostEntityQueryService {
         Post post = getPostByIdOrThrow(postId);
         PostSupportedChannel channel = post.getChannel();
         channel.validatePostDeletePermission(post, channelMember);
+        post.delete();
         eventPublisher.publishEvent(new PostDeletedEvent(channel.getId(), postId));
-        postRepository.delete(post);
     }
 
     @Transactional
@@ -58,7 +54,7 @@ class PostServiceImpl implements PostEntityQueryService {
     @Transactional(readOnly = true)
     public Post getPostByIdOrThrow(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId + "는 존재하지 않는 postId 입니다."));
+                .orElseThrow(PostNotFoundException::new);
     }
 
     /**
@@ -78,10 +74,10 @@ class PostServiceImpl implements PostEntityQueryService {
             Sort.Direction direction
     ) {
         //채널Id로 존재하는 채널인지 확인.
-        Channel channel = channelEntityQueryService.getChannelByIdOrThrow(channelId);
+        PostSupportedChannel channel = postSupportedChannelRepository.findById(channelId)
+                .orElseThrow(() -> new PostBadRequestException(PostBadRequestException.ErrorCode.POST_NOT_SUPPORTED_CHANNEL));
         channel.validateContentReadPermission(channelMember);
         Page<Post> posts = postRepository.findPagedPost(channelId, searchParam, page, size, sort, direction);
         return PagedPostsResponse.from(posts);
     }
-
 }

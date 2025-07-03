@@ -19,14 +19,13 @@ public abstract class BaseChannelTest extends BaseMemberTest {
     protected Long channel_2_id;
     protected Long channel_3_id;
 
-
     @BeforeEach
     void setUp() {
         channel_1_owner = member_1;
         channel_2_owner = member_2;
         channel_3_owner = admin_1;
-        channel_1_id = channelService.addChannel(channelCreateCommand_1, channel_1_owner);
-        channel_2_id = channelService.addChannel(channelCreateCommand_2, channel_2_owner);
-        channel_3_id = channelService.addChannel(channelCreateCommand_3, channel_3_owner);
+        channel_1_id = channelService.addChannel(CHANNEL_ADD_COMMAND_1, channel_1_owner);
+        channel_2_id = channelService.addChannel(CHANNEL_ADD_COMMAND_2, channel_2_owner);
+        channel_3_id = channelService.addChannel(CHANNEL_ADD_COMMAND_3, channel_3_owner);
     }
 }

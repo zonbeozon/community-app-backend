@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.entity;
 
 import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
-import com.zonbeozon.channel.service.ChannelCreateCommand;
+import com.zonbeozon.channel.service.ChannelAddCommand;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OficialInfoChannel extends Channel {
 
-    private OficialInfoChannel(ChannelCreateCommand command) {
+    private OficialInfoChannel(ChannelAddCommand command) {
         super(
                 command.title(),
                 command.description(),
@@ -25,7 +25,7 @@ public class OficialInfoChannel extends Channel {
         );
     }
 
-    public static OficialInfoChannel create(ChannelCreateCommand command, Member member) {
+    public static OficialInfoChannel create(ChannelAddCommand command, Member member) {
         if (!member.isAdmin()) throw new ChannelAccessDeniedException(ChannelAccessDeniedException.ErrorCode.CHANNEL_CREATION_FORBIDDEN);
         return new OficialInfoChannel(command);
     }

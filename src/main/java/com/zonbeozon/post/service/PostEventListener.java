@@ -51,7 +51,7 @@ class PostEventListener {
 
     private PostResponse createPostResponse(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId + "에 해당하는 Post를 찾을 수 없습니다."));
+                .orElseThrow(PostNotFoundException::new);
         return PostResponse.fromEntity(post);
     }
 }

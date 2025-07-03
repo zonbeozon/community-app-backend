@@ -3,13 +3,10 @@ package com.zonbeozon.channel.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class ChannelBadRequestException extends ChannelException {
-  public static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
   private final ErrorCode errorCode;
-
 
   public ChannelBadRequestException(ErrorCode errorCode) {
     super(errorCode.getMessage());

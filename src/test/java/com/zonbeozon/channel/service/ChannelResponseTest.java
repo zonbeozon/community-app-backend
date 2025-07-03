@@ -2,15 +2,15 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
 import com.zonbeozon.channel.service.dto.JoinedChannelResponse;
-import com.zonbeozon.member.service.MemberService;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.repository.PostRepository;
+import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
 import com.zonbeozon.post.service.PostService;
 import com.zonbeozon.post.service.dto.PostAddCommand;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -31,7 +31,7 @@ public class ChannelResponseTest extends BaseChannelTest {
     void returnsOnlyChannelsJoinedByMember() {
         JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
         assertThat(response.channels()).hasSize(1);
-        assertChannelMetadataEquals(response.channels().get(0), ChannelFixture.channelCreateCommand_1);
+        assertChannelMetadataEquals(response.channels().get(0), ChannelFixture.CHANNEL_ADD_COMMAND_1);
     }
 
 
@@ -68,7 +68,7 @@ public class ChannelResponseTest extends BaseChannelTest {
         assertThat(response.channels().get(0).latestPostCreatedAt()).isEqualTo(post_1_createdAt);
     }
 
-    public static void assertChannelMetadataEquals(JoinedChannelResponse response, ChannelCreateCommand command) {
+    public static void assertChannelMetadataEquals(JoinedChannelResponse response, ChannelAddCommand command) {
         assertThat(response.title()).isEqualTo(command.title());
         assertThat(response.description()).isEqualTo(command.description());
         assertThat(response.profile()).isEqualTo(command.profile());

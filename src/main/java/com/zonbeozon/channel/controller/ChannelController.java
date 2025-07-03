@@ -5,7 +5,7 @@ import com.zonbeozon.channel.entity.ChannelJoinLevel;
 import com.zonbeozon.channel.entity.ChannelType;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelSort;
-import com.zonbeozon.channel.service.ChannelCreateCommand;
+import com.zonbeozon.channel.service.ChannelAddCommand;
 import com.zonbeozon.channel.service.ChannelService;
 import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
 import com.zonbeozon.channel.service.dto.PagedChannelResponse;
@@ -14,7 +14,6 @@ import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -112,7 +111,7 @@ public class ChannelController {
             Member member
     ) {
         Long channelId = channelService.addChannel(
-                new ChannelCreateCommand(
+                new ChannelAddCommand(
                         request.title(),
                         request.description(),
                         request.profile(),
@@ -132,7 +131,7 @@ public class ChannelController {
     @PatchMapping("/{channelId}")
     public ResponseEntity<Void> updateChannel(
             @Parameter(hidden = true) Member member,
-            @Valid ChannelUpdateRequest channelUpdateRequest,
+            @Valid @RequestBody ChannelUpdateRequest channelUpdateRequest,
             @PathVariable Long channelId
     ) {
         channelService.updateChannel(member, channelId, channelUpdateRequest);

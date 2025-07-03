@@ -28,7 +28,7 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
     private final ChannelRepository channelRepository;
     private final ChannelFactory channelFactory;
 
-    public Long addChannel(ChannelCreateCommand command, Member requester) {
+    public Long addChannel(ChannelAddCommand command, Member requester) {
         if(isDuplicateTitle(command.title()))
             throw new ChannelBadRequestException(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
         Channel channel = channelFactory.createChannel(command, requester);
@@ -98,6 +98,6 @@ class ChannelServiceImpl implements ChannelEntityQueryService {
 
     public Channel getChannelByIdOrThrow(Long channelId) {
         return channelRepository.findById(channelId)
-                .orElseThrow(() -> new ChannelNotFoundException(channelId + "은 존재하지 않는 channelId입니다."));
+                .orElseThrow(ChannelNotFoundException::new);
     }
 }

@@ -1,6 +1,5 @@
 package com.zonbeozon.post.exception;
 
-
 import com.zonbeozon.post.controller.PostController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,13 @@ public class PostExceptionHandler {
     }
 
     @ExceptionHandler(PostAccessDeniedException.class)
-    public ResponseEntity<String> handlePostAccessDeniedException(PostAccessDeniedException e) {
+    public ResponseEntity<PostAccessDeniedException.Response> handlePostAccessDeniedException(PostAccessDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(e.getMessage());
+                .body(e.toResponse());
+    }
+    @ExceptionHandler(PostBadRequestException.class)
+    public ResponseEntity<PostBadRequestException.Response> handlePostBadRequestException(PostBadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(e.toResponse());
     }
 }

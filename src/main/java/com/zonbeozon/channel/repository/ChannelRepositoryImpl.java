@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.zonbeozon.channel.entity.QChannel.*;

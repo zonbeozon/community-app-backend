@@ -5,7 +5,7 @@ import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
 import com.zonbeozon.channel.entity.ChannelSearchLevel;
 import com.zonbeozon.channel.entity.ChannelType;
 
-public record ChannelCreateCommand(
+public record ChannelAddCommand(
         String title,
         String description,
         String profile,

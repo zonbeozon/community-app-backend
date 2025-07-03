@@ -5,9 +5,11 @@ import com.zonbeozon.channel.entity.*;
 import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelBadRequestException;
 import com.zonbeozon.channel.repository.ChannelRepository;
+import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -43,7 +45,7 @@ public class ChannelUpdateTest extends BaseChannelTest {
     @Test
     @DisplayName("중복 채널 명이 있다면 예외가 발생한다")
     void throwExceptionWhenDuplicateChannelTitleProvided() {
-        ChannelCreateCommand validChannelCreateCommand = new ChannelCreateCommand(
+        ChannelAddCommand validChannelAddCommand = new ChannelAddCommand(
                 validUpdateRequest.title(),
                 "description",
                 "emtpyProfile",
@@ -52,7 +54,7 @@ public class ChannelUpdateTest extends BaseChannelTest {
                 ChannelJoinLevel.OPEN,
                 ChannelSearchLevel.PUBLIC
         );
-        channelService.addChannel(validChannelCreateCommand, channel_1_owner);
+        channelService.addChannel(validChannelAddCommand, channel_1_owner);
 
         assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest))
                 .isInstanceOf(ChannelBadRequestException.class)
@@ -66,7 +68,7 @@ public class ChannelUpdateTest extends BaseChannelTest {
     @DisplayName("채널 Setting조합이 잘못된 조합(SearchLevel이 Private, ContentOpenLevel이 Public)이라면 예외가 발생한다.")
     void throwExceptionWhenInvalidSettingCombinationProvided() {
         ChannelUpdateRequest invalidCombinationUpdateRequest = new ChannelUpdateRequest(
-                ChannelFixture.channelCreateCommand_1.title(),
+                ChannelFixture.CHANNEL_ADD_COMMAND_1.title(),
                 "description",
                 "emtpyProfile",
                 ChannelContentOpenLevel.PUBLIC,

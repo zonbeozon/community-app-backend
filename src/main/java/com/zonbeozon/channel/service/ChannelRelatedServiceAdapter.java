@@ -22,7 +22,7 @@ class ChannelRelatedServiceAdapter implements ChannelService, ChannelMemberServi
     private final ChannelMemberResolver channelMemberResolver;
 
     @Override
-    public Long addChannel(ChannelCreateCommand command, Member requester) {
+    public Long addChannel(ChannelAddCommand command, Member requester) {
         return channelServiceImpl.addChannel(command, requester);
     }
 

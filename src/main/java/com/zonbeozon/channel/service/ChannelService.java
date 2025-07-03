@@ -9,7 +9,7 @@ import com.zonbeozon.member.domain.Member;
 import org.springframework.data.domain.Sort;
 
 public interface ChannelService {
-    Long addChannel(ChannelCreateCommand command, Member requester);
+    Long addChannel(ChannelAddCommand command, Member requester);
     void updateChannel(Member member, Long channelId, ChannelUpdateRequest channelUpdateRequest);
     void deleteChannel(Member member, Long channelId);
     JoinedChannelListResponse createMemberJoinedChannelResponse(Member member);

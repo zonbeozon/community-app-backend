@@ -46,8 +46,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         List<Post> posts = queryFactory.selectFrom(post)
                 .where(whereClause)
-                .offset(offset)
                 .orderBy(getOrderSpecifier(sort, direction))
+                .offset(offset)
                 .limit(size)
                 .fetch();
 
