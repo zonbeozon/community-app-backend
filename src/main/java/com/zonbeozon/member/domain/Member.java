@@ -10,6 +10,8 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Member extends BaseTimeEntity {
+    public static final String ALLOWED_USERNAME_PATTERN = "^[가-힣a-zA-Z0-9_]{2,32}$";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,6 +42,14 @@ public class Member extends BaseTimeEntity {
 
     public boolean isAdmin() {
         return this.role == ServerRole.ADMIN;
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void deleteMember() {
+        this.status = MemberStatus.DELETED;
     }
 
     @Override

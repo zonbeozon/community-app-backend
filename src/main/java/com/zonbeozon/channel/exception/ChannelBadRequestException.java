@@ -36,6 +36,4 @@ public class ChannelBadRequestException extends ChannelException {
   public Response toResponse() {
     return new Response(this.errorCode, this.getMessage());
   }
-
-
 }

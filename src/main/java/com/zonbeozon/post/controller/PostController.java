@@ -120,8 +120,15 @@ public class PostController {
             summary = "POST 삭제",
             description = """
                     Post작성자 혹은 Post작성자보다 권한이 높은 채널 맴버만 삭제 가능하다.
-                    """
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "성공 - 응답 바디 없음"
+            )
+    })
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long channelId,
@@ -136,8 +143,15 @@ public class PostController {
             summary = "POST 업데이트",
             description = """
                     Post작성자만 호출 가능하다.
-                    """
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성공 - 응답 바디 없음"
+            )
+    })
     @PatchMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long channelId,

@@ -2,7 +2,7 @@ package com.zonbeozon.channel.service.dto;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelType;
-import com.zonbeozon.member.dto.MemberResponse;
+import com.zonbeozon.member.service.dto.MemberResponse;
 
 public record InviteCodeResponse (
     String code,

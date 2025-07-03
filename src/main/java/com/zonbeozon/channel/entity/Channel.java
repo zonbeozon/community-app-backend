@@ -31,7 +31,7 @@ public abstract class Channel extends BaseTimeEntity {
 
     @NotNull
     @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH)
-    @Column(unique = true, length = MAX_TITLE_LENGTH)
+    @Column(length = MAX_TITLE_LENGTH)
     private String title;
 
     @NotNull

@@ -16,7 +16,6 @@ class ChannelInvitationServiceImpl {
     private final MemberService memberService;
     private final ChannelInviteCodeRepository channelInviteCodeRepository;
     private final ChannelMemberServiceImpl channelMemberServiceImpl;
-    private final ChannelServiceImpl channelServiceImpl;
 
     public InviteCodeResponse publishInvite(ChannelMember inviter, Long inviteeId) {
         inviter.getChannel().validateInvitePermission(inviter);
@@ -26,7 +25,7 @@ class ChannelInvitationServiceImpl {
         return InviteCodeResponse.with(
                 inviteCode.getCode(),
                 inviter.getChannel(),
-                memberService.createMemberResponse(inviter.getMember())
+                memberService.getMemberResponse(inviter.getMember().getId())
         );
     }
 
