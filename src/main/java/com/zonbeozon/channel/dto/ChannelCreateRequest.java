@@ -5,7 +5,9 @@ import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelSearchScope;
 import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.channel.validation.ChannelSettingProvider;
+import com.zonbeozon.channel.validation.ChannelTitleProvider;
 import com.zonbeozon.channel.validation.ValidChannelSetting;
+import com.zonbeozon.channel.validation.ValidChannelTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,10 +15,10 @@ import jakarta.validation.constraints.Size;
 
 import static com.zonbeozon.channel.entity.Channel.*;
 
+@ValidChannelTitle
 @ValidChannelSetting
 public record ChannelCreateRequest(
         @Schema(description = "채널 이름", minLength = MIN_TITLE_LENGTH, maxLength = MAX_TITLE_LENGTH, example = "My Channel")
-        @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH, message = "{channel.title.length}")
         String title,
         @Schema(description = "채널 설명", maxLength = MAX_DESCRIPTION_LENGTH, example = "이 채널은...")
         @Size(max = MAX_DESCRIPTION_LENGTH, message = "{channel.description.length}")
@@ -36,5 +38,5 @@ public record ChannelCreateRequest(
         @Schema(description = "검색 허용 수준", example = "PUBLIC")
         @NotNull(message = "검색 허용 수준을 선택해야 합니다.")
         ChannelSearchScope searchScope
-) implements ChannelSettingProvider {
+) implements ChannelSettingProvider, ChannelTitleProvider {
 }

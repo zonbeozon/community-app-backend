@@ -18,7 +18,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class reissueAccessTokenFilter extends OncePerRequestFilter {
+public class ReissueAccessTokenFilter extends OncePerRequestFilter {
     private static final String REISSUE_URI = "/auth/reissue";
     private final TokenProvider tokenProvider;
 

@@ -23,6 +23,7 @@ import org.hibernate.annotations.SQLRestriction;
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 32;
+
     public static final int MIN_DESCRIPTION_LENGTH = 0;
     public static final int MAX_DESCRIPTION_LENGTH = 256;
 
@@ -31,12 +32,10 @@ public abstract class Channel extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    @Size(min = MIN_TITLE_LENGTH, max = MAX_TITLE_LENGTH)
     @Column(length = MAX_TITLE_LENGTH)
     private String title;
 
     @NotNull
-    @Size(min = MIN_DESCRIPTION_LENGTH, max = MAX_DESCRIPTION_LENGTH)
     @Column(columnDefinition = "TEXT")
     private String description;
 

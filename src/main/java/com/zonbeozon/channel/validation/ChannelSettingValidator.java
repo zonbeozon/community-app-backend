@@ -20,6 +20,7 @@ public class ChannelSettingValidator implements ConstraintValidator<ValidChannel
         if(contentVisibility == ChannelContentVisibility.PUBLIC && searchScope == ChannelSearchScope.NONE) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("contentVisibility가 public이지만 searchScope가 NONE일수는 없다")
+                    .addPropertyNode("setting")
                     .addConstraintViolation();
             isValid = false;
         }

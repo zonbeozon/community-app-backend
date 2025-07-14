@@ -1,16 +1,11 @@
 package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.dto.*;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelType;
-import com.zonbeozon.channel.repository.ChannelSort;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelUpdater;
 import com.zonbeozon.channel.service.InfoChannelAssembler;
 import com.zonbeozon.config.SwaggerConfig;
-import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,7 +95,6 @@ public class ChannelController {
     @PostMapping
     public ResponseEntity<Long> addChannel(
             @Valid
-            @Parameter(name = "Request Body")
             @RequestBody
             ChannelCreateRequest request
     ) {
