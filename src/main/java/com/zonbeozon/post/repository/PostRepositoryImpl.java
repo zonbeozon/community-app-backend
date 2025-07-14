@@ -1,22 +1,16 @@
 package com.zonbeozon.post.repository;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.repository.ChannelSort;
+import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.global.CursorPage;
+import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.entity.Post;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.zonbeozon.channel.entity.QChannel.channel;
-import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
+import static com.zonbeozon.member.domain.QMember.*;
 import static com.zonbeozon.post.entity.QPost.*;
 
 @Repository
@@ -24,53 +18,40 @@ import static com.zonbeozon.post.entity.QPost.*;
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-    private BooleanBuilder createDefaultBooleanBuilder() {
-        return new BooleanBuilder()
-                .and(post.isDeleted.eq(false));
-    }
-
     @Override
-    public Page<Post> findPagedPost(
-            Long channelId,
-            String keyword,
-            int page,
-            int size,
-            PostSort sort,
-            Sort.Direction direction
-    ) {
-        long offset = (long) page * size;
-
-        BooleanBuilder whereClause = createDefaultBooleanBuilder()
-                .and(post.channel.id.eq(channelId))
-                .and(containsKeyword(keyword));
-
+    public CursorPage<Post> findCursorBasedPostsByChannel(InfoChannel channel, Long cursorPostId, int size) {
         List<Post> posts = queryFactory.selectFrom(post)
-                .where(whereClause)
-                .orderBy(getOrderSpecifier(sort, direction))
-                .offset(offset)
-                .limit(size)
+                .where(post.isDeleted.eq(false)
+                        .and(post.channel.eq(channel))
+                        .and(post.id.lt(cursorPostId))
+                )
+                .join(member).on(post.author.eq(member)).fetchJoin()
+                .orderBy(post.id.desc())
+                .limit(size + 1) //last 페이지인지 확인
                 .fetch();
 
-        Long total = queryFactory.select(post.count())
+        List<Post> contentToReturn;
+        Long nextCursorId;
+
+        boolean hasNext = posts.size() > size;
+
+        if(hasNext) {
+            contentToReturn = posts.subList(0, size);
+            nextCursorId = posts.get(size).getId();
+        } else {
+            contentToReturn = posts;
+            nextCursorId = posts.getLast().getId();
+        }
+
+        Long totalElement = queryFactory
+                .select(post.count()) // count 함수 사용
                 .from(post)
-                .where(whereClause)
+                .where(post.isDeleted.isFalse().and(post.channel.eq(channel))) // 채널 조건
                 .fetchOne();
 
-        long unboxedTotal = total == null ? 0L : total;
+        //조회되는 값 없을때 Null 대신 반환
+        totalElement = totalElement == null ? 0L : totalElement;
 
-        return new PageImpl<>(posts, PageRequest.of(page, size, Sort.by(direction, sort.name())), unboxedTotal);
-    }
-
-    private BooleanExpression containsKeyword(String keyword) {
-        return keyword == null ? null : channel.title.containsIgnoreCase(keyword); // 대소문자 구분 없이 포함 검색
-    }
-
-    private OrderSpecifier<?> getOrderSpecifier(PostSort sort, Sort.Direction direction) {
-        boolean asc = direction.isAscending();
-
-        return switch (sort) {
-            case UPDATED_AT -> asc ? post.modifiedAt.asc() : post.modifiedAt.desc();
-            case CREATED_AT -> asc ? post.createdAt.asc() : post.createdAt.desc();
-        };
+        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, size);
     }
 }

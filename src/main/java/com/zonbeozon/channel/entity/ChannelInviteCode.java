@@ -1,6 +1,6 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.common.entity.BaseTimeEntity;
+import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChannelInviteCode extends BaseTimeEntity {
     private static final Duration DEFAULT_EXPIRATION = Duration.ofDays(1);
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,16 +29,16 @@ public class ChannelInviteCode extends BaseTimeEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inviter_id")
-    private ChannelMember inviter;
+    private Member inviter;
     @NotNull
     private Long inviteeId;
     @NotNull
     private LocalDateTime expiredAt;
 
-    public static ChannelInviteCode generate(ChannelMember inviter, Long inviteeId) {
+    public static ChannelInviteCode generate(Channel channel, Member inviter, Long inviteeId) {
         ChannelInviteCode inviteCode = new ChannelInviteCode();
         inviteCode.code = UUID.randomUUID().toString();
-        inviteCode.channel = inviter.getChannel();
+        inviteCode.channel = channel;
         inviteCode.inviter = inviter;
         inviteCode.inviteeId = inviteeId;
         inviteCode.expiredAt = LocalDateTime.now().plus(DEFAULT_EXPIRATION);

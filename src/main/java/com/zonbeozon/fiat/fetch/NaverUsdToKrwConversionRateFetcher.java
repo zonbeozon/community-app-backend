@@ -1,6 +1,6 @@
 package com.zonbeozon.fiat.fetch;
 
-import com.zonbeozon.common.fetch.FetchException;
+import com.zonbeozon.global.fetch.FetchException;
 import com.zonbeozon.fiat.entity.ConversionRateCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Optional;
 
-import static com.zonbeozon.common.utils.BigDecimalUtils.*;
+import static com.zonbeozon.global.utils.BigDecimalUtils.*;
 
 @Component
 @Slf4j

@@ -1,7 +1,7 @@
 package com.zonbeozon.comment.entity;
 
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.common.entity.BaseTimeEntity;
+import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.reaction.entity.CommentReaction;
 import jakarta.persistence.*;

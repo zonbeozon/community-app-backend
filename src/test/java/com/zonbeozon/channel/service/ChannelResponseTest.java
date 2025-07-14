@@ -1,21 +1,16 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
-import com.zonbeozon.channel.service.dto.JoinedChannelResponse;
+import com.zonbeozon.channel.dto.ChannelAddCommand;
+import com.zonbeozon.channel.dto.ListedChannelResponse;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
-import com.zonbeozon.post.service.PostService;
-import com.zonbeozon.post.service.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostAddCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.*;
 
 public class ChannelResponseTest extends BaseChannelTest {
 
@@ -29,7 +24,7 @@ public class ChannelResponseTest extends BaseChannelTest {
     @Test
     @DisplayName("member가 속한 채널만 가져와야 한다.")
     void returnsOnlyChannelsJoinedByMember() {
-        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
+        ListedChannelResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
         assertThat(response.channels()).hasSize(1);
         assertChannelMetadataEquals(response.channels().get(0), ChannelFixture.CHANNEL_ADD_COMMAND_1);
     }
@@ -61,11 +56,29 @@ public class ChannelResponseTest extends BaseChannelTest {
         postRepository.save(post_2);
         postRepository.save(post_3);
 
-        JoinedChannelListResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
+        ListedChannelResponse response = channelService.createMemberJoinedChannelResponse(channel_1_owner);
 
         assertThat(response.channels()).hasSize(1);
         assertThat(response.channels().get(0).latestPostContent()).isEqualTo(postAddCommand_1.content());
         assertThat(response.channels().get(0).latestPostCreatedAt()).isEqualTo(post_1_createdAt);
+    }
+
+    @Test
+    @DisplayName("삭제된 채널은 가져오면 안된다")
+    void d() {
+
+    }
+
+    @Test
+    @DisplayName("상태가 ACTIVE인 채널 맴버만 memberCount에 포함한다.")
+    void d() {
+
+    }
+
+    @Test
+    @DisplayName("SearchScope가 NONE인 채널이라면 검색되면 안된다.")
+    void d() {
+
     }
 
     public static void assertChannelMetadataEquals(JoinedChannelResponse response, ChannelAddCommand command) {
@@ -73,7 +86,7 @@ public class ChannelResponseTest extends BaseChannelTest {
         assertThat(response.description()).isEqualTo(command.description());
         assertThat(response.profile()).isEqualTo(command.profile());
         assertThat(response.channelType()).isEqualTo(command.type());
-        assertThat(response.channelJoinLevel()).isEqualTo(command.joinLevel());
+        assertThat(response.channelJoinPolicy()).isEqualTo(command.joinLevel());
         assertThat(response.contentOpenLevel()).isEqualTo(command.contentOpenLevel());
     }
 }

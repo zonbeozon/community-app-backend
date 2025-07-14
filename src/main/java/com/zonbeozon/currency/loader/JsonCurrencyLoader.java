@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.loader;
 
-import com.zonbeozon.common.ListFileLoaderTemplate;
+import com.zonbeozon.global.ListFileLoaderTemplate;
 
 import java.util.function.Supplier;
 

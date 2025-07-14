@@ -1,6 +1,6 @@
 package com.zonbeozon.fiat.fetch;
 
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import com.zonbeozon.fiat.entity.ConversionRateCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

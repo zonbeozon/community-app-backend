@@ -1,10 +1,9 @@
 package com.zonbeozon.market.fetch;
 
-import com.zonbeozon.common.fetch.FetchException;
+import com.zonbeozon.global.fetch.FetchException;
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.fiat.entity.FiatType;
 import com.zonbeozon.market.MarketHolder;
-import com.zonbeozon.market.entity.Market;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.MultiValueMap;

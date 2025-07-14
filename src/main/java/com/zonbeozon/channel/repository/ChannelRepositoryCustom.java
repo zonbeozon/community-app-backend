@@ -1,13 +1,11 @@
 package com.zonbeozon.channel.repository;
 
-import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
-import com.zonbeozon.channel.entity.ChannelJoinLevel;
-import com.zonbeozon.channel.entity.ChannelType;
-import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.channel.dto.ChannelWithMemberCount;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelJoinPolicy;
+import com.zonbeozon.channel.enums.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-
-import java.util.List;
 
 public interface ChannelRepositoryCustom {
     Page<ChannelWithMemberCount> searchByKeyword(
@@ -17,9 +15,7 @@ public interface ChannelRepositoryCustom {
             ChannelSort sort,
             Sort.Direction direction,
             ChannelType type,
-            ChannelContentOpenLevel contentOpenLevel,
-            ChannelJoinLevel joinLevel
+            ChannelContentVisibility contentVisibility,
+            ChannelJoinPolicy joinPolicy
     );
-
-    List<JoinedChannelDto> findJoinedChannels(Member member);
 }

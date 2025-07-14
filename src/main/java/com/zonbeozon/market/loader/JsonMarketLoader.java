@@ -1,6 +1,6 @@
 package com.zonbeozon.market.loader;
 
-import com.zonbeozon.common.ListFileLoaderTemplate;
+import com.zonbeozon.global.ListFileLoaderTemplate;
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.entity.MarketType;
 import com.zonbeozon.market.service.MarketCodeResolver;

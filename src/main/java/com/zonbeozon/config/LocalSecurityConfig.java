@@ -3,7 +3,8 @@ package com.zonbeozon.config;
 import com.zonbeozon.auth.handler.OAuth2SuccessHandler;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.ServerRole;
-import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.member.service.MemberCreator;
+import com.zonbeozon.member.service.MemberFinder;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,8 +31,10 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class LocalSecurityConfig {
-    private final MemberService memberService;
+    private final MemberCreator memberCreator;
     private final OAuth2SuccessHandler successHandler;
+    private final MemberFinder memberFinder;
+
     @Bean
     @Order(0)
     public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -40,27 +43,27 @@ public class LocalSecurityConfig {
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers("/local/swagger-ui/**", "/local/v3/api-docs/**", "/local/login").permitAll();
                 })
-                .addFilterBefore(new LocalTestLoginFilter(successHandler, memberService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new LocalTestLoginFilter(successHandler, memberFinder), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @PostConstruct
     public void init() {
-        memberService.createMemberWithRandomUsername("user@gmail.com", "", ServerRole.USER);
-        memberService.createMemberWithRandomUsername("admin@gmail.com", "", ServerRole.ADMIN);
+        memberCreator.createMemberWithRandomUsername("user@gmail.com", "", ServerRole.USER);
+        memberCreator.createMemberWithRandomUsername("admin@gmail.com", "", ServerRole.ADMIN);
     }
 
     @RequiredArgsConstructor
     public static class LocalTestLoginFilter extends OncePerRequestFilter {
         private final OAuth2SuccessHandler successHandler;
-        private final MemberService memberService;
+        private final MemberFinder memberFinder;
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                 throws ServletException, IOException {
             if (request.getRequestURI().equals("/local/login")) {
                 // testuser 로 자동 인증
                 String email = request.getParameter("email");
-                Member member = memberService.getByEmailOrElseThrow(email);
+                Member member = memberFinder.findByEmail(email);
                 Authentication authentication = createAuthentication(member);
                 successHandler.onAuthenticationSuccess(request, response, authentication);
                 return;

@@ -1,7 +1,7 @@
 package com.zonbeozon.fiat.entity;
 
-import com.zonbeozon.common.entity.BaseTimeEntity;
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

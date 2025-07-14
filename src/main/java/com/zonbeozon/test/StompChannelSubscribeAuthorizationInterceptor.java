@@ -1,15 +1,11 @@
 package com.zonbeozon.test;
 
-import com.zonbeozon.auth.exception.AuthException;
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.exception.ChannelMemberNotFoundException;
-import com.zonbeozon.channel.exception.ChannelNotFoundException;
-import com.zonbeozon.channel.service.ChannelEntityQueryService;
-import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
+import com.zonbeozon.channel.service.ChannelFinder;
+import com.zonbeozon.channel.service.ChannelMemberFinder;
+import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.exception.MemberNotFoundException;
-import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -24,9 +20,9 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInterceptor {
 
-    private final ChannelMemberEntityQueryService channelMemberEntityQueryService;
-    private final ChannelEntityQueryService channelEntityQueryService;
-    private final MemberService memberService;
+    private final ChannelMemberFinder channelMemberFinder;
+    private final ChannelFinder channelFinder;
+    private final MemberFinder memberFinder;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -35,7 +31,7 @@ public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInt
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) && isChannelSubscriptionDestination(destination)) {
             Principal principal = accessor.getUser();
             if (principal == null) {
-                throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.UNAUTHORIZED);
+                throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
             }
             Long memberId = Long.parseLong(principal.getName());
             Long channelId = extractChannelIdFromDestination(destination);
@@ -43,19 +39,19 @@ public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInt
             Channel foundChannel;
             Member member;
             try {
-                foundChannel = channelEntityQueryService.getChannelByIdOrThrow(channelId);
-            } catch (ChannelNotFoundException e) {
-                throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
+                foundChannel = channelFinder.findById(channelId);
+            } catch (NotFoundException e) {
+                throw new SubscriptionException(SubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
             }
             try {
-                member = memberService.getByIdOrThrow(memberId);
-            } catch (MemberNotFoundException e) {
-                throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.UNAUTHORIZED);
+                member = memberFinder.findById(memberId);
+            } catch (NotFoundException e) {
+                throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
             }
             try {
-                channelMemberEntityQueryService.getChannelMemberOrThrow(member, foundChannel);
-            } catch (ChannelMemberNotFoundException e) {
-                throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.FORBIDDEN);
+                channelMemberFinder.findByMemberAndChannel(member, foundChannel);
+            } catch (NotFoundException e) {
+                throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
             }
         }
         return message;
@@ -69,12 +65,12 @@ public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInt
         // 예: /topic/channel/123 → 123
         String[] parts = destination.split("/");
         if (parts.length < 4) {
-            throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.INVALID_DESTINATION);
+            throw new SubscriptionException(SubscriptionException.ErrorCode.INVALID_DESTINATION);
         }
         try {
             return Long.parseLong(parts[3]);
         } catch (NumberFormatException e) {
-            throw new ChannelSubscriptionException(ChannelSubscriptionException.ErrorCode.INVALID_DESTINATION);
+            throw new SubscriptionException(SubscriptionException.ErrorCode.INVALID_DESTINATION);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.loader;
 
-import com.zonbeozon.common.fetch.FetchManager;
+import com.zonbeozon.global.fetch.FetchManager;
 import com.zonbeozon.currency.fetch.CurrencyFetchContext;
 import com.zonbeozon.currency.fetch.CurrencyMetadataFetchResult;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.zonbeozon.currency.updater;
 
-import com.zonbeozon.common.AbstractFetchBasedUpdater;
-import com.zonbeozon.common.fetch.FetchManager;
+import com.zonbeozon.global.AbstractFetchBasedUpdater;
+import com.zonbeozon.global.fetch.FetchManager;
 import com.zonbeozon.currency.CurrencyHolder;
 import com.zonbeozon.currency.CurrencyHolderSupplier;
 import com.zonbeozon.currency.entity.Currency;
@@ -10,7 +10,6 @@ import com.zonbeozon.currency.fetch.CurrencyFetchContext;
 import com.zonbeozon.currency.fetch.CurrencyQuotesFetchData;
 import com.zonbeozon.currency.fetch.CurrencyQuotesFetchResult;
 import com.zonbeozon.currency.service.CurrencyFiatMetricService;
-import com.zonbeozon.currency.service.CurrencyService;
 import com.zonbeozon.fiat.ExpandToMultiFiat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

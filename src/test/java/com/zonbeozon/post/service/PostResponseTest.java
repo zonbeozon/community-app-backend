@@ -1,13 +1,11 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.post.repository.PostSort;
-import com.zonbeozon.post.service.dto.PagedPostsResponse;
-import com.zonbeozon.post.service.dto.SimplifiedPostResponse;
+import com.zonbeozon.post.dto.CursorBasedPostsResponse;
+import com.zonbeozon.post.dto.SimplifiedPostResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.*;
@@ -30,7 +28,7 @@ public class PostResponseTest extends BasePostTest {
     @Test
     @DisplayName("채널 조회시 올바른 응답 객체를 생성한다.")
     void returnCorrectPagedPostsResponse(){
-        PagedPostsResponse response = postService.createPagedPostResponse(member_1, channel_1_id, "", 0, 20, PostSort.CREATED_AT, Sort.Direction.DESC);
+        CursorBasedPostsResponse response = postService.createPagedPostResponse(member_1, channel_1_id, "", 0, 20, PostSort.CREATED_AT, Sort.Direction.DESC);
         assertThat(response.members().size()).isEqualTo(2);
         assertThat(response.posts().size()).isEqualTo(3);
         assertThat(response.posts())

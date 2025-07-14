@@ -1,7 +1,8 @@
 package com.zonbeozon.auth.filter;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
-import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.UnauthenticatedException;
 import com.zonbeozon.auth.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,10 +38,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (tokenProvider.validateToken(accessToken)) {
             setAuthentication(accessToken);
             filterChain.doFilter(request, response);
-            return;
+        } else {
+            throw new UnauthenticatedException(ErrorCode.EXPIRED_TOKEN);
         }
-        //토큰이 만료되었을때
-        throw new AuthException(AuthException.ErrorCode.EXPIRED_TOKEN);
     }
 
     private void setAuthentication(String accessToken) {

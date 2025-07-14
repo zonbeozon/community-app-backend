@@ -3,7 +3,10 @@ package com.zonbeozon.member.controller;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.respository.MemberSort;
-import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.member.service.MemberAssembler;
+import com.zonbeozon.member.service.MemberFinder;
+import com.zonbeozon.member.service.MemberRemover;
+import com.zonbeozon.member.service.MemberUpdater;
 import com.zonbeozon.member.service.dto.MemberResponse;
 import com.zonbeozon.member.service.dto.PagedMemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +30,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member")
 @Tag(name = "서버 맴버", description = "서버 맴버 관련 로직 (채널 맴버가 아니다)")
 public class MemberController {
-    private final MemberService memberService;
+    private final MemberAssembler memberAssembler;
+    private final MemberUpdater memberUpdater;
+    private final MemberRemover memberRemover;
 
     @Operation(
             summary = "맴버 명 업데이트",
@@ -77,12 +82,11 @@ public class MemberController {
     })
     @PatchMapping
     public ResponseEntity<Void> updateUsername(
-            @RequestBody @Valid
-            UsernameUpdateRequest request,
-            @Parameter(hidden = true)
-            Member member
+            @RequestBody
+            @Valid
+            UsernameUpdateRequest request
     ) {
-       memberService.updateUsername(member, request.username());
+       memberUpdater.updateUsername(request.username());
        return ResponseEntity.ok().build();
     }
 
@@ -121,7 +125,7 @@ public class MemberController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                memberService.searchPagedMemberResponse(
+                memberAssembler.searchPagedMemberResponse(
                     partialUsername,
                     sort,
                     direction,
@@ -152,7 +156,7 @@ public class MemberController {
     )
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberResponse> getMember(@PathVariable Long memberId) {
-        return ResponseEntity.ok(memberService.getMemberResponse(memberId));
+        return ResponseEntity.ok(memberAssembler.createMemberResponse(memberId));
     }
 
 
@@ -170,8 +174,8 @@ public class MemberController {
             )}
     )
     @DeleteMapping
-    public ResponseEntity<Void> deleteMember(Member member) {
-        memberService.deleteMember(member);
+    public ResponseEntity<Void> deleteMember() {
+        memberRemover.deleteMember();
         return ResponseEntity.noContent().build();
     }
 }

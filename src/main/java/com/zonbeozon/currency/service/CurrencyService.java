@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.service;
 
-import com.zonbeozon.common.EntityValidator;
+import com.zonbeozon.global.EntityValidator;
 import com.zonbeozon.currency.service.dto.CurrenciesOverviewResponse;
 import com.zonbeozon.currency.service.dto.CurrencyResponse;
 import com.zonbeozon.currency.entity.Currency;

@@ -1,7 +1,9 @@
 package com.zonbeozon.channel.controller;
 
-import com.zonbeozon.channel.entity.ChannelRole;
-import com.zonbeozon.channel.service.ChannelMemberService;
+import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.service.ChannelMemberJoiner;
+import com.zonbeozon.channel.service.ChannelMemberRemover;
+import com.zonbeozon.channel.service.ChannelMemberRoleModifier;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/channel/{channelId}/member")
 @Tag(name = "채널 맴버", description = "채널에 속해 있는 맴버 관련 엔드포인트.")
 public class ChannelMemberController {
-    private final ChannelMemberService channelMemberService;
+    private final ChannelMemberJoiner channelMemberJoiner;
+    private final ChannelMemberRemover channelMemberRemover;
+    private final ChannelMemberRoleModifier channelMemberRoleModifier;
 
     @Operation(
             summary = "채널 참가",
@@ -32,10 +36,9 @@ public class ChannelMemberController {
     })
     @PostMapping
     public ResponseEntity<Void> joinChannelAsMember(
-            @PathVariable Long channelId,
-            @Parameter(hidden = true) Member member
+            @PathVariable Long channelId
     ) {
-        channelMemberService.joinAsMember(member, channelId);
+        channelMemberJoiner.joinAsMember(channelId);
         return ResponseEntity.ok().build();
     }
 
@@ -48,13 +51,12 @@ public class ChannelMemberController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema())),
     })
-    @DeleteMapping("/{targetChannelMemberId}/kick")
+    @DeleteMapping("/{targetMemberId}/kick")
     public ResponseEntity<Void> kickChannelMember(
-            @Parameter(hidden = true) Member member,
             @PathVariable Long channelId,
-            @PathVariable Long targetChannelMemberId
+            @PathVariable Long targetMemberId
     ) {
-        channelMemberService.kickMember(member, channelId, targetChannelMemberId);
+        channelMemberRemover.kickMember(channelId, targetMemberId);
         return ResponseEntity.ok().build();
     }
 
@@ -69,10 +71,9 @@ public class ChannelMemberController {
     })
     @DeleteMapping
     public ResponseEntity<Void> leaveChannel(
-            @Parameter(hidden = true) Member member,
             @PathVariable Long channelId
     ) {
-        channelMemberService.leaveChannel(member, channelId);
+        channelMemberRemover.leaveChannel(channelId);
         return ResponseEntity.noContent().build();
     }
 
@@ -86,14 +87,13 @@ public class ChannelMemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "성공", content = @Content(schema = @Schema())),
     })
-    @PatchMapping("/{targetChannelMemberId}/role")
+    @PatchMapping("/{targetMemberId}/role")
     public ResponseEntity<Void> modifyRole(
-            @Parameter(hidden = true) Member member,
             @PathVariable Long channelId,
-            @PathVariable Long targetChannelMemberId,
+            @PathVariable Long targetMemberId,
             @RequestParam ChannelRole wantTo
     ) {
-        channelMemberService.modifyChannelMemberRole(member, channelId, targetChannelMemberId, wantTo);
+        channelMemberRoleModifier.modifyChannelMemberRole(channelId, targetMemberId, wantTo);
         return ResponseEntity.ok().build();
     }
 

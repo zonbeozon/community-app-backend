@@ -1,13 +1,10 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.channel.exception.ChannelMemberNotFoundException;
 import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 

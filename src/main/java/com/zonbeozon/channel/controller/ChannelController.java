@@ -1,15 +1,14 @@
 package com.zonbeozon.channel.controller;
 
-import com.zonbeozon.channel.entity.ChannelContentOpenLevel;
-import com.zonbeozon.channel.entity.ChannelJoinLevel;
-import com.zonbeozon.channel.entity.ChannelType;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.dto.*;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelCreatorType;
+import com.zonbeozon.channel.enums.ChannelJoinPolicy;
+import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.channel.repository.ChannelSort;
-import com.zonbeozon.channel.service.ChannelAddCommand;
-import com.zonbeozon.channel.service.ChannelService;
-import com.zonbeozon.channel.service.dto.JoinedChannelListResponse;
-import com.zonbeozon.channel.service.dto.PagedChannelResponse;
-import com.zonbeozon.common.exception.ArgumentValidationErrorResponse;
+import com.zonbeozon.channel.service.ChannelCreator;
+import com.zonbeozon.channel.service.ChannelUpdater;
+import com.zonbeozon.channel.service.InfoChannelAssembler;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +22,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +31,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/channel")
 @Tag(name = "채널", description = "채널 관련 엔드포인트")
 public class ChannelController {
-    private final ChannelService channelService;
+    private final ChannelCreator channelCreator;
+    private final ChannelUpdater channelUpdater;
+    private final InfoChannelAssembler infoChannelAssembler;
 
     @Operation(
             summary = "채널 추가",
@@ -95,31 +95,26 @@ public class ChannelController {
                                                         }
                                                     """
                                     )
-                            },
-                            schema = @Schema(anyOf = {
-                            ChannelBadRequestException.Response.class,
-                            ArgumentValidationErrorResponse.class
-                    }))),
+                            })),
     })
     @PostMapping
     public ResponseEntity<Long> addChannel(
             @Valid
             @Parameter(name = "Request Body")
             @RequestBody
-            ChannelCreateRequest request,
-            @Parameter(hidden = true)
-            Member member
+            ChannelCreateRequest request
     ) {
-        Long channelId = channelService.addChannel(
+        Long channelId = channelCreator.addChannel(
                 new ChannelAddCommand(
                         request.title(),
                         request.description(),
                         request.profile(),
-                        request.contentOpenLevel(),
+                        request.contentVisibility(),
                         request.channelType(),
-                        request.joinLevel(),
-                        request.searchLevel()),
-                member);
+                        request.joinPolicy(),
+                        request.searchScope(),
+                        ChannelCreatorType.COMMUNITY
+                ));
         return ResponseEntity.ok(channelId);
     }
 
@@ -130,19 +125,19 @@ public class ChannelController {
     )
     @PatchMapping("/{channelId}")
     public ResponseEntity<Void> updateChannel(
-            @Parameter(hidden = true) Member member,
             @Valid @RequestBody ChannelUpdateRequest channelUpdateRequest,
             @PathVariable Long channelId
     ) {
-        channelService.updateChannel(member, channelId, channelUpdateRequest);
+        channelUpdater.updateChannel(channelId, channelUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
 
     @Operation(
-            summary = "사용자가 속한 모든 채널 정보 가져오기",
+            summary = "사용자가 속한 COMMUNITY - INFO 타입의 모든 채널 정보 가져오기",
             description = """
                     사용자가 속한 모든 채널 정보 가져온다.
+                    
                     가장 최근 post가 작성된 시간 기준 DESC순이며 
                     post가 없는 채널은 순서가 보장되지 않는다. 
                     """,
@@ -151,77 +146,77 @@ public class ChannelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = JoinedChannelListResponse.class))
+                    schema = @Schema(implementation = JoinedInfoChannelListResponse.class))
             ),
     })
-    @GetMapping("/joined")
-    public ResponseEntity<JoinedChannelListResponse> getMemberJoinedChannels(@Parameter(hidden = true) Member member) {
-        return ResponseEntity.ok(channelService.createMemberJoinedChannelResponse(member));
+    @GetMapping("/communityInfo/joined")
+    public ResponseEntity<JoinedInfoChannelListResponse> getJoinedInfoChannels() {
+        return ResponseEntity.ok(infoChannelAssembler.createJoinedCommunityInfoChannelResponse());
     }
 
-    @Operation(
-            summary = "채널 검색",
-            description = """
-                    채널 title중 searchParam이 포함된 채널을 찾는다.
-                    
-                    정렬 순서는 채널 구독자 DESC순이다.
-                    
-                    채널 설정에서 검색 허용을 PRIVATE으로 설정시 검색되지 않는다.
-                    """
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "성공",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PagedChannelResponse.class))
-            ),
-    })
-    @GetMapping
-    public ResponseEntity<PagedChannelResponse> getChannels(
-            @Parameter(
-                    name = "채널 명",
-                    description = """
-                            채널 명, 입력 안할시 빈 문자열로 적용
-                            
-                            채널 명의 일부로도 검색할 수 있다.(대소문자 구분안함)
-                            """,
-                    example = "좋은 채널"
-            )
-            @RequestParam(defaultValue = "") String searchParam,
-            @Parameter(name = "채널 타입")
-            @RequestParam(required = false) ChannelType type,
-            @Parameter(name = "채널 컨텐츠 공개 수준")
-            @RequestParam(required = false) ChannelContentOpenLevel contentOpenLevel,
-            @Parameter(name = "채널 검색 허용 수준")
-            @RequestParam(required = false) ChannelJoinLevel joinLevel,
-            @Parameter(name = "정렬 기준")
-            @RequestParam(defaultValue = "MEMBER_COUNT") ChannelSort sort,
-            @Parameter(name = "정렬 순서")
-            @RequestParam(defaultValue = "DESC") Sort.Direction direction,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-            ) {
-        return ResponseEntity.ok(channelService.createChannelSearchResponse(searchParam, page, size, sort, direction, type, contentOpenLevel, joinLevel));
-    }
-
-    @Operation(
-            summary = "채널 삭제",
-            description = "채널 Owner만 허용",
-            security = @SecurityRequirement(name = "bearerAuth")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "삭제 성공시"),
-    })
-    @DeleteMapping("/{channelId}")
-    public ResponseEntity<Void> deleteChannel(
-            @Parameter(hidden = true) Member member,
-            @PathVariable Long channelId
-            ) {
-        channelService.deleteChannel(member, channelId);
-        return ResponseEntity.noContent().build();
-    }
+//    @Operation(
+//            summary = "채널 검색",
+//            description = """
+//                    채널 title중 searchParam이 포함된 채널을 찾는다.
+//
+//                    정렬 순서는 채널 구독자 DESC순이다.
+//
+//                    채널 설정에서 검색 허용을 PRIVATE으로 설정시 검색되지 않는다.
+//                    """
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "성공",
+//                    content = @Content(
+//                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                            schema = @Schema(implementation = PagedChannelResponse.class))
+//            ),
+//    })
+//    @GetMapping
+//    public ResponseEntity<PagedChannelResponse> getChannels(
+//            @Parameter(
+//                    name = "채널 명",
+//                    description = """
+//                            채널 명, 입력 안할시 빈 문자열로 적용
+//
+//                            채널 명의 일부로도 검색할 수 있다.(대소문자 구분안함)
+//                            """,
+//                    example = "좋은 채널"
+//            )
+//            @RequestParam(defaultValue = "") String searchParam,
+//            @Parameter(name = "채널 타입")
+//            @RequestParam(required = false) ChannelType type,
+//            @Parameter(name = "채널 컨텐츠 공개 수준")
+//            @RequestParam(required = false) ChannelContentVisibility contentOpenLevel,
+//            @Parameter(name = "채널 검색 허용 수준")
+//            @RequestParam(required = false) ChannelJoinPolicy joinLevel,
+//            @Parameter(name = "정렬 기준")
+//            @RequestParam(defaultValue = "MEMBER_COUNT") ChannelSort sort,
+//            @Parameter(name = "정렬 순서")
+//            @RequestParam(defaultValue = "DESC") Sort.Direction direction,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "20") int size
+//            ) {
+//        return ResponseEntity.ok(channelService.createChannelSearchResponse(searchParam, page, size, sort, direction, type, contentOpenLevel, joinLevel));
+//    }
+//
+//    @Operation(
+//            summary = "채널 삭제",
+//            description = "채널 Owner만 허용",
+//            security = @SecurityRequirement(name = "bearerAuth")
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "204", description = "삭제 성공시"),
+//    })
+//    @DeleteMapping("/{channelId}")
+//    public ResponseEntity<Void> deleteChannel(
+//            @Parameter(hidden = true) Member member,
+//            @PathVariable Long channelId
+//            ) {
+//        channelService.deleteChannel(member, channelId);
+//        return ResponseEntity.noContent().build();
+//    }
 
 
 }

@@ -1,22 +1,14 @@
 package com.zonbeozon.market.entity;
 
-import com.zonbeozon.common.entity.BaseTimeEntity;
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import com.zonbeozon.currency.entity.Currency;
 import com.zonbeozon.exchange.Exchange;
-import com.zonbeozon.fiat.entity.FiatType;
-import com.zonbeozon.market.fetch.MarketFetchData;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter

@@ -1,7 +1,8 @@
 package com.zonbeozon.reaction.entity;
 
-import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.comment.entity.Comment;
+import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.reaction.enums.ReactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -24,17 +25,17 @@ public class CommentReaction extends Reaction {
     private CommentReaction(
             Comment comment,
             ReactionType reactionType,
-            ChannelMember channelMember
+            Member author
     ) {
-        super(reactionType, channelMember);
+        super(reactionType, author);
        this.comment = comment;
     }
 
     public static CommentReaction create(
             Comment comment,
             ReactionType reactionType,
-            ChannelMember channelMember
+            Member author
     ) {
-        return new CommentReaction(comment, reactionType, channelMember);
+        return new CommentReaction(comment, reactionType, author);
     }
 }

@@ -1,7 +1,9 @@
 package com.zonbeozon.reaction.entity;
 
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.reaction.enums.ReactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -24,7 +26,7 @@ public class PostReaction extends Reaction {
     private PostReaction(
             Post post,
             ReactionType reactionType,
-            ChannelMember author
+            Member author
     ) {
         super(reactionType, author);
         this.post = post;
@@ -33,7 +35,7 @@ public class PostReaction extends Reaction {
     public static PostReaction create(
             Post post,
             ReactionType reactionType,
-            ChannelMember author
+            Member author
     ) {
         return new PostReaction(post, reactionType, author);
     }

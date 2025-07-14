@@ -2,7 +2,8 @@ package com.zonbeozon.auth.jwt;
 
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.auth.entity.Token;
-import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.UnauthenticatedException;
 import com.zonbeozon.auth.service.TokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -100,12 +101,12 @@ public class TokenProvider {
         }
         //refresh token이 만료된 경우
         tokenService.deleteToken(token);
-        throw new AuthException(AuthException.ErrorCode.INVALID_TOKEN);
+        throw new UnauthenticatedException(ErrorCode.INVALID_TOKEN);
 
     }
 
     /**
-     * @throws AuthException 잘못된 토큰일때 하지만 토큰만료는 예외 대신 false를 리턴한다.
+     * @throws UnauthenticatedException 잘못된 토큰일때 하지만 토큰만료는 예외 대신 false를 리턴한다.
      */
     public boolean validateToken(String token) {
         return parseClaims(token).getExpiration().after(new Date());
@@ -118,7 +119,7 @@ public class TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
-            throw new AuthException(AuthException.ErrorCode.INVALID_TOKEN);
+            throw new UnauthenticatedException(ErrorCode.INVALID_TOKEN);
         }
     }
 

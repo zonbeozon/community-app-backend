@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.entity;
 
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import com.zonbeozon.fiat.entity.FiatType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -1,11 +1,14 @@
 package com.zonbeozon.post.controller;
 
 import com.zonbeozon.config.SwaggerConfig;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.repository.PostSort;
-import com.zonbeozon.post.service.PostService;
-import com.zonbeozon.post.service.dto.PagedPostsResponse;
-import com.zonbeozon.post.service.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostAddRequest;
+import com.zonbeozon.post.dto.CursorBasedPostsResponse;
+import com.zonbeozon.post.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostUpdateRequest;
+import com.zonbeozon.post.service.PostAssembler;
+import com.zonbeozon.post.service.PostCreator;
+import com.zonbeozon.post.service.PostRemover;
+import com.zonbeozon.post.service.PostUpdater;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -18,7 +21,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/channel/{channelId}/post")
 @Tag(name = "포스트", description = "포스트 관련 엔드포인트")
 public class PostController {
-    private final PostService postService;
+    private final PostCreator postCreator;
+    private final PostUpdater postUpdater;
+    private final PostRemover postRemover;
+    private final PostAssembler postAssembler;
 
     @Operation(
             summary = "Post 생성",
@@ -63,7 +68,7 @@ public class PostController {
                                                   "errors": [
                                                     {
                                                       "field": "content",
-                                                      "message": "post content는 {?}자 이상 {?}자 이하여야 합니다."
+                                                      "message": "post content는 ?자 이상 ?자 이하여야 합니다."
                                                     }
                                                   ]
                                                 }
@@ -74,8 +79,8 @@ public class PostController {
                                             summary = "Post 미지원 채널로 Post 생성 요청을 보냈을때",
                                             value = """
                                                 {
-                                                  "code": "POST_NOT_SUPPORTED_CHANNEL",
-                                                  "message": "post를 작성할 수 없는 채널입니다."
+                                                  "code": "NOT_INFO_CHANNEL",
+                                                  "message": "INFO채널이 아닙니다."
                                                 }
                                             """
                                     )
@@ -90,11 +95,11 @@ public class PostController {
                             examples = {
                                     @ExampleObject(
                                             name = "생성 권한이 없을때",
-                                            summary = "채널 별 Post생성 규칙에 따라 권한이 없을때",
+                                            summary = "Post생성 규칙에 따라 권한이 없을때",
                                             value = """
                                                 {
-                                                  "code": "POST_CREATION_DENIED",
-                                                  "message": "post 작성 권한이 없습니다."
+                                                  "code": "ACCESS_DENIED",
+                                                  "message": "접근 권한이 없습니다."
                                                 }
                                             """
                                     )
@@ -109,10 +114,9 @@ public class PostController {
             @PathVariable Long channelId,
             @RequestBody
             @Valid
-            PostAddRequest request,
-            @Parameter(hidden = true) Member member
+            PostAddRequest request
     ) {
-        Long postId = postService.addPost(member, channelId, new PostAddCommand(request.content()));
+        Long postId = postCreator.addPost(channelId, new PostAddCommand(request.content()));
         return ResponseEntity.ok(postId);
     }
 
@@ -131,11 +135,9 @@ public class PostController {
     })
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
-            @PathVariable Long channelId,
-            @PathVariable Long postId,
-            @Parameter(hidden = true) Member member
+            @PathVariable Long postId
     ) {
-        postService.deletePost(member, channelId, postId);
+        postRemover.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
@@ -154,33 +156,30 @@ public class PostController {
     })
     @PatchMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
-            @PathVariable Long channelId,
             @PathVariable Long postId,
             @RequestBody
             @Valid
-            PostUpdateRequest request,
-            @Parameter(hidden = true)
-            Member member
+            PostUpdateRequest request
     ) {
-        postService.updatePostContent(member, channelId, postId, request.content());
+        postUpdater.updateContent(postId, request.content());
         return ResponseEntity.noContent().build();
     }
 
     @Operation(
-            summary = "POST 검색",
+            summary = "커서 기반 과거 POST 검색",
             description = """
-                    searchParam이 없다면 모든 POST에 대해 검색.
-                    
                     채널에 가입하지 않아도 호출 가능하지만
                     
                     채널 SearchLevel이 Private이라면 채널에 가입된 맴버여야지만 정상적으로 호출된다.
+                    
+                    cursor기반으로 postId를 기준으로 DESC순으로 리턴된다(postId는 생성순으로 커지기 때문에 Id가 줄어들 수록 과거에 만들어진 Post이다.
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = PagedPostsResponse.class),
+                    schema = @Schema(implementation = CursorBasedPostsResponse.class),
                     examples = @ExampleObject(
                             name = "게시글 목록 응답 예시",
                             summary = "3개의 게시글과 2명의 작성자가 포함된 응답",
@@ -242,8 +241,8 @@ public class PostController {
                                             name = "해당 채널의 맴버가 아니고 동시에 채널이 컨텐츠 열람을 막아뒀을때",
                                             value = """
                                                 {
-                                                  "code": "CONTENT_READ_FORBIDDEN",
-                                                  "message": "채널 컨텐츠 접근 권한이 없습니다."
+                                                  "code": "ACCESS_DENIED",
+                                                  "message": "접근 권한이 없습니다."
                                                 }
                                                 """
                                     )
@@ -252,29 +251,19 @@ public class PostController {
             )
     })
     @Parameters({
-            @Parameter(name = "searchParam", description = "POST 글의 일부", example = "Wen?"),
-            @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", example = "0"),
-            @Parameter(name = "size", description = "한 페이지당 아이템 수", example = "10")
+            @Parameter(name = "cursorPostId", description = "해당 postId보다 작은 PostId를 size만큼 반환(cursor)"),
+            @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10")
     })
     @GetMapping
-    public ResponseEntity<PagedPostsResponse> createPagedPostResponse(
+    public ResponseEntity<CursorBasedPostsResponse> createCursorBasedPostResponse(
             @PathVariable Long channelId,
-            @RequestParam(defaultValue = "") String searchParam,
-            @RequestParam(defaultValue = "CREATED_AT") PostSort sort,
-            @RequestParam(defaultValue = "DESC") Sort.Direction direction,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @Parameter(hidden = true)
-            Member member
+            @RequestParam Long cursorPostId,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        PagedPostsResponse response = postService.createPagedPostResponse(
-                member,
+        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(
                 channelId,
-                searchParam,
-                page,
-                size,
-                sort,
-                direction
+                cursorPostId,
+                size
         );
         return ResponseEntity.ok(response);
     }

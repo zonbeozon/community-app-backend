@@ -1,10 +1,11 @@
 package com.zonbeozon.auth.service;
 
 import com.zonbeozon.auth.entity.Token;
-import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.UnauthenticatedException;
 import com.zonbeozon.auth.repository.TokenRepository;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TokenService {
     private final TokenRepository tokenRepository;
-    private final MemberService memberService;
+    private final MemberFinder memberFinder;
 
     public void save(String memberId, String accessToken, String refreshToken) {
-        Member member = memberService.getByIdOrThrow(Long.parseLong(memberId));
+        Member member = memberFinder.findById(Long.parseLong(memberId));
         Token token = new Token(member, accessToken, refreshToken);
         tokenRepository.save(token);
     }
@@ -25,7 +26,7 @@ public class TokenService {
     @Transactional(readOnly = true)
     public Token getByAccessTokenOrThrow(String accessToken) {
         return tokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new AuthException(AuthException.ErrorCode.INVALID_TOKEN));
+                .orElseThrow(() -> new UnauthenticatedException(ErrorCode.INVALID_TOKEN));
     }
 
     public void deleteTokenByMemberId(Long memberId) {

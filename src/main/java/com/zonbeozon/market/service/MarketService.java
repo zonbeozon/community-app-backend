@@ -1,6 +1,6 @@
 package com.zonbeozon.market.service;
 
-import com.zonbeozon.common.EntityValidator;
+import com.zonbeozon.global.EntityValidator;
 import com.zonbeozon.market.entity.Market;
 import com.zonbeozon.market.entity.MarketFiatMetric;
 import com.zonbeozon.market.exception.MarketNotFoundException;

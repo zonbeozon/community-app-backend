@@ -1,7 +1,7 @@
 package com.zonbeozon.currency.fetch;
 
-import com.zonbeozon.common.fetch.FetchContextSupplier;
-import com.zonbeozon.common.fetch.FetchManager;
+import com.zonbeozon.global.fetch.FetchContextSupplier;
+import com.zonbeozon.global.fetch.FetchManager;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,7 @@
 package com.zonbeozon.currency.entity;
 
-import com.zonbeozon.common.entity.BaseTimeEntity;
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import com.zonbeozon.fiat.entity.FiatType;
 import com.zonbeozon.market.entity.Market;
 import jakarta.persistence.*;

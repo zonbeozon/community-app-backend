@@ -1,15 +1,16 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.controller.ChannelUpdateRequest;
-import com.zonbeozon.channel.entity.*;
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
-import com.zonbeozon.channel.exception.ChannelBadRequestException;
+import com.zonbeozon.channel.dto.ChannelAddCommand;
+import com.zonbeozon.channel.dto.ChannelUpdateRequest;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelJoinPolicy;
+import com.zonbeozon.channel.enums.ChannelSearchScope;
+import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -25,9 +26,9 @@ public class ChannelUpdateTest extends BaseChannelTest {
             "otherName",
             "otherDescription",
             "otherEmtpyProfile",
-            ChannelContentOpenLevel.PRIVATE,
-            ChannelJoinLevel.DENY,
-            ChannelSearchLevel.PRIVATE
+            ChannelContentVisibility.PRIVATE,
+            ChannelJoinPolicy.DENY,
+            ChannelSearchScope.PRIVATE
     );
 
     @Test
@@ -49,10 +50,10 @@ public class ChannelUpdateTest extends BaseChannelTest {
                 validUpdateRequest.title(),
                 "description",
                 "emtpyProfile",
-                ChannelContentOpenLevel.PUBLIC,
+                ChannelContentVisibility.PUBLIC,
                 ChannelType.COMMUNITY_INFO,
-                ChannelJoinLevel.OPEN,
-                ChannelSearchLevel.PUBLIC
+                ChannelJoinPolicy.OPEN,
+                ChannelSearchScope.PUBLIC
         );
         channelService.addChannel(validChannelAddCommand, channel_1_owner);
 
@@ -71,9 +72,9 @@ public class ChannelUpdateTest extends BaseChannelTest {
                 ChannelFixture.CHANNEL_ADD_COMMAND_1.title(),
                 "description",
                 "emtpyProfile",
-                ChannelContentOpenLevel.PUBLIC,
-                ChannelJoinLevel.DENY,
-                ChannelSearchLevel.PRIVATE
+                ChannelContentVisibility.PUBLIC,
+                ChannelJoinPolicy.DENY,
+                ChannelSearchScope.PRIVATE
         );
 
         assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, invalidCombinationUpdateRequest))

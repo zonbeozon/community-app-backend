@@ -1,6 +1,0 @@
-package com.zonbeozon.post.controller;
-
-public record PostUpdateRequest(
-        String content
-) {
-}

@@ -1,8 +1,8 @@
 package com.zonbeozon.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zonbeozon.auth.controller.AuthErrorResponse;
-import com.zonbeozon.auth.exception.AuthException;
+import com.zonbeozon.global.exception.ErrorResponse;
+import com.zonbeozon.global.exception.UnauthenticatedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,12 +19,12 @@ public class TokenExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (AuthException e) {
-            response.setStatus(e.getErrorCode().getHttpStatus().value());
+        } catch (UnauthenticatedException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(new AuthErrorResponse(e.getErrorCode()));
+            String json = objectMapper.writeValueAsString(new ErrorResponse(e.getErrorCode(), e.getMessage()));
 
             response.getWriter().write(json);
         }

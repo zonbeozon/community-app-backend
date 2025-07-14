@@ -1,6 +1,5 @@
 package com.zonbeozon.channel.repository;
 
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelInviteCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 

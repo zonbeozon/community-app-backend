@@ -1,6 +1,6 @@
 package com.zonbeozon.currency;
 
-import com.zonbeozon.common.fetch.FetchContextSupplier;
+import com.zonbeozon.global.fetch.FetchContextSupplier;
 import com.zonbeozon.currency.entity.Currency;
 import com.zonbeozon.currency.fetch.CurrencyFetchContext;
 

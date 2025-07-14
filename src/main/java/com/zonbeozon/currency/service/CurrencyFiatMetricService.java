@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.service;
 
-import com.zonbeozon.common.EntityValidator;
+import com.zonbeozon.global.EntityValidator;
 import com.zonbeozon.currency.entity.Currency;
 import com.zonbeozon.currency.entity.CurrencyFiatMetric;
 import com.zonbeozon.currency.repository.CurrencyFiatMetricRepository;

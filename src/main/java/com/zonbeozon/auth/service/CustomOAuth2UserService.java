@@ -2,11 +2,12 @@ package com.zonbeozon.auth.service;
 
 import com.zonbeozon.auth.dto.OAuth2UserInfo;
 import com.zonbeozon.auth.dto.SimpleOAuth2User;
+import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.ServerRole;
-import com.zonbeozon.member.service.MemberService;
+import com.zonbeozon.member.service.MemberCreator;
+import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -18,11 +19,11 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-    private final MemberService memberService;
+    private final MemberFinder memberFinder;
+    private final MemberCreator memberCreator;
 
-    @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         Map<String, Object> oAuth2UserAttributes = super.loadUser(userRequest).getAttributes();
@@ -33,11 +34,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member getOrCreateMember(OAuth2UserInfo oAuth2UserInfo) {
-        return memberService.getByEmail(oAuth2UserInfo.email())
-                .orElseGet(() -> memberService.createMemberWithRandomUsername(
-                        oAuth2UserInfo.email(),
-                        oAuth2UserInfo.profile(),
-                        ServerRole.USER)
-                );
+        try {
+            return memberFinder.findByEmail(oAuth2UserInfo.email());
+        } catch (NotFoundException e) {
+            return memberCreator.createMemberWithRandomUsername(
+                    oAuth2UserInfo.email(),
+                    oAuth2UserInfo.profile(),
+                    ServerRole.USER
+            );
+        }
     }
 }

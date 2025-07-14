@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.fetch;
 
-import com.zonbeozon.common.fetch.FetchException;
+import com.zonbeozon.global.fetch.FetchException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.web.client.RestClient;

@@ -2,13 +2,10 @@ package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelRole;
+import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.service.BaseChannelTest;
-import com.zonbeozon.channel.service.ChannelEntityQueryService;
-import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
-import com.zonbeozon.channel.service.ChannelMemberService;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.service.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostAddCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;

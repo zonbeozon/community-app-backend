@@ -1,11 +1,9 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.exception.ChannelAccessDeniedException;
 import com.zonbeozon.post.exception.PostAccessDeniedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 

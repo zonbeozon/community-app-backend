@@ -2,7 +2,7 @@ package com.zonbeozon.fiat.fetch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zonbeozon.common.utils.BigDecimalUtils;
+import com.zonbeozon.global.utils.BigDecimalUtils;
 import com.zonbeozon.fiat.entity.ConversionRateCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

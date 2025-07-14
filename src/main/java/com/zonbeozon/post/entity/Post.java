@@ -1,18 +1,21 @@
 package com.zonbeozon.post.entity;
 
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.PostSupportedChannel;
-import com.zonbeozon.common.entity.BaseTimeEntity;
+import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
+@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @ToString
 public class Post extends BaseTimeEntity {
@@ -33,17 +36,18 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
-    private PostSupportedChannel channel;
+    private InfoChannel channel;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    private ChannelMember author;
+    private Member author;
 
-    public static Post create(String content, PostSupportedChannel channel, ChannelMember author) {
+    public static Post create(String content, InfoChannel channel, Member requester) {
+
         Post post = new Post();
         post.content = content;
-        post.author = author;
+        post.author = requester;
         post.channel = channel;
         post.isDeleted = false;
         return post;
@@ -51,13 +55,5 @@ public class Post extends BaseTimeEntity {
 
     public void updateContent(String content) {
         this.content = content;
-    }
-
-    public boolean isAuthor(ChannelMember channelMember) {
-        return author.equals(channelMember);
-    }
-
-    public void delete() {
-        isDeleted = true;
     }
 }

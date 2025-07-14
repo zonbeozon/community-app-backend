@@ -3,17 +3,14 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.exception.ChannelMemberNotFoundException;
 import com.zonbeozon.channel.service.BaseChannelTest;
-import com.zonbeozon.channel.service.ChannelMemberEntityQueryService;
-import com.zonbeozon.channel.service.ChannelMemberService;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.exception.PostAccessDeniedException;
 import com.zonbeozon.post.exception.PostBadRequestException;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.service.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostAddCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.*;
 

@@ -1,16 +1,9 @@
 package com.zonbeozon.post.repository;
 
+import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.post.entity.Post;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 public interface PostRepositoryCustom {
-    Page<Post> findPagedPost(
-            Long channelId,
-            String keyword,
-            int page,
-            int size,
-            PostSort sort,
-            Sort.Direction direction
-    );
+    CursorPage<Post> findCursorBasedPostsByChannel(InfoChannel channel, Long cursorPostId, int size);
 }
