@@ -5,25 +5,26 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.service.ChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
-import com.zonbeozon.global.AspectUtils;
-import com.zonbeozon.global.exception.AccessDeniedException;
-import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ChannelRoleBasedPermissionEvaluator {
+public class SimpleChannelPermissionEvaluator {
     private final AuthenticationService authenticationService;
     private final ChannelMemberFinder channelMemberFinder;
     private final ChannelFinder channelFinder;
 
-    public boolean hasAtLeastRole(Long channelId, ChannelRole requiredRole) {
+    public boolean isMemberOfChannel(Long channelId) {
+        Member member = authenticationService.getCurrentMember();
+        Channel channel = channelFinder.findById(channelId);
+        return channelMemberFinder.existsByMemberAndChannel(member, channel);
+    }
+
+    public boolean hasMinimumRole(Long channelId, ChannelRole requiredRole) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);
         ChannelRole requesterRole = channelMemberFinder.findByMemberAndChannel(requester, channel).getRole();

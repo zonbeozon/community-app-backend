@@ -4,7 +4,6 @@ import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

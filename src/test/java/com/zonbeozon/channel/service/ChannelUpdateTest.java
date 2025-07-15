@@ -1,19 +1,5 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.dto.ChannelAddCommand;
-import com.zonbeozon.channel.dto.ChannelUpdateRequest;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.enums.ChannelType;
-import com.zonbeozon.channel.repository.ChannelRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.assertj.core.api.Assertions.*;
-
 //public class ChannelUpdateTest extends BaseChannelTest {
 //    @Autowired
 //    private ChannelService channelService;
@@ -26,7 +12,7 @@ import static org.assertj.core.api.Assertions.*;
 //            "otherName",
 //            "otherDescription",
 //            "otherEmtpyProfile",
-//            ChannelContentVisibility.PRIVATE,
+//            ChannelVisibility.PRIVATE,
 //            ChannelJoinPolicy.DENY,
 //            ChannelSearchScope.PRIVATE
 //    );
@@ -50,7 +36,7 @@ import static org.assertj.core.api.Assertions.*;
 //                validUpdateRequest.title(),
 //                "description",
 //                "emtpyProfile",
-//                ChannelContentVisibility.PUBLIC,
+//                ChannelVisibility.PUBLIC,
 //                ChannelType.COMMUNITY_INFO,
 //                ChannelJoinPolicy.OPEN,
 //                ChannelSearchScope.PUBLIC
@@ -72,7 +58,7 @@ import static org.assertj.core.api.Assertions.*;
 //                ChannelFixture.CHANNEL_ADD_COMMAND_1.title(),
 //                "description",
 //                "emtpyProfile",
-//                ChannelContentVisibility.PUBLIC,
+//                ChannelVisibility.PUBLIC,
 //                ChannelJoinPolicy.DENY,
 //                ChannelSearchScope.PRIVATE
 //        );

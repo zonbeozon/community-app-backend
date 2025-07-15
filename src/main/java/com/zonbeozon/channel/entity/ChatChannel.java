@@ -8,11 +8,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@DiscriminatorValue("INFO")
+@DiscriminatorValue("CHAT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InfoChannel extends Channel {
-
-    public InfoChannel(
+public class ChatChannel extends Channel {
+    public ChatChannel(
             String title,
             String description,
             String profile,
@@ -22,11 +21,8 @@ public class InfoChannel extends Channel {
         super(title, description, profile, setting, creatorType);
     }
 
-    //비정규화 필드
-    Long latestPostId;
-
     @Override
     public ChannelType getChannelType() {
-        return ChannelType.INFO;
+        return ChannelType.CHAT;
     }
 }

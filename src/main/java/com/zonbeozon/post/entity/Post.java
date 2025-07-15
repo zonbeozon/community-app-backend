@@ -1,7 +1,6 @@
 package com.zonbeozon.post.entity;
 
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;
@@ -36,14 +35,14 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
-    private InfoChannel channel;
+    private BlogChannel channel;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Member author;
 
-    public static Post create(String content, InfoChannel channel, Member requester) {
+    public static Post create(String content, BlogChannel channel, Member requester) {
 
         Post post = new Post();
         post.content = content;

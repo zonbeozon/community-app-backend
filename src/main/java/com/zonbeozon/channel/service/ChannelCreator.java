@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.dto.ChannelAddCommand;
+import com.zonbeozon.channel.dto.ChannelCreateCommand;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.global.exception.ConflictException;
@@ -20,7 +20,7 @@ public class ChannelCreator {
     private final ChannelMemberJoiner channelMemberJoiner;
     private final AuthenticationService authenticationService;
 
-    public Long addChannel(ChannelAddCommand command) {
+    public Long addChannel(ChannelCreateCommand command) {
         Member requester = authenticationService.getCurrentMember();
         if(isDuplicateTitle(command.title()))
             throw new ConflictException(ErrorCode.DUPLICATE_CHANNEL_TITLE);

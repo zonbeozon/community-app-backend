@@ -38,11 +38,10 @@ public class ChannelUpdater {
 
         ChannelSetting setting = channel.getSetting();
         boolean isSettingChanged =
-                setting.getContentVisibility() != request.contentVisibility()
-                        || setting.getJoinPolicy() != request.joinPolicy()
-                        || setting.getSearchScope() != request.searchScope();
+                setting.getVisibility() != request.visibility()
+                        || setting.getJoinPolicy() != request.joinPolicy();
         if(isSettingChanged) {
-            setting.updateSettings(request.contentVisibility(), request.joinPolicy(), request.searchScope());
+            setting.updateSettings(request.visibility(), request.joinPolicy());
         }
     }
 

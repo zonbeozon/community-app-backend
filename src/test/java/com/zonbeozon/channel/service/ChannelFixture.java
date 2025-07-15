@@ -1,17 +1,11 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.dto.ChannelAddCommand;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
-import com.zonbeozon.channel.enums.ChannelType;
-
 //public class ChannelFixture {
 //    public static final ChannelAddCommand CHANNEL_ADD_COMMAND_1 = new ChannelAddCommand(
 //            "title1",
 //            "description",
 //            "emtpyProfile",
-//            ChannelContentVisibility.PRIVATE,
+//            ChannelVisibility.PRIVATE,
 //            ChannelType.COMMUNITY_INFO,
 //            ChannelJoinPolicy.OPEN,
 //            ChannelSearchScope.PUBLIC
@@ -20,7 +14,7 @@ import com.zonbeozon.channel.enums.ChannelType;
 //            "title2",
 //            "description",
 //            "emtpyProfile",
-//            ChannelContentVisibility.PUBLIC,
+//            ChannelVisibility.PUBLIC,
 //            ChannelType.COMMUNITY_INFO,
 //            ChannelJoinPolicy.OPEN,
 //            ChannelSearchScope.PUBLIC
@@ -30,7 +24,7 @@ import com.zonbeozon.channel.enums.ChannelType;
 //            "title3",
 //            "description",
 //            "emtpyProfile",
-//            ChannelContentVisibility.PUBLIC,
+//            ChannelVisibility.PUBLIC,
 //            ChannelType.OFFICIAL_INFO,
 //            ChannelJoinPolicy.OPEN,
 //            ChannelSearchScope.PUBLIC

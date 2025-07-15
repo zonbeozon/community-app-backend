@@ -14,14 +14,13 @@ import org.springframework.stereotype.Service;
 public class ChannelMemberFinder {
     private final ChannelMemberRepository channelMemberRepository;
 
-    public ChannelMember findById(Long id) {
-        return channelMemberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND));
-    }
-
     public ChannelMember findByMemberAndChannel(Member member, Channel channel) {
         return channelMemberRepository.findByMemberAndChannel(member, channel)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND));
+    }
+
+    public boolean existsByMemberAndChannel(Member member, Channel channel) {
+        return channelMemberRepository.existsByMemberAndChannel(member, channel);
     }
 
     public ChannelMember findByChannelAndMemberIgnoringStatus(Member member, Channel channel) {

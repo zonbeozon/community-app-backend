@@ -2,12 +2,11 @@ package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.dto.*;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
+import com.zonbeozon.channel.service.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelUpdater;
-import com.zonbeozon.channel.service.InfoChannelAssembler;
 import com.zonbeozon.config.SwaggerConfig;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class ChannelController {
     private final ChannelCreator channelCreator;
     private final ChannelUpdater channelUpdater;
-    private final InfoChannelAssembler infoChannelAssembler;
+    private final BlogChannelAssembler blogChannelAssembler;
 
     @Operation(
             summary = "채널 추가",
@@ -72,15 +71,6 @@ public class ChannelController {
                                                     """
                                     ),
                                     @ExampleObject(
-                                            name = "중복 채널 명일때",
-                                            value = """
-                                                        {
-                                                          "code": "DUPLICATE_CHANNEL_TITLE",
-                                                          "message": "해당 채널 명이 이미 존재합니다."
-                                                        }
-                                                    """
-                                    ),
-                                    @ExampleObject(
                                             name = "허용되지 않는 문자를 사용시",
                                             description = "입력값에 보안상 허용되지 않는 특수 문자 혹은 문자열이 포함된 경우.",
                                             value = """
@@ -91,6 +81,21 @@ public class ChannelController {
                                                     """
                                     )
                             })),
+            @ApiResponse(responseCode = "409", description = "채널 생성 충돌 (예: 중복 채널명)",
+                    content =  @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "중복 채널 명일 때",
+                                            summary = "활성 상태의 채널명이 이미 존재하여 생성할 수 없는 경우",
+                                            value = """
+                                                    {
+                                                      "code": "DUPLICATE_CHANNEL_TITLE",
+                                                      "message": "해당 채널 명이 이미 존재합니다."
+                                                    }
+                                                """
+                                    )
+                            }))
     })
     @PostMapping
     public ResponseEntity<Long> addChannel(
@@ -99,14 +104,13 @@ public class ChannelController {
             ChannelCreateRequest request
     ) {
         Long channelId = channelCreator.addChannel(
-                new ChannelAddCommand(
+                new ChannelCreateCommand(
+                        request.channelType(),
                         request.title(),
                         request.description(),
                         request.profile(),
-                        request.contentVisibility(),
-                        request.channelType(),
+                        request.visibility(),
                         request.joinPolicy(),
-                        request.searchScope(),
                         ChannelCreatorType.COMMUNITY
                 ));
         return ResponseEntity.ok(channelId);
@@ -128,7 +132,7 @@ public class ChannelController {
 
 
     @Operation(
-            summary = "사용자가 속한 COMMUNITY - INFO 타입의 모든 채널 정보 가져오기",
+            summary = "사용자가 속한 COMMUNITY - BLOG 타입의 모든 채널 정보 가져오기",
             description = """
                     사용자가 속한 모든 채널 정보 가져온다.
                     
@@ -140,12 +144,12 @@ public class ChannelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = JoinedInfoChannelListResponse.class))
+                    schema = @Schema(implementation = JoinedBlogChannelListResponse.class))
             ),
     })
-    @GetMapping("/communityInfo/joined")
-    public ResponseEntity<JoinedInfoChannelListResponse> getJoinedInfoChannels() {
-        return ResponseEntity.ok(infoChannelAssembler.createJoinedCommunityInfoChannelResponse());
+    @GetMapping("/communityBlog/joined")
+    public ResponseEntity<JoinedBlogChannelListResponse> getJoinedInfoChannels() {
+        return ResponseEntity.ok(blogChannelAssembler.createJoinedCommunityBlogChannelResponse());
     }
 
 //    @Operation(
@@ -182,7 +186,7 @@ public class ChannelController {
 //            @Parameter(name = "채널 타입")
 //            @RequestParam(required = false) ChannelType type,
 //            @Parameter(name = "채널 컨텐츠 공개 수준")
-//            @RequestParam(required = false) ChannelContentVisibility contentOpenLevel,
+//            @RequestParam(required = false) ChannelVisibility contentOpenLevel,
 //            @Parameter(name = "채널 검색 허용 수준")
 //            @RequestParam(required = false) ChannelJoinPolicy joinLevel,
 //            @Parameter(name = "정렬 기준")

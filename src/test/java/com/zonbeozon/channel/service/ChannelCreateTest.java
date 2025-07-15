@@ -1,93 +1,81 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.channel.dto.ChannelAddCommand;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
+import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
+import com.zonbeozon.channel.dto.ChannelCreateCommand;
+import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.enums.ChannelType;
-import com.zonbeozon.channel.repository.ChannelMemberRepository;
-import com.zonbeozon.channel.repository.ChannelRepository;
+import com.zonbeozon.global.exception.ConflictException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.member.TestMemberBuilder;
+import com.zonbeozon.member.domain.Member;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.assertj.core.api.Assertions.*;
 
-//public class ChannelCreateTest {
-//    private ChannelCreator channelCreator;
-//    @Autowired
-//    private ChannelMemberRepository channelMemberRepository;
-//    @Autowired
-//    private ChannelRepository channelRepository;
-//
-//    @Test
-//    @DisplayName("command로 부터 정상적으로 채널이 생성되어야 한다.")
-//    void createsChannelSuccessfullyFromCommand() {
-//       Long id = channelService.addChannel(CHANNEL_ADD_COMMAND_1, member_1);
-//       Channel channel = channelRepository.findById(id).orElseThrow(() -> new RuntimeException("해당 Id와 맞는 채널이 없습니다"));
-//
-//       ChannelMember channelMember = channelMemberRepository.findByMemberAndChannel(member_1, channel)
-//               .orElseThrow(() -> new RuntimeException("해당 조건에 해당하는 채널 맴버가 없습니다."));
-//
-//       assertChannelMetadataEquals(channel, CHANNEL_ADD_COMMAND_1);
-//       assertThat(channelMember.getMember()).isEqualTo(member_1);
-//    }
-//
-//    @Test
-//    @DisplayName("USER_ROLE 유저가 Community채널이 아닌 채널을 만든다면 예외를 발생시킨다")
-//    void throwsAccessDeniedWhenUserRoleCreatesNonCommunityChannel() {
-//        assertThatThrownBy(()-> channelService.addChannel(CHANNEL_ADD_COMMAND_3, member_1))
-//                .isInstanceOf(ChannelAccessDeniedException.class)
-//                .satisfies(e -> {
-//                    ChannelAccessDeniedException exception = (ChannelAccessDeniedException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAccessDeniedException.ErrorCode.CHANNEL_CREATION_FORBIDDEN);
-//                });
-//    }
-//
-//    @Test
-//    @DisplayName("중복 채널명은 예외를 발생시킨다.")
-//    void throwsExceptionWhenCreatingChannelWithDuplicateTitle() {
-//        //first time create
-//        channelService.addChannel(CHANNEL_ADD_COMMAND_1, member_1);
-//
-//        //second time create with same title
-//        assertThatThrownBy(()-> channelService.addChannel(CHANNEL_ADD_COMMAND_1, member_1))
-//                .isInstanceOf(ChannelBadRequestException.class)
-//                .satisfies(e -> {
-//                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
-//                });
-//    }
-//
-//    @Test
-//    @DisplayName("검색 가능 여부가 Private이지만 열람 설정이 Public이라면 예외를 발생시킨다.")
-//    void throwExceptionWhenSearchIsPrivateAndContentIsPublic() {
-//        ChannelAddCommand invalidCommand = new ChannelAddCommand(
-//                "title",
-//                "description",
-//                "emtpyProfile",
-//                ChannelContentVisibility.PUBLIC,
-//                ChannelType.COMMUNITY_INFO,
-//                ChannelJoinPolicy.DENY,
-//                ChannelSearchScope.PRIVATE
-//        );
-//
-//        assertThatThrownBy(()-> channelService.addChannel(invalidCommand, member_1))
-//                .isInstanceOf(ChannelBadRequestException.class)
-//                .satisfies(e -> {
-//                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
-//                });
-//    }
-//
-//    static void assertChannelMetadataEquals(Channel channel, ChannelAddCommand command) {
-//        assertThat(channel.getTitle()).isEqualTo(command.title());
-//        assertThat(channel.getDescription()).isEqualTo(command.description());
-//        assertThat(channel.getProfile()).isEqualTo(command.profile());
-//        assertThat(channel.getContentOpenLevel()).isEqualTo(command.contentOpenLevel());
-//        assertThat(channel.getJoinLevel()).isEqualTo(command.joinLevel());
-//        assertThat(channel.getSearchLevel()).isEqualTo(command.searchLevel());
-//        assertThat(channel.getType()).isEqualTo(command.type());
-//    }
-//}
+@SpringBootTest
+@Transactional
+public class ChannelCreateTest {
+    @Autowired
+    private ChannelCreator channelCreator;
+    @Autowired
+    private ChannelMemberFinder channelMemberFinder;
+    @Autowired
+    private ChannelFinder channelFinder;
+    @Autowired
+    private EntityManager entityManager;
+
+    @Test
+    @DisplayName("command로 부터 정상적으로 채널이 저장되어야 한다.")
+    void createsChannelSuccessfullyFromCommand() {
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        new TestMemberBuilder("yunghi", "yunghi@gmail.com").persistAndSetSecurityContext(entityManager);
+        Long id = channelCreator.addChannel(command);
+        Channel channel = channelFinder.findById(id);
+        assertChannelMetadataEquals(channel, command);
+    }
+
+    @Test
+    @DisplayName("채널이 생성될때 요청자는 Owner로 등록된다.")
+    void registerRequesterAsOwnerWhenChannelIsCreated() {
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        Member member = new TestMemberBuilder("yunghi", "yunghi@gmail.com").persistAndSetSecurityContext(entityManager);
+        Long id = channelCreator.addChannel(command);
+        Channel channel = channelFinder.findById(id);
+        ChannelMember channelMember = channelMemberFinder.findByMemberAndChannel(member, channel);
+        assertThat(channelMember.getMember()).isEqualTo(member);
+        assertThat(channelMember.isOwner()).isTrue();
+    }
+
+    @Test
+    @DisplayName("중복 채널명은 예외를 발생시킨다.")
+    void throwsExceptionWhenCreatingChannelWithDuplicateTitle() {
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        new TestMemberBuilder("yunghi", "yunghi@gmail.com").persistAndSetSecurityContext(entityManager);
+        //first time create
+        channelCreator.addChannel(command);
+
+        //second time create with same title
+        assertThatThrownBy(()-> channelCreator.addChannel(command))
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> {
+                    ConflictException exception = (ConflictException) e;
+                    assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_CHANNEL_TITLE.name());
+                });
+    }
+
+    static void assertChannelMetadataEquals(Channel channel, ChannelCreateCommand command) {
+        assertThat(channel.getTitle()).isEqualTo(command.title());
+        assertThat(channel.getDescription()).isEqualTo(command.description());
+        assertThat(channel.getProfile()).isEqualTo(command.profile());
+        assertThat(channel.getSetting().getContentVisibility()).isEqualTo(command.contentVisibility());
+        assertThat(channel.getSetting().getJoinPolicy()).isEqualTo(command.joinPolicy());
+        assertThat(channel.getSetting().getSearchScope()).isEqualTo(command.searchScope());
+        assertThat(channel.getChannelType()).isEqualTo(command.type());
+    }
+}

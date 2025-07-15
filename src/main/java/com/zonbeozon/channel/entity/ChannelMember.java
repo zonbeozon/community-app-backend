@@ -51,7 +51,7 @@ public class ChannelMember extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ChannelMemberStatus status = ChannelMemberStatus.ACTIVE;
+    private ChannelMemberStatus status;
 
     public void updateRole(ChannelRole role) {
         this.role = role;
@@ -65,11 +65,12 @@ public class ChannelMember extends BaseTimeEntity {
         this.status = ChannelMemberStatus.ACTIVE;
     }
 
-    public static ChannelMember create(Member member, Channel channel, ChannelRole role) {
+    public static ChannelMember create(Member member, Channel channel, ChannelRole role, ChannelMemberStatus status) {
         ChannelMember channelMember = new ChannelMember();
         channelMember.member = member;
         channelMember.channel = channel;
         channelMember.role = role;
+        channelMember.status = status;
         return channelMember;
     }
 

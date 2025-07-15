@@ -1,11 +1,11 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.security.ChannelAction;
 import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
-import com.zonbeozon.channel.service.InfoChannelFinder;
+import com.zonbeozon.channel.service.BlogChannelFinder;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
@@ -23,7 +23,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostAssembler {
     private final PostRepository postRepository;
-    private final InfoChannelFinder infoChannelFinder;
+    private final BlogChannelFinder blogChannelFinder;
     private final ChannelMemberAssembler channelMemberAssembler;
     private final PostFinder postFinder;
 
@@ -33,7 +33,7 @@ public class PostAssembler {
             Long cursorPostId,
             int size
     ) {
-        InfoChannel channel = infoChannelFinder.findById(channelId);
+        BlogChannel channel = blogChannelFinder.findById(channelId);
         CursorPage<Post> posts = postRepository.findCursorBasedPostsByChannel(channel, cursorPostId, size);
         List<ChannelMemberResponse> authorResponse = channelMemberAssembler.createChannelMemberListResponse(
                 getDistinctAuthorsFromPosts(posts.getContent()),

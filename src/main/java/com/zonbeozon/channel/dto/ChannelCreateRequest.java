@@ -1,9 +1,6 @@
 package com.zonbeozon.channel.dto;
 
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
-import com.zonbeozon.channel.enums.ChannelType;
+import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.validation.ChannelSettingProvider;
 import com.zonbeozon.channel.validation.ChannelTitleProvider;
 import com.zonbeozon.channel.validation.ValidChannelSetting;
@@ -18,6 +15,9 @@ import static com.zonbeozon.channel.entity.Channel.*;
 @ValidChannelTitle
 @ValidChannelSetting
 public record ChannelCreateRequest(
+        @Schema(description = "채널 유형", example = "INFO")
+        @NotNull(message = "채널 유형을 선택해야 합니다.")
+        ChannelType channelType,
         @Schema(description = "채널 이름", minLength = MIN_TITLE_LENGTH, maxLength = MAX_TITLE_LENGTH, example = "My Channel")
         String title,
         @Schema(description = "채널 설명", maxLength = MAX_DESCRIPTION_LENGTH, example = "이 채널은...")
@@ -26,17 +26,16 @@ public record ChannelCreateRequest(
         @Schema(description = "채널 프로필 이미지 URL", example = "https://example.com/profile.png")
         @NotBlank(message = "채널 프로필 이미지는 필수입니다.")
         String profile,
-        @Schema(description = "콘텐츠 공개 수준", example = "PUBLIC")
-        @NotNull(message = "콘텐츠 공개 수준을 선택해야 합니다.")
-        ChannelContentVisibility contentVisibility,
-        @Schema(description = "채널 유형", example = "INFO")
-        @NotNull(message = "채널 유형을 선택해야 합니다.")
-        ChannelType channelType,
+        @Schema(description = "채널 공개 수준", example = "PUBLIC")
+        @NotNull(message = "채널 공개 수준을 선택해야 합니다.")
+        ChannelVisibility visibility,
         @Schema(description = "가입 허용 수준", example = "OPEN")
         @NotNull(message = "가입 허용 수준을 선택해야 합니다.")
-        ChannelJoinPolicy joinPolicy,
-        @Schema(description = "검색 허용 수준", example = "PUBLIC")
-        @NotNull(message = "검색 허용 수준을 선택해야 합니다.")
-        ChannelSearchScope searchScope
+        ChannelJoinPolicy joinPolicy
 ) implements ChannelSettingProvider, ChannelTitleProvider {
+        public ChannelCreateCommand toCommand(ChannelCreatorType creatorType) {
+                return new ChannelCreateCommand(
+                        channelType, title, description, profile, visibility, joinPolicy, creatorType
+                );
+        }
 }

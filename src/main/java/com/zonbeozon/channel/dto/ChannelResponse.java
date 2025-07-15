@@ -1,18 +1,18 @@
 package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
 
 public record ChannelResponse(
         Long channelId,
+        ChannelType channelType,
         String title,
         String profile,
         String description,
-        ChannelType channelType,
         ChannelJoinPolicy channelJoinPolicy,
-        ChannelContentVisibility contentOpenLevel,
+        ChannelVisibility channelVisibility,
         int memberCount
 ) {
 
@@ -20,10 +20,10 @@ public record ChannelResponse(
         Channel channel = channelWithMemberCount.getChannel();
         return new ChannelResponse(
                 channel.getId(),
+                channel.getChannelType(),
                 channel.getTitle(),
                 channel.getProfile(),
                 channel.getDescription(),
-                channel.getChannelType(),
                 channel.getSetting().getJoinPolicy(),
                 channel.getSetting().getContentVisibility(),
                 channelWithMemberCount.getMemberCount()

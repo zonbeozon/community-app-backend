@@ -3,7 +3,7 @@ package com.zonbeozon.post.security;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.security.ChannelAction;
 import com.zonbeozon.channel.security.ChannelActionPermissionEvaluateHandler;
-import com.zonbeozon.channel.security.ChannelRoleBasedPermissionEvaluator;
+import com.zonbeozon.channel.security.SimpleChannelPermissionEvaluator;
 import com.zonbeozon.channel.security.ChannelSecurityAspect;
 import com.zonbeozon.global.AspectUtils;
 import com.zonbeozon.global.exception.AccessDeniedException;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PostCreatePermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler {
-    private final ChannelRoleBasedPermissionEvaluator permissionEvaluator;
+    private final SimpleChannelPermissionEvaluator permissionEvaluator;
     /**
      * channel admin 이상 부터 가능
      */

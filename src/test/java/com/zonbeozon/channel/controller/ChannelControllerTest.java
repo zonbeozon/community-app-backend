@@ -1,25 +1,19 @@
 package com.zonbeozon.channel.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SecurityTestUtils;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
-import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelUpdater;
 import com.zonbeozon.channel.service.InfoChannelAssembler;
-import com.zonbeozon.channel.validation.ChannelTitleValidator;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -74,7 +68,7 @@ public class ChannelControllerTest {
         void InvalidSettingCombinationShouldReturnBadRequest() throws Exception {
             ChannelCreateRequest request = new TestChannelCreateRequestBuilder()
                     .setJoinPolicy(ChannelJoinPolicy.DENY)
-                    .setContentVisibility(ChannelContentVisibility.PUBLIC)
+                    .setContentVisibility(ChannelVisibility.PUBLIC)
                     .build();
             mockMvc.perform(post("/channel")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +77,4 @@ public class ChannelControllerTest {
                     .andExpect(jsonPath("$.code").value("INVALID_ARGUMENT"));
         }
     }
-
-
-
 }

@@ -4,27 +4,27 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.post.dto.PostResponse;
 
-public record JoinedInfoChannelResponse(
+public record JoinedBlogChannelResponse(
     Long channelId,
-    String title,
-    String profile,
-    String description,
     ChannelType type,
+    String title,
+    String description,
+    String profile,
     ChannelSettingResponse settings,
     Long memberCount,
     PostResponse latestPost
 ) {
-    public static JoinedInfoChannelResponse from(InfoChannelOverview infoChannelOverview) {
-        Channel channel = infoChannelOverview.getInfoChannel();
-        return new JoinedInfoChannelResponse(
+    public static JoinedBlogChannelResponse from(BlogChannelOverview blogChannelOverview) {
+        Channel channel = blogChannelOverview.getBlogChannel();
+        return new JoinedBlogChannelResponse(
                 channel.getId(),
-                channel.getTitle(),
-                channel.getProfile(),
-                channel.getDescription(),
                 channel.getChannelType(),
+                channel.getTitle(),
+                channel.getDescription(),
+                channel.getProfile(),
                 ChannelSettingResponse.from(channel.getSetting()),
-                infoChannelOverview.getMemberCount(),
-                PostResponse.from(infoChannelOverview.getLatestPost())
+                blogChannelOverview.getMemberCount(),
+                PostResponse.from(blogChannelOverview.getLatestPost())
         );
     }
 }

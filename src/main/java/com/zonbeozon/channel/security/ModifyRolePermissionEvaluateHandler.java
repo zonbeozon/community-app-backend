@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class KickPermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler {
-    private final SimpleChannelPermissionEvaluator permissionEvaluator;
+public class ModifyRolePermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler{
     private final MemberFinder memberFinder;
-    /**
-     * 대상 보다 권한이 높다면 허용
-     */
+    private final SimpleChannelPermissionEvaluator permissionEvaluator;
+
     @Override
     public void handle(JoinPoint joinPoint) {
         Long channelId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
@@ -29,10 +27,11 @@ public class KickPermissionEvaluateHandler implements ChannelActionPermissionEva
             return;
         }
         throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+
     }
 
     @Override
     public boolean isSupport(ChannelAction action) {
-        return ChannelAction.KICK == action;
+        return action == ChannelAction.MODIFY_ROLE;
     }
 }

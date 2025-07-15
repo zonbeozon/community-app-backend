@@ -2,18 +2,16 @@ package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelType;
 
-public record ChannelAddCommand(
+public record ChannelCreateCommand(
+        ChannelType type,
         String title,
         String description,
         String profile,
-        ChannelContentVisibility contentVisibility,
-        ChannelType type,
+        ChannelVisibility contentVisibility,
         ChannelJoinPolicy joinPolicy,
-        ChannelSearchScope searchScope,
         ChannelCreatorType creatorType
 ) {
 }

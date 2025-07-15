@@ -5,6 +5,6 @@ public enum ChannelJoinPolicy {
     DENY,
     //전부 허용
     OPEN,
-    //초대만 허용
-    INVITE_ONLY
+    //승인
+    APPROVAL
 }

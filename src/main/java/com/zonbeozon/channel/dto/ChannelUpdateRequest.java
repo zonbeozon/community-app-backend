@@ -1,8 +1,7 @@
 package com.zonbeozon.channel.dto;
 
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
 import com.zonbeozon.channel.validation.ChannelSettingProvider;
 import com.zonbeozon.channel.validation.ChannelTitleProvider;
 import com.zonbeozon.channel.validation.ValidChannelSetting;
@@ -24,11 +23,9 @@ public record ChannelUpdateRequest(
         String description,
         @NotBlank(message = "채널 프로필 이미지는 필수입니다.")
         String profile,
-        @NotNull(message = "콘텐츠 공개 수준을 선택해야 합니다.")
-        ChannelContentVisibility contentVisibility,
+        @NotNull(message = "채널 공개 수준을 선택해야 합니다.")
+        ChannelVisibility visibility,
         @NotNull(message = "가입 허용 수준을 선택해야 합니다.")
-        ChannelJoinPolicy joinPolicy,
-        @NotNull(message = "검색 허용 수준을 선택해야 합니다.")
-        ChannelSearchScope searchScope
+        ChannelJoinPolicy joinPolicy
 ) implements ChannelSettingProvider, ChannelTitleProvider {
 }

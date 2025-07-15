@@ -1,6 +1,7 @@
 package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.enums.JoinResultStatus;
 import com.zonbeozon.channel.service.ChannelMemberJoiner;
 import com.zonbeozon.channel.service.ChannelMemberRemover;
 import com.zonbeozon.channel.service.ChannelMemberRoleModifier;
@@ -33,12 +34,17 @@ public class ChannelMemberController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "202", description = "요청 발송됨", content = @Content(schema = @Schema())),
     })
     @PostMapping
     public ResponseEntity<Void> joinChannelAsMember(
             @PathVariable Long channelId
     ) {
-        channelMemberJoiner.joinAsMember(channelId);
+        JoinResultStatus status = channelMemberJoiner.joinAsMember(channelId);
+
+        if(status == JoinResultStatus.APPROVAL_REQUESTED)
+            return ResponseEntity.accepted().build();
+
         return ResponseEntity.ok().build();
     }
 

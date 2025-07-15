@@ -1,10 +1,8 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelSearchScope;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -20,23 +18,17 @@ import lombok.NoArgsConstructor;
 public class ChannelSetting {
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ChannelContentVisibility contentVisibility;
+    private ChannelVisibility visibility;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private ChannelJoinPolicy joinPolicy;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private ChannelSearchScope searchScope;
-
     public void updateSettings(
-            ChannelContentVisibility contentVisibility,
-            ChannelJoinPolicy joinLevel,
-            ChannelSearchScope searchLevel
+            ChannelVisibility visibility,
+            ChannelJoinPolicy joinLevel
     ) {
-        this.contentVisibility = contentVisibility;
+        this.visibility = visibility;
         this.joinPolicy = joinLevel;
-        this.searchScope = searchLevel;
     }
 }

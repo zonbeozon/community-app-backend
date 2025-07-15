@@ -2,7 +2,7 @@ package com.zonbeozon.channel.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import org.springframework.data.domain.Sort;
 
@@ -14,8 +14,8 @@ public class ChannelQuery {
         return channel.isDeleted.eq(false);
     }
 
-    public static BooleanExpression eqContentVisibility(ChannelContentVisibility contentVisibility) {
-        return contentVisibility == null ? null : channel.setting.contentVisibility.eq(contentVisibility);
+    public static BooleanExpression eqVisibility(ChannelVisibility channelVisibility) {
+        return channelVisibility == null ? null : channel.setting.contentVisibility.eq(channelVisibility);
     }
 
     public static BooleanExpression eqJoinPolicy(ChannelJoinPolicy joinPolicy) {

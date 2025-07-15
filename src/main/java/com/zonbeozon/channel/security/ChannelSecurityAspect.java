@@ -18,6 +18,11 @@ public class ChannelSecurityAspect {
 
     @Before("@annotation(checkChannelAccess)")
     public void checkChannelAction(JoinPoint joinPoint, CheckChannelAccess checkChannelAccess) {
-        channelActionPermissionEvaluator.evaluate(joinPoint, checkChannelAccess.value());
+        channelActionPermissionEvaluator.evaluateChannelAction(joinPoint, checkChannelAccess.value());
+    }
+
+    @Before("@annotation(memberOfChannelOnly)")
+    public void checkMemberJoined(JoinPoint joinPoint, MemberOfChannelOnly memberOfChannelOnly) {
+        channelActionPermissionEvaluator.evaluateMemberJoined(joinPoint);
     }
 }

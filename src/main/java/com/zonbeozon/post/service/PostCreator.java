@@ -2,7 +2,7 @@ package com.zonbeozon.post.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.security.ChannelAction;
 import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.channel.service.ChannelFinder;
@@ -31,8 +31,8 @@ public class PostCreator {
     public Long addPost(Long channelId, PostAddCommand command) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);
-        if(channel instanceof InfoChannel infoChannel) {
-            Post post = Post.create(command.content(), infoChannel, requester);
+        if(channel instanceof BlogChannel blogChannel) {
+            Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();

@@ -1,13 +1,11 @@
 package com.zonbeozon.channel.repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.dto.ChannelWithMemberCount;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,7 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
             ChannelSort sort,
             Sort.Direction direction,
             ChannelType type,
-            ChannelContentVisibility contentVisibility,
+            ChannelVisibility visibility,
             ChannelJoinPolicy joinPolicy
     ) {
         OrderSpecifier<?> orderSpecifier = ChannelQuery.getOrderSpecifier(sort, direction);
@@ -43,7 +41,7 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
 
         BooleanBuilder whereClause = new BooleanBuilder()
                 .and(ChannelQuery.isNotDeleted())
-                .and(ChannelQuery.eqContentVisibility(contentVisibility))
+                .and(ChannelQuery.eqVisibility(visibility))
                 .and(ChannelQuery.eqJoinPolicy(joinPolicy))
                 .and(ChannelQuery.containsKeyword(keyword));
 

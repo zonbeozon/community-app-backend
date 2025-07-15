@@ -4,6 +4,8 @@ import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.security.ChannelAction;
+import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ChannelMemberRoleModifier {
     private final AuthenticationService authenticationService;
     private final List<ModifyChannelRoleHandler> modifyChannelRoleHandlers;
 
+    @CheckChannelAccess(ChannelAction.MODIFY_ROLE)
     public void modifyChannelMemberRole(Long channelId, Long targetMemberId, ChannelRole newRole) {
         Channel channel = channelFinder.findById(channelId);
         Member requestMember = authenticationService.getCurrentMember();

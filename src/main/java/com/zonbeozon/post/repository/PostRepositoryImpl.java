@@ -1,7 +1,7 @@
 package com.zonbeozon.post.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.entity.InfoChannel;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.entity.Post;
@@ -19,7 +19,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public CursorPage<Post> findCursorBasedPostsByChannel(InfoChannel channel, Long cursorPostId, int size) {
+    public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
         List<Post> posts = queryFactory.selectFrom(post)
                 .where(post.isDeleted.eq(false)
                         .and(post.channel.eq(channel))

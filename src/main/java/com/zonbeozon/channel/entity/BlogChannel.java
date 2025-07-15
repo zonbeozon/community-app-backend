@@ -8,10 +8,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@DiscriminatorValue("DISCUSSION")
+@DiscriminatorValue("BLOG")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DiscussionChannel extends Channel {
-    public DiscussionChannel(
+public class BlogChannel extends Channel {
+
+    public BlogChannel(
             String title,
             String description,
             String profile,
@@ -21,8 +22,11 @@ public class DiscussionChannel extends Channel {
         super(title, description, profile, setting, creatorType);
     }
 
+    //비정규화 필드
+    Long latestPostId;
+
     @Override
     public ChannelType getChannelType() {
-        return ChannelType.DISCUSSION;
+        return ChannelType.BLOG;
     }
 }

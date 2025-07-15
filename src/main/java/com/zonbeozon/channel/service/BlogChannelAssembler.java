@@ -1,10 +1,10 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.dto.InfoChannelOverview;
-import com.zonbeozon.channel.dto.JoinedInfoChannelListResponse;
+import com.zonbeozon.channel.dto.BlogChannelOverview;
+import com.zonbeozon.channel.dto.JoinedBlogChannelListResponse;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
-import com.zonbeozon.channel.repository.InfoChannelRepository;
+import com.zonbeozon.channel.repository.BlogChannelRepository;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
-public class InfoChannelAssembler {
+public class BlogChannelAssembler {
     private final AuthenticationService authenticationService;
-    private final InfoChannelRepository infoChannelRepository;
+    private final BlogChannelRepository blogChannelRepository;
 
-    public JoinedInfoChannelListResponse createJoinedCommunityInfoChannelResponse() {
+    public JoinedBlogChannelListResponse createJoinedCommunityBlogChannelResponse() {
         Member member = authenticationService.getCurrentMember();
-        List<InfoChannelOverview> joinedChannels = infoChannelRepository.getInfoChannelsByMember(member, ChannelCreatorType.COMMUNITY);
-        return JoinedInfoChannelListResponse.from(joinedChannels);
+        List<BlogChannelOverview> joinedChannels = blogChannelRepository.getBlogChannelsByMember(member, ChannelCreatorType.COMMUNITY);
+        return JoinedBlogChannelListResponse.from(joinedChannels);
     }
 }
