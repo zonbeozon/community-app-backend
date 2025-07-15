@@ -7,8 +7,8 @@ import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 
-import static com.zonbeozon.channel.entity.QChannelMember.*;
 
 @RequiredArgsConstructor
 @Repository

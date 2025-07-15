@@ -10,7 +10,7 @@ public record ChannelCreateCommand(
         String title,
         String description,
         String profile,
-        ChannelVisibility contentVisibility,
+        ChannelVisibility visibility,
         ChannelJoinPolicy joinPolicy,
         ChannelCreatorType creatorType
 ) {

@@ -4,6 +4,7 @@ import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.security.ChannelAction;
 import com.zonbeozon.channel.security.CheckChannelAccess;
+import com.zonbeozon.channel.security.MemberOfChannelOnly;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.BlogChannelFinder;
 import com.zonbeozon.global.CursorPage;
@@ -27,7 +28,7 @@ public class PostAssembler {
     private final ChannelMemberAssembler channelMemberAssembler;
     private final PostFinder postFinder;
 
-    @CheckChannelAccess(ChannelAction.POST_READ)
+    @MemberOfChannelOnly
     public CursorBasedPostsResponse createCursorBasedPostResponse(
             Long channelId,
             Long cursorPostId,

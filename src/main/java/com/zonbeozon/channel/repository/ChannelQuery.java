@@ -6,8 +6,9 @@ import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import org.springframework.data.domain.Sort;
 
-import static com.zonbeozon.channel.entity.QChannel.*;
+import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
+
 
 public class ChannelQuery {
     public static BooleanExpression isNotDeleted() {
@@ -15,7 +16,7 @@ public class ChannelQuery {
     }
 
     public static BooleanExpression eqVisibility(ChannelVisibility channelVisibility) {
-        return channelVisibility == null ? null : channel.setting.contentVisibility.eq(channelVisibility);
+        return channelVisibility == null ? null : channel.setting.visibility.eq(channelVisibility);
     }
 
     public static BooleanExpression eqJoinPolicy(ChannelJoinPolicy joinPolicy) {

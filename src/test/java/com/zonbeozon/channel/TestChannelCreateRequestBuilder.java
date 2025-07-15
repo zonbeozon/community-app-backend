@@ -24,13 +24,8 @@ public class TestChannelCreateRequestBuilder {
         return this;
     }
 
-    public TestChannelCreateRequestBuilder setContentVisibility(ChannelVisibility contentVisibility) {
-        this.contentVisibility = contentVisibility;
-        return this;
-    }
-
-    public TestChannelCreateRequestBuilder setSearchScope(ChannelSearchScope searchScope) {
-        this.searchScope = searchScope;
+    public TestChannelCreateRequestBuilder setContentVisibility(ChannelVisibility visibility) {
+        this.visibility = visibility;
         return this;
     }
 

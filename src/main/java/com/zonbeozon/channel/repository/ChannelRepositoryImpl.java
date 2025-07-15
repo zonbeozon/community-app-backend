@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.zonbeozon.channel.entity.QChannel.*;
-import static com.zonbeozon.channel.entity.QChannelMember.*;
+import static com.zonbeozon.channel.entity.QChannel.channel;
+import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 
 @Repository
 @RequiredArgsConstructor

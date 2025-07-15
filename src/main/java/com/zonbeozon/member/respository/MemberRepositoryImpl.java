@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.zonbeozon.member.domain.QMember.*;
+import static com.zonbeozon.member.domain.QMember.member;
 
 
 @RequiredArgsConstructor

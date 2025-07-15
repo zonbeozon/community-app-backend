@@ -7,9 +7,9 @@ import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
 import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
+import com.zonbeozon.channel.service.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelUpdater;
-import com.zonbeozon.channel.service.InfoChannelAssembler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ public class ChannelControllerTest {
     @MockitoBean
     private ChannelUpdater channelUpdater;
     @MockitoBean
-    private InfoChannelAssembler infoChannelAssembler;
+    private BlogChannelAssembler blogChannelAssembler;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

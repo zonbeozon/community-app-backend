@@ -23,7 +23,7 @@ public class PostCreatePermissionEvaluateHandler implements ChannelActionPermiss
     public void handle(JoinPoint joinPoint) {
         Long channelId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
         //admin 이상이라면
-        if(permissionEvaluator.hasAtLeastRole(channelId, ChannelRole.CHANNEL_ADMIN)) return;
+        if(permissionEvaluator.isMemberOfChannel(channelId) && permissionEvaluator.hasMinimumRole(channelId, ChannelRole.CHANNEL_ADMIN)) return;
         //나머지 경우에는 허용 안된다.
         throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
 

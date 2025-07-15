@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class ChannelController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "성공 - 채널 id 반환",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -60,11 +61,11 @@ public class ChannelController {
                                                           "errors": [
                                                             {
                                                               "field": "title",
-                                                              "message": "채널 이름은 2자 이상 30자 이하여야 합니다."
+                                                              "message": "채널 이름은 2자 이상 32자 이하여야 합니다."
                                                             },
                                                             {
                                                               "field": "description",
-                                                              "message": "채널 설명은 300자 이하여야 합니다."
+                                                              "message": "채널 설명은 256자 이하여야 합니다."
                                                             }
                                                           ]
                                                         }
@@ -113,7 +114,7 @@ public class ChannelController {
                         request.joinPolicy(),
                         ChannelCreatorType.COMMUNITY
                 ));
-        return ResponseEntity.ok(channelId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(channelId);
     }
 
     @Operation(
@@ -147,7 +148,7 @@ public class ChannelController {
                     schema = @Schema(implementation = JoinedBlogChannelListResponse.class))
             ),
     })
-    @GetMapping("/communityBlog/joined")
+    @GetMapping("/community-blog/joined")
     public ResponseEntity<JoinedBlogChannelListResponse> getJoinedInfoChannels() {
         return ResponseEntity.ok(blogChannelAssembler.createJoinedCommunityBlogChannelResponse());
     }

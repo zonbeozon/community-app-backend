@@ -25,7 +25,7 @@ public record ChannelResponse(
                 channel.getProfile(),
                 channel.getDescription(),
                 channel.getSetting().getJoinPolicy(),
-                channel.getSetting().getContentVisibility(),
+                channel.getSetting().getVisibility(),
                 channelWithMemberCount.getMemberCount()
         );
     }

@@ -11,7 +11,7 @@ public record ChannelSettingResponse(
 ) {
     public static ChannelSettingResponse from(ChannelSetting setting) {
         return new ChannelSettingResponse(
-                setting.getContentVisibility(),
+                setting.getVisibility(),
                 setting.getJoinPolicy()
         );
     }

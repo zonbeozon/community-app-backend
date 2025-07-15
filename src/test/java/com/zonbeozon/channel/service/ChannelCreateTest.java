@@ -70,12 +70,11 @@ public class ChannelCreateTest {
     }
 
     static void assertChannelMetadataEquals(Channel channel, ChannelCreateCommand command) {
+        assertThat(channel.getChannelType()).isEqualTo(command.type());
         assertThat(channel.getTitle()).isEqualTo(command.title());
         assertThat(channel.getDescription()).isEqualTo(command.description());
         assertThat(channel.getProfile()).isEqualTo(command.profile());
-        assertThat(channel.getSetting().getContentVisibility()).isEqualTo(command.contentVisibility());
+        assertThat(channel.getSetting().getVisibility()).isEqualTo(command.visibility());
         assertThat(channel.getSetting().getJoinPolicy()).isEqualTo(command.joinPolicy());
-        assertThat(channel.getSetting().getSearchScope()).isEqualTo(command.searchScope());
-        assertThat(channel.getChannelType()).isEqualTo(command.type());
     }
 }
