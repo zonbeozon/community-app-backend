@@ -18,7 +18,10 @@ public class UriAuthorizationConfig {
                 //channel Related
                 "/channel",
                 "/channel/joined",
-                "channel/*/post"
+                "channel/*/post",
+
+                //member Related
+                "/member/*"
         ).authenticated();
 
         // USER PROTECTION LEVEL
