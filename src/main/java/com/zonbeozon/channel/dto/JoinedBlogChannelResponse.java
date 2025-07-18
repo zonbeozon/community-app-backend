@@ -16,6 +16,8 @@ public record JoinedBlogChannelResponse(
 ) {
     public static JoinedBlogChannelResponse from(BlogChannelOverview blogChannelOverview) {
         Channel channel = blogChannelOverview.getBlogChannel();
+        PostResponse postResponse = blogChannelOverview.getLatestPost() == null ?
+                null : PostResponse.from(blogChannelOverview.getLatestPost());
         return new JoinedBlogChannelResponse(
                 channel.getId(),
                 channel.getChannelType(),
@@ -24,7 +26,7 @@ public record JoinedBlogChannelResponse(
                 channel.getProfile(),
                 ChannelSettingResponse.from(channel.getSetting()),
                 blogChannelOverview.getMemberCount(),
-                PostResponse.from(blogChannelOverview.getLatestPost())
+                postResponse
         );
     }
 }

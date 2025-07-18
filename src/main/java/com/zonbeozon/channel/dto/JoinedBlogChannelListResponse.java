@@ -2,7 +2,6 @@ package com.zonbeozon.channel.dto;
 
 import java.util.List;
 
-
 public record JoinedBlogChannelListResponse(
     List<JoinedBlogChannelResponse> channels,
     int totalElements

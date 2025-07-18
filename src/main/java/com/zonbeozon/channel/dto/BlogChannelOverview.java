@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class BlogChannelOverview {
-    private BlogChannel blogChannel;
-    private Long memberCount;
-    private Post latestPost;
+    private final BlogChannel blogChannel;
+    private final Long memberCount;
+    private final Post latestPost;
 }
