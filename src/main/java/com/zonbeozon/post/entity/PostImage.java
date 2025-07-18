@@ -1,0 +1,34 @@
+package com.zonbeozon.post.entity;
+
+import com.zonbeozon.global.image.Image;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class PostImage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", nullable = false)
+    private Image image;
+
+    @NotNull
+    private int displayOrder;
+
+    public PostImage(Post post, Image image, int displayOrder) {
+        this.post = post;
+        this.image = image;
+        this.displayOrder = displayOrder;
+    }
+}

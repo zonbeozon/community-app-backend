@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile("!test")
 class CurrencyLoaderConfig {
     private static final String FILE_PATH = "/data/kr-currencies.json";
 

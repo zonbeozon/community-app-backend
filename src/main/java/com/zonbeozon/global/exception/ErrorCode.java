@@ -34,7 +34,7 @@ public enum ErrorCode {
     KICKED_MEMBER_CANNOT_JOIN("강퇴당한 사용자는 재가입이 불가능 합니다."),
     ALREADY_JOINED_CHANNEL("이미 참가한 채널입니다."),
     INVITE_GENERATE_DENIED("채널의 가입 정책에 따라 초대코드를 생성할 수 없습니다."),
-    NOT_INFO_CHANNEL("INFO채널이 아닙니다."),
+    OPERATION_FOR_BLOG_CHANNEL_ONLY("블로그 채널 전용 작업입니다."),
 
 
     //member
@@ -42,6 +42,7 @@ public enum ErrorCode {
 
     //post
     POST_NOT_FOUND("post를 찾을 수 없습니다"),
+    MAX_POST_IMAGE_REACHED("Post 이미지 최대 업로드 개수를 초과했습니다"),
 
     //reaction
     REACTION_NOT_FOUND("해당 reaction 기록이 없습니다");

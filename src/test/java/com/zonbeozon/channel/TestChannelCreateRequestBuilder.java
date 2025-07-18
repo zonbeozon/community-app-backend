@@ -1,6 +1,7 @@
 package com.zonbeozon.channel;
 
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
+import com.zonbeozon.channel.dto.ChannelSettingRequest;
 import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
@@ -15,7 +16,7 @@ public class TestChannelCreateRequestBuilder {
 
     public ChannelCreateRequest build() {
         return new ChannelCreateRequest(
-                channelType, title, description, profile, visibility, joinPolicy
+                channelType, title, description, profile, new ChannelSettingRequest(visibility, joinPolicy)
         );
     }
 

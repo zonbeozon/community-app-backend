@@ -10,6 +10,8 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,6 +22,7 @@ import org.hibernate.annotations.SQLRestriction;
 public class Post extends BaseTimeEntity {
     public static final int MAX_CONTENT_LENGTH = 2048;
     public static final int MIN_CONTENT_LENGTH = 1;
+    public static final int MAX_IMAGE_COUNT = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +45,10 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
-    public static Post create(String content, BlogChannel channel, Member requester) {
+    @OneToMany(mappedBy = "post")
+    private List<PostImage> images;
 
+    public static Post create(String content, BlogChannel channel, Member requester) {
         Post post = new Post();
         post.content = content;
         post.author = requester;

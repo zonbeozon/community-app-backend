@@ -11,7 +11,7 @@ import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,17 +26,19 @@ public class PostCreator {
     private final ApplicationEventPublisher eventPublisher;
     private final AuthenticationService authenticationService;
     private final ChannelFinder channelFinder;
+    private final PostImageCreator postImageCreator;
 
     @CheckChannelAccess(ChannelAction.POST_CREATE)
-    public Long addPost(Long channelId, PostAddCommand command) {
+    public Long addPost(Long channelId, PostCreateCommand command) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);
         if(channel instanceof BlogChannel blogChannel) {
             Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
+            postImageCreator.addPostImages(post.getId(), command.imageIds());
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();
         }
-        throw new BadRequestException(ErrorCode.NOT_INFO_CHANNEL);
+        throw new BadRequestException(ErrorCode.OPERATION_FOR_BLOG_CHANNEL_ONLY);
     }
 }

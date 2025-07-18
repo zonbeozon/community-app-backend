@@ -1,0 +1,16 @@
+package com.zonbeozon.post.dto;
+
+import com.zonbeozon.post.entity.Post;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
+
+public record PostCreateRequest(
+        @Schema(name = "내용", minLength = Post.MIN_CONTENT_LENGTH, maxLength = Post.MAX_CONTENT_LENGTH, example = "some post...")
+        @Size(min = Post.MIN_CONTENT_LENGTH, max = Post.MAX_CONTENT_LENGTH, message = "{post.content}")
+        String content,
+        @Schema(name = "이미지 Id", description = "이미지 업로드로 부터 받은 응답Id를 리스트 형식으로 전달")
+        List<Long> imageIds
+) {
+}

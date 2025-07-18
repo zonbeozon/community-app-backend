@@ -11,9 +11,11 @@ import com.zonbeozon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostCreatePermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler {
     private final SimpleChannelPermissionEvaluator permissionEvaluator;
     /**
@@ -24,7 +26,7 @@ public class PostCreatePermissionEvaluateHandler implements ChannelActionPermiss
         Long channelId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
         //admin 이상이라면
         if(permissionEvaluator.isMemberOfChannel(channelId) && permissionEvaluator.hasMinimumRole(channelId, ChannelRole.CHANNEL_ADMIN)) return;
-        //나머지 경우에는 허용 안된다.
+        //나머지 경우에는 허용 안된다
         throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
 
     }

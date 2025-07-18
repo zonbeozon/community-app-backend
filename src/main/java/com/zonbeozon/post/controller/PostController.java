@@ -1,9 +1,9 @@
 package com.zonbeozon.post.controller;
 
 import com.zonbeozon.config.SwaggerConfig;
-import com.zonbeozon.post.dto.PostAddRequest;
+import com.zonbeozon.post.dto.PostCreateRequest;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
-import com.zonbeozon.post.dto.PostAddCommand;
+import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostUpdateRequest;
 import com.zonbeozon.post.service.PostAssembler;
 import com.zonbeozon.post.service.PostCreator;
@@ -114,9 +114,9 @@ public class PostController {
             @PathVariable Long channelId,
             @RequestBody
             @Valid
-            PostAddRequest request
+            PostCreateRequest request
     ) {
-        Long postId = postCreator.addPost(channelId, new PostAddCommand(request.content()));
+        Long postId = postCreator.addPost(channelId, new PostCreateCommand(request.content(), request.imageIds()));
         return ResponseEntity.ok(postId);
     }
 

@@ -1,15 +1,5 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.dto.PostAddCommand;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.time.LocalDateTime;
-
 //public class ChannelResponseTest extends BaseChannelTest {
 //
 //    @Autowired
