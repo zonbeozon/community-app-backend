@@ -6,6 +6,7 @@ import com.zonbeozon.channel.validation.ChannelTitleProvider;
 import com.zonbeozon.channel.validation.ValidChannelSetting;
 import com.zonbeozon.channel.validation.ValidChannelTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import static com.zonbeozon.channel.entity.Channel.*;
 
 @ValidChannelTitle
-@ValidChannelSetting
 public record ChannelCreateRequest(
         @Schema(description = "채널 유형", example = "INFO")
         @NotNull(message = "채널 유형을 선택해야 합니다.")
@@ -26,16 +26,12 @@ public record ChannelCreateRequest(
         @Schema(description = "채널 프로필 이미지 URL", example = "https://example.com/profile.png")
         @NotBlank(message = "채널 프로필 이미지는 필수입니다.")
         String profile,
-        @Schema(description = "채널 공개 수준", example = "PUBLIC")
-        @NotNull(message = "채널 공개 수준을 선택해야 합니다.")
-        ChannelVisibility visibility,
-        @Schema(description = "가입 허용 수준", example = "OPEN")
-        @NotNull(message = "가입 허용 수준을 선택해야 합니다.")
-        ChannelJoinPolicy joinPolicy
-) implements ChannelSettingProvider, ChannelTitleProvider {
+        @Valid
+        ChannelSettingRequest settings
+) implements ChannelTitleProvider {
         public ChannelCreateCommand toCommand(ChannelCreatorType creatorType) {
                 return new ChannelCreateCommand(
-                        channelType, title, description, profile, visibility, joinPolicy, creatorType
+                        channelType, title, description, profile, settings.visibility(), settings.joinPolicy(), creatorType
                 );
         }
 }

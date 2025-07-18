@@ -10,8 +10,8 @@ public enum ChannelRole {
 
     private final int level;
 
-    public boolean isHigherThan(ChannelRole other) {
-        return this.level > other.level;
+    public boolean isHigherThan(ChannelRole role) {
+        return this.level > role.level;
     }
 
     public boolean isEqual(ChannelRole other) {

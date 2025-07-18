@@ -14,7 +14,6 @@ import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 import static com.zonbeozon.post.entity.QPost.post;
 
-
 @Repository
 @RequiredArgsConstructor
 public class BlogChannelRepositoryImpl implements BlogChannelRepositoryCustom {

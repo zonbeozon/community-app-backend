@@ -29,4 +29,8 @@ public class BlogChannel extends Channel {
     public ChannelType getChannelType() {
         return ChannelType.BLOG;
     }
+
+    public void setLatestPostId(Long latestPostId) {
+        this.latestPostId = latestPostId;
+    }
 }

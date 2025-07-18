@@ -29,7 +29,7 @@ public class SimpleChannelPermissionEvaluator {
         Channel channel = channelFinder.findById(channelId);
         ChannelRole requesterRole = channelMemberFinder.findByMemberAndChannel(requester, channel).getRole();
         //권한이 요구 권한보다 높거나 같다면
-        return requesterRole.isHigherThan(requiredRole) || requesterRole.isEqual(requesterRole);
+        return requesterRole.isHigherThan(requiredRole) || requesterRole.isEqual(requiredRole);
     }
 
     public boolean isSuperiorTo(Long channelId, Member targetMember) {
