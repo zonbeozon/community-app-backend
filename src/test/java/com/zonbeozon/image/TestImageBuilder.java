@@ -1,6 +1,6 @@
-package com.zonbeozon.integral.image;
+package com.zonbeozon.image;
 
-import com.zonbeozon.global.image.Image;
+import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.EntityManager;
 

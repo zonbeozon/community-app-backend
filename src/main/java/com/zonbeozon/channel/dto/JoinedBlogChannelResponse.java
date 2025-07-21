@@ -6,7 +6,7 @@ import com.zonbeozon.post.dto.PostResponse;
 
 public record JoinedBlogChannelResponse(
     Long channelId,
-    ChannelType type,
+    ChannelType channelType,
     String title,
     String description,
     String profile,

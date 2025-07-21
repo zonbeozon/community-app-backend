@@ -1,8 +1,10 @@
-package com.zonbeozon.global.image;
+package com.zonbeozon.image.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.image.ImageRepository;
+import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

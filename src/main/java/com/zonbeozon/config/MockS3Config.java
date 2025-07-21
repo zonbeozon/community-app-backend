@@ -1,6 +1,6 @@
 package com.zonbeozon.config;
 
-import com.zonbeozon.global.image.S3Properties;
+import com.zonbeozon.image.S3Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,6 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 import java.net.URI;
 
@@ -42,7 +41,7 @@ public class MockS3Config {
     }
 
     @Bean
-    public S3Properties mockS3Properties() {
+    public S3Properties s3Properties() {
         return new S3Properties() {
             @Override
             public String getBucket() {

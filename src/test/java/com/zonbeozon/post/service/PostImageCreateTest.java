@@ -7,7 +7,7 @@ import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.integral.image.TestImageBuilder;
+import com.zonbeozon.image.TestImageBuilder;
 import com.zonbeozon.member.TestMemberBuilder;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.TestPostBuilder;

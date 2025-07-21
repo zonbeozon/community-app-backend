@@ -1,11 +1,10 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.global.exception.BadRequestException;
-import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.global.image.Image;
-import com.zonbeozon.global.image.ImageOwnershipVerifier;
-import com.zonbeozon.global.image.ImageRepository;
+import com.zonbeozon.image.entity.Image;
+import com.zonbeozon.image.service.ImageOwnershipVerifier;
+import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.entity.PostImage;
 import com.zonbeozon.post.repository.PostImageRepository;

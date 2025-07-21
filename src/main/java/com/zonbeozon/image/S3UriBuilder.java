@@ -1,4 +1,4 @@
-package com.zonbeozon.global.image;
+package com.zonbeozon.image;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

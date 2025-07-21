@@ -18,7 +18,8 @@ public class UriAuthorizationConfig {
                 //channel Related
                 "/channel",
                 "/channel/joined",
-                "channel/*/post",
+                "/channel/*/post",
+                "/channel/community-blog/joined",
 
                 //member Related
                 "/member/*"
@@ -29,7 +30,9 @@ public class UriAuthorizationConfig {
                 //channel Related
                 "/channel",
                 "/channel/*/member",
-                "channel/*/post"
+                "channel/*/post",
+
+                "/image"
         ).authenticated();
 
         request.requestMatchers(HttpMethod.PATCH,

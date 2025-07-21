@@ -1,4 +1,4 @@
-package com.zonbeozon.global.image;
+package com.zonbeozon.image.entity;
 
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.zonbeozon.global.image;
+package com.zonbeozon.image;
 
 public interface S3Properties {
     String getBucket();

@@ -1,6 +1,6 @@
 package com.zonbeozon.post.entity;
 
-import com.zonbeozon.global.image.Image;
+import com.zonbeozon.image.entity.Image;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
