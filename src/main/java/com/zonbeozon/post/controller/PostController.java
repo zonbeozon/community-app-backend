@@ -21,13 +21,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/channel/{channelId}/post")
 @Tag(name = "포스트", description = "포스트 관련 엔드포인트")
 public class PostController {
     private final PostCreator postCreator;
@@ -46,7 +46,7 @@ public class PostController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "성공 - post id 반환",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -108,7 +108,7 @@ public class PostController {
             )
         }
     )
-    @PostMapping
+    @PostMapping("/channel/{channelId}/post")
     public ResponseEntity<Long> createPost(
             @PathVariable Long channelId,
             @RequestBody
@@ -116,7 +116,7 @@ public class PostController {
             PostCreateRequest request
     ) {
         Long postId = postCreator.addPost(channelId, new PostCreateCommand(request.content(), request.imageIds()));
-        return ResponseEntity.ok(postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(postId);
     }
 
     @Operation(
@@ -167,9 +167,7 @@ public class PostController {
     @Operation(
             summary = "커서 기반 과거 POST 검색",
             description = """
-                    채널에 가입하지 않아도 호출 가능하지만
-                    
-                    채널 SearchLevel이 Private이라면 채널에 가입된 맴버여야지만 정상적으로 호출된다.
+                    채널에 가입해야지만 호출 가능
                     
                     cursor기반으로 postId를 기준으로 DESC순으로 리턴된다(postId는 생성순으로 커지기 때문에 Id가 줄어들 수록 과거에 만들어진 Post이다.
                     """,
@@ -237,7 +235,7 @@ public class PostController {
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
                                     @ExampleObject(
-                                            name = "해당 채널의 맴버가 아니고 동시에 채널이 컨텐츠 열람을 막아뒀을때",
+                                            name = "해당 채널의 맴버가 아닐때",
                                             value = """
                                                 {
                                                   "code": "ACCESS_DENIED",
@@ -250,13 +248,16 @@ public class PostController {
             )
     })
     @Parameters({
-            @Parameter(name = "cursorPostId", description = "해당 postId보다 작은 PostId를 size만큼 반환(cursor)"),
+            @Parameter(name = "cursorPostId", description = """
+                    해당 postId보다 작은 PostId를 size만큼 반환(cursor)
+                    cursorPostId를 가장 최신 post로 설정하고 싶다면 null로 설정
+                    """),
             @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10")
     })
-    @GetMapping
+    @GetMapping("channel/{channelId}/post")
     public ResponseEntity<CursorBasedPostsResponse> createCursorBasedPostResponse(
             @PathVariable Long channelId,
-            @RequestParam Long cursorPostId,
+            @RequestParam(required = false) Long cursorPostId,
             @RequestParam(defaultValue = "20") int size
     ) {
         CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(

@@ -17,7 +17,7 @@ public record CursorBasedPostsResponse(
     public static CursorBasedPostsResponse from(List<ChannelMemberResponse> authors, CursorPage<Post> posts) {
 
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
-                .map(SimplifiedPostResponse::fromEntity)  // SimplifiedPostResponse로 변환
+                .map(SimplifiedPostResponse::from)  // SimplifiedPostResponse로 변환
                 .toList();
 
         return new CursorBasedPostsResponse(

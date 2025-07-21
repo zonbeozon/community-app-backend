@@ -32,6 +32,7 @@ public class PostImageCreator {
         for(Image image : images) {
             PostImage postImage = new PostImage(post, image, displayOrder++);
             postImageRepository.save(postImage);
+            post.getImages().add(postImage);
         }
     }
 

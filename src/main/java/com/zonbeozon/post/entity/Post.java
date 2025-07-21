@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,7 +47,7 @@ public class Post extends BaseTimeEntity {
     private Member author;
 
     @OneToMany(mappedBy = "post")
-    private List<PostImage> images;
+    private List<PostImage> images = new ArrayList<>();
 
     public static Post create(String content, BlogChannel channel, Member requester) {
         Post post = new Post();

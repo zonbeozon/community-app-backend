@@ -1,10 +1,13 @@
 package com.zonbeozon.post.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.entity.QPost;
+import com.zonbeozon.post.entity.QPostImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +15,7 @@ import java.util.List;
 
 import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.post.entity.QPost.post;
+import static com.zonbeozon.post.entity.QPostImage.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,13 +24,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
     @Override
     public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
+
+        BooleanBuilder whereClause = new BooleanBuilder()
+                .and(PostQuery.isNotDeleted())
+                .and(post.channel.eq(channel));
+
+        if(cursorPostId != null) {
+            whereClause.and(post.id.lt(cursorPostId));
+        }
+
         List<Post> posts = queryFactory.selectFrom(post)
-                .where(post.isDeleted.eq(false)
-                        .and(post.channel.eq(channel))
-                        .and(post.id.lt(cursorPostId))
-                )
-                .join(member).on(post.author.eq(member)).fetchJoin()
-                .orderBy(post.id.desc())
+                .where(whereClause)
+                .join(post.author).fetchJoin()
+                .leftJoin(post.images, postImage).fetchJoin()
+                .leftJoin(postImage.image).fetchJoin()
+                .orderBy(post.id.desc(), postImage.displayOrder.asc())
                 .limit(size + 1) //last 페이지인지 확인
                 .fetch();
 
@@ -35,7 +47,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         boolean hasNext = posts.size() > size;
 
-        if(hasNext) {
+        if(posts.isEmpty()) {
+            contentToReturn = List.of();
+            nextCursorId = null;
+        } else if (hasNext) {
             contentToReturn = posts.subList(0, size);
             nextCursorId = posts.get(size).getId();
         } else {

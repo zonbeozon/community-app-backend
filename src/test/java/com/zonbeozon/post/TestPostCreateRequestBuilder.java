@@ -1,4 +1,4 @@
-package com.zonbeozon.post.controller;
+package com.zonbeozon.post;
 
 import com.zonbeozon.post.dto.PostCreateRequest;
 
