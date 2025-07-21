@@ -47,7 +47,7 @@ public class UriAuthorizationConfig {
                 "/channel/*/member",
                 "/channel/*",
                 "/channel/*/member/*/kick",
-                "/channel/*/post/*"
+                "/post/*"
         ).authenticated();
 
 

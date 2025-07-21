@@ -17,10 +17,12 @@ public class PostRemover {
     private final PostFinder postFinder;
     private final PostRepository postRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final PostImageRemover postImageRemover;
 
     @CheckChannelAccess(ChannelAction.POST_DELETE)
     public void deletePost(Long postId) {
         Post post = postFinder.findById(postId);
+        postImageRemover.deletePostImages(postId);
         postRepository.delete(post);
         eventPublisher.publishEvent(new PostDeletedEvent(post.getChannel().getId(), postId));
     }

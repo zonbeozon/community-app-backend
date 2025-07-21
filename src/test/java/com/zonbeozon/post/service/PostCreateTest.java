@@ -100,7 +100,7 @@ public class PostCreateTest {
     }
 
     @Test
-    @DisplayName("올바른 이벤트를 발생시킨다.")
+    @DisplayName("이벤트를 발생시킨다.")
     void publishesEventWithCorrectValues() {
         new TestChannelMemberBuilder(author, blogChannel).withRole(ChannelRole.CHANNEL_ADMIN).persist(entityManager);
         Long id = postCreator.addPost(blogChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()));
