@@ -67,6 +67,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         //조회되는 값 없을때 Null 대신 반환
         totalElement = totalElement == null ? 0L : totalElement;
 
-        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, size);
+        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, posts.size());
     }
 }

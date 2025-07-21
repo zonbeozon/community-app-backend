@@ -35,7 +35,7 @@ public class PostCreator {
         if(channel instanceof BlogChannel blogChannel) {
             Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
-            postImageCreator.addPostImages(post.getId(), command.imageIds());
+            if(!command.imageIds().isEmpty()) postImageCreator.addPostImages(post.getId(), command.imageIds());
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();
         }

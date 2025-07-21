@@ -24,6 +24,14 @@ public class SimpleChannelPermissionEvaluator {
         return channelMemberFinder.existsByMemberAndChannel(member, channel);
     }
 
+    public boolean isMemberOfChannel(Long channelId, Member member) {
+        Channel channel = channelFinder.findById(channelId);
+        return channelMemberFinder.existsByMemberAndChannel(member, channel);
+    }
+
+    /**
+     *  채널 가입 여부는 확인하지 않는다.
+     */
     public boolean hasMinimumRole(Long channelId, ChannelRole requiredRole) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);
@@ -32,6 +40,9 @@ public class SimpleChannelPermissionEvaluator {
         return requesterRole.isHigherThan(requiredRole) || requesterRole.isEqual(requiredRole);
     }
 
+    /**
+     *  요청자와 타켓 유저의 채널 가입 여부는 확인하지 않는다.
+     */
     public boolean isSuperiorTo(Long channelId, Member targetMember) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);

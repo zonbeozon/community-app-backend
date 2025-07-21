@@ -182,7 +182,7 @@ public class PostController {
                             summary = "3개의 게시글과 2명의 작성자가 포함된 응답",
                             value = """
                                 {
-                                  "members": [
+                                  "authors": [
                                     {
                                       "memberId": 1,
                                       "username": "user1",
@@ -200,6 +200,7 @@ public class PostController {
                                     {
                                       "postId": 101,
                                       "content": "첫 번째 게시글 내용",
+                                      "images": [],
                                       "authorId": 1,
                                       "createdAt": "2024-07-01T10:00:00",
                                       "updatedAt": "2024-07-01T10:00:00"
@@ -207,6 +208,7 @@ public class PostController {
                                     {
                                       "postId": 102,
                                       "content": "두 번째 게시글 내용",
+                                      "images": [],
                                       "authorId": 2,
                                       "createdAt": "2024-07-02T12:00:00",
                                       "updatedAt": "2024-07-02T12:00:00"
@@ -214,16 +216,16 @@ public class PostController {
                                     {
                                       "postId": 103,
                                       "content": "세 번째 게시글 내용",
+                                      "images": ["http://example.com/123"],
                                       "authorId": 1,
                                       "createdAt": "2024-07-03T14:00:00",
                                       "updatedAt": "2024-07-03T14:30:00"
                                     }
                                   ],
                                   "size": 3,
-                                  "page": 0,
-                                  "totalPages": 1,
-                                  "totalElements": 3,
-                                  "isLastPage": true
+                                  "cursorId": 3,
+                                  "totalElements": 100,
+                                  "isLast": false,
                                 }
                                 """
                     ))

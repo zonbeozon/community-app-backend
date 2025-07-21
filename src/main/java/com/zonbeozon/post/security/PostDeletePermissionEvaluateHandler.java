@@ -28,12 +28,22 @@ public class PostDeletePermissionEvaluateHandler implements ChannelActionPermiss
         Long postId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.postIdParamName, Long.class);
         Post post = postFinder.findById(postId);
         Member author = post.getAuthor();
-        if(
-                //채널에 가입되어있고
-                permissionEvaluator.isMemberOfChannel(post.getChannel().getId())
-                //작성자거나 작성자 보다 권한이 높다면
-                && (author.equals(requester) || permissionEvaluator.isSuperiorTo(post.getChannel().getId(), author))
-        ) return;
+        //작성자가 채널에 가입되어 있다면
+        if(permissionEvaluator.isMemberOfChannel(post.getChannel().getId(), author)) {
+            //요청자가 채널에 가입되어 있고 작성자보다 권한이 높거나 작성자라면
+            if(
+                    permissionEvaluator.isMemberOfChannel(post.getChannel().getId())
+                    && (author.equals(requester) || permissionEvaluator.isSuperiorTo(post.getChannel().getId(), author))
+            ) return;
+        }
+        //작성자가 채널에 가입되어있지 않은 상태라면
+        else {
+            //요청자가 채널에 가입되어 있고 Admin 이상이라면
+            if(
+                    permissionEvaluator.isMemberOfChannel(post.getChannel().getId())
+                    && permissionEvaluator.hasMinimumRole(post.getChannel().getId(), ChannelRole.CHANNEL_ADMIN)
+            ) return;
+        }
         //나머지 경우라면 권한 없음
         throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
     }
