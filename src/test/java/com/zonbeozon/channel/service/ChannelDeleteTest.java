@@ -4,19 +4,21 @@ import com.zonbeozon.channel.repository.ChannelRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 
-//public class ChannelDeleteTest extends BaseChannelTest {
-//    @Autowired
-//    private ChannelRepository channelRepository;
-//    @Autowired
-//    private ChannelService channelService;
-//    @Autowired
-//    private ChannelMemberService channelMemberService;
-//
+@SpringBootTest
+@Transactional
+public class ChannelDeleteTest {
+    @Autowired
+    private ChannelRepository channelRepository;
+    @Autowired
+    private ChannelRemover channelRemover;
+
 //    @Test
-//    @DisplayName("채널 Owner라면 채널삭제를 수행할 수 있다.")
+//    @DisplayName("채널 Owner가 아니라면 채널삭제시 예외가 발생한다.")
 //    void ownerCanDeleteChannelSuccessfully() {
 //        channelRepository.findById(channel_1_id);
 //        channelService.deleteChannel(channel_1_owner, channel_1_id);
@@ -41,4 +43,4 @@ import static org.assertj.core.api.Assertions.*;
 //        assertThatThrownBy(() -> channelService.deleteChannel(member_2, channel_1_id))
 //                .isInstanceOf(ChannelMemberNotFoundException.class);
 //    }
-//}
+}

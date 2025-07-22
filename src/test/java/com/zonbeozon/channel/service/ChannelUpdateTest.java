@@ -1,88 +1,94 @@
 package com.zonbeozon.channel.service;
 
-//public class ChannelUpdateTest extends BaseChannelTest {
-//    @Autowired
-//    private ChannelService channelService;
-//    @Autowired
-//    private ChannelMemberService channelMemberService;
-//    @Autowired
-//    private ChannelRepository channelRepository;
-//
-//    private ChannelUpdateRequest validUpdateRequest = new ChannelUpdateRequest(
-//            "otherName",
-//            "otherDescription",
-//            "otherEmtpyProfile",
-//            ChannelVisibility.PRIVATE,
-//            ChannelJoinPolicy.DENY,
-//            ChannelSearchScope.PRIVATE
-//    );
-//
-//    @Test
-//    @DisplayName("채널 Owner가 아니라면 채널 업데이트를 호출시 예외가 발생한다")
-//    void throwExceptionWhenNonOwnerTriesToUpdateChannel() {
-//        channelMemberService.joinAsMember(member_2, channel_1_id);
-//        assertThatThrownBy(() -> channelService.updateChannel(member_2, channel_1_id, validUpdateRequest))
-//                .isInstanceOf(ChannelAccessDeniedException.class)
-//                .satisfies((e) -> {
-//                    ChannelAccessDeniedException exception = (ChannelAccessDeniedException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelAccessDeniedException.ErrorCode.MODIFY_CHANNEL_METADATA_FORBIDDEN);
-//                });
-//    }
-//
-//    @Test
-//    @DisplayName("중복 채널 명이 있다면 예외가 발생한다")
-//    void throwExceptionWhenDuplicateChannelTitleProvided() {
-//        ChannelAddCommand validChannelAddCommand = new ChannelAddCommand(
-//                validUpdateRequest.title(),
-//                "description",
-//                "emtpyProfile",
-//                ChannelVisibility.PUBLIC,
-//                ChannelType.COMMUNITY_INFO,
-//                ChannelJoinPolicy.OPEN,
-//                ChannelSearchScope.PUBLIC
-//        );
-//        channelService.addChannel(validChannelAddCommand, channel_1_owner);
-//
-//        assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest))
-//                .isInstanceOf(ChannelBadRequestException.class)
-//                .satisfies((e) -> {
-//                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.DUPLICATE_CHANNEL_TITLE);
-//                });
-//    }
-//
-//    @Test
-//    @DisplayName("채널 Setting조합이 잘못된 조합(SearchLevel이 Private, ContentOpenLevel이 Public)이라면 예외가 발생한다.")
-//    void throwExceptionWhenInvalidSettingCombinationProvided() {
-//        ChannelUpdateRequest invalidCombinationUpdateRequest = new ChannelUpdateRequest(
-//                ChannelFixture.CHANNEL_ADD_COMMAND_1.title(),
-//                "description",
-//                "emtpyProfile",
-//                ChannelVisibility.PUBLIC,
-//                ChannelJoinPolicy.DENY,
-//                ChannelSearchScope.PRIVATE
-//        );
-//
-//        assertThatThrownBy(() -> channelService.updateChannel(channel_1_owner, channel_1_id, invalidCombinationUpdateRequest))
-//                .isInstanceOf(ChannelBadRequestException.class)
-//                .satisfies((e) -> {
-//                    ChannelBadRequestException exception = (ChannelBadRequestException) e;
-//                    assertThat(exception.getErrorCode()).isEqualTo(ChannelBadRequestException.ErrorCode.INVALID_CHANNEL_SETTING_COMBINATION);
-//                });
-//    }
-//
-//    @Test
-//    @DisplayName("업데이트가 정상적으로 수행되어야 한다.")
-//    void updateChannelSuccessfullyWhenValidRequestAndOwner() {
-//        channelService.updateChannel(channel_1_owner, channel_1_id, validUpdateRequest);
-//        Channel channel = channelRepository.findById(channel_1_id)
-//                .orElseThrow(() -> new RuntimeException("채널 Id에 맞는 채널이 존재하지 않습니다."));
-//
-//        assertThat(channel.getTitle()).isEqualTo(validUpdateRequest.title());
-//        assertThat(channel.getDescription()).isEqualTo(validUpdateRequest.description());
-//        assertThat(channel.getProfile()).isEqualTo(validUpdateRequest.profile());
-//        assertThat(channel.getContentOpenLevel()).isEqualTo(validUpdateRequest.contentOpenLevel());
-//        assertThat(channel.getJoinLevel()).isEqualTo(validUpdateRequest.joinLevel());
-//        assertThat(channel.getSearchLevel()).isEqualTo(validUpdateRequest.searchLevel());
-//    }
-//}
+import com.zonbeozon.channel.TestChannelBuilder;
+import com.zonbeozon.channel.TestChannelMemberBuilder;
+import com.zonbeozon.channel.TestChannelProfileBuilder;
+import com.zonbeozon.channel.TestChannelUpdateRequestBuilder;
+import com.zonbeozon.channel.dto.ChannelUpdateRequest;
+import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelProfile;
+import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.repository.ChannelRepository;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ConflictException;
+import com.zonbeozon.image.TestImageBuilder;
+import com.zonbeozon.image.entity.Image;
+import com.zonbeozon.member.TestMemberBuilder;
+import com.zonbeozon.member.domain.Member;
+import jakarta.persistence.EntityManager;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+@SpringBootTest
+@Transactional
+public class ChannelUpdateTest {
+    @Autowired
+    private ChannelUpdater channelUpdater;
+    @Autowired
+    private EntityManager entityManager;
+
+    private Channel channel;
+    private Member member;
+
+    @BeforeEach
+    void setUp() {
+        member = new TestMemberBuilder("choi", "choi@gmail.com").persistAndSetSecurityContext(entityManager);
+        channel = new TestChannelBuilder().persist(entityManager);
+    }
+
+    @Test
+    @DisplayName("채널 Owner가 아니라면 채널 업데이트를 호출시 예외가 발생한다")
+    void throwExceptionWhenNonOwnerTriesToUpdateChannel() {
+        new TestChannelMemberBuilder(member, channel).withRole(ChannelRole.CHANNEL_ADMIN).persist(entityManager);
+        ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().build();
+        assertThatThrownBy(() -> channelUpdater.updateChannel(channel.getId(), request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("중복 채널 명이 있다면 예외가 발생한다")
+    void throwExceptionWhenDuplicateChannelTitleProvided() {
+        new TestChannelBuilder().withTitle("duplicate").persist(entityManager);
+        new TestChannelMemberBuilder(member, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
+        ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withTitle("duplicate").build();
+        assertThatThrownBy(() -> channelUpdater.updateChannel(channel.getId(), request))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("채널 프로필 이미지 id가 기존에 없었다면 프로필 이미지를 추가한다.")
+    void addProfileImageWhenChannelHasNoExistingProfileImage() {
+        Image image = new TestImageBuilder(member, "134").persist(entityManager);
+
+        new TestChannelMemberBuilder(member, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
+        ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(image.getId()).build();
+        channelUpdater.updateChannel(channel.getId(), request);
+
+        Assertions.assertThat(channel.getProfile()).isNotNull();
+        Assertions.assertThat(channel.getProfile().getImage().getId()).isEqualTo(image.getId());
+    }
+
+    @Test
+    @DisplayName("채널 프로필 이미지 id가 기존에 있었지만 변경되었다면 프로필 이미지를 변경한다.")
+    void updateProfileImageWhenChannelHasExistingProfileImage() {
+        Image existImage = new TestImageBuilder(member, "134").persist(entityManager);
+        ChannelProfile channelProfile = new TestChannelProfileBuilder(channel, existImage).persist(entityManager);
+
+        channel.updateChannelProfile(channelProfile);
+        Image newImage = new TestImageBuilder(member, "1345").persist(entityManager);
+        new TestChannelMemberBuilder(member, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
+
+        ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(newImage.getId()).build();
+        channelUpdater.updateChannel(channel.getId(), request);
+
+        Assertions.assertThat(channel.getProfile()).isNotNull();
+        Assertions.assertThat(channel.getProfile().getImage().getId()).isEqualTo(newImage.getId());
+    }
+}

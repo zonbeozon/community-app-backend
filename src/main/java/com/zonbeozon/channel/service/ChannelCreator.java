@@ -19,6 +19,7 @@ public class ChannelCreator {
     private final ChannelFactory channelFactory;
     private final ChannelMemberJoiner channelMemberJoiner;
     private final AuthenticationService authenticationService;
+    private final ChannelProfileUpdater channelProfileUpdater;
 
     public Long addChannel(ChannelCreateCommand command) {
         Member requester = authenticationService.getCurrentMember();
@@ -26,6 +27,7 @@ public class ChannelCreator {
             throw new ConflictException(ErrorCode.DUPLICATE_CHANNEL_TITLE);
         Channel channel = channelFactory.createChannel(command, requester);
         channelRepository.save(channel);
+        channelProfileUpdater.updateImage(channel.getId(), command.imageId());
         channelMemberJoiner.joinAsOwner(requester, channel);
         return channel.getId();
     }

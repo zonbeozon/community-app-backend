@@ -54,9 +54,9 @@ public class PostAssemblerTest {
 
         image_1 = new TestImageBuilder(member, "1").persist(entityManager);
         image_2 = new TestImageBuilder(member, "2").persist(entityManager);
-        PostImage postImage_1 = new TestPostImageBuilder(post_1, image_1, 0).persist(entityManager);
+        PostImage postImage_1 = new TestPostImageBuilder(post_1, image_1).persist(entityManager);
         post_1.getImages().add(postImage_1);
-        PostImage postImage_2 = new TestPostImageBuilder(post_1, image_2, 1).persist(entityManager);
+        PostImage postImage_2 = new TestPostImageBuilder(post_1, image_2).persist(entityManager);
         post_1.getImages().add(postImage_2);
     }
 
@@ -90,7 +90,7 @@ public class PostAssemblerTest {
         Assertions.assertThat(response.posts()).hasSize(1);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_1.getId());
         Assertions.assertThat(response.posts().get(0).images()).hasSize(2);
-        Assertions.assertThat(response.posts().get(0).images().get(0)).isEqualTo(image_1.getUrl());
-        Assertions.assertThat(response.posts().get(0).images().get(1)).isEqualTo(image_2.getUrl());
+        Assertions.assertThat(response.posts().get(0).images().get(0).imageId()).isEqualTo(image_1.getId());
+        Assertions.assertThat(response.posts().get(0).images().get(1).imageId()).isEqualTo(image_2.getId());
     }
 }

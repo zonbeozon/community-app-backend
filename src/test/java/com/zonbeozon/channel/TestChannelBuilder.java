@@ -13,7 +13,6 @@ import jakarta.persistence.EntityManager;
 public class TestChannelBuilder {
     private String title = "example title";
     private String description = "example description";
-    private String profile = "example Profile";
     private ChannelVisibility visibility = ChannelVisibility.PUBLIC;
     private ChannelJoinPolicy joinPolicy = ChannelJoinPolicy.OPEN;
     private ChannelCreatorType creatorType = ChannelCreatorType.COMMUNITY;
@@ -22,10 +21,10 @@ public class TestChannelBuilder {
     public Channel build() {
         return switch (channelType) {
             case BLOG:
-                yield new BlogChannel(title, description, profile, new ChannelSetting(visibility, joinPolicy), creatorType);
+                yield new BlogChannel(title, description, new ChannelSetting(visibility, joinPolicy), creatorType);
 
             case CHAT:
-                yield new ChatChannel(title, description, profile, new ChannelSetting(visibility, joinPolicy), creatorType);
+                yield new ChatChannel(title, description, new ChannelSetting(visibility, joinPolicy), creatorType);
         };
     }
 

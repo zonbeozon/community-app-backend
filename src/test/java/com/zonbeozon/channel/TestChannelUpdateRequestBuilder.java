@@ -2,40 +2,40 @@ package com.zonbeozon.channel;
 
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
 import com.zonbeozon.channel.dto.ChannelSettingRequest;
-import com.zonbeozon.channel.enums.ChannelVisibility;
+import com.zonbeozon.channel.dto.ChannelUpdateRequest;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
+import com.zonbeozon.channel.enums.ChannelVisibility;
 
-public class TestChannelCreateRequestBuilder {
+public class TestChannelUpdateRequestBuilder {
     private String title = "example title";
     private String description = "example description";
     private Long imageId;
     private ChannelVisibility visibility = ChannelVisibility.PUBLIC;
-    private ChannelType channelType = ChannelType.BLOG;
     private ChannelJoinPolicy joinPolicy = ChannelJoinPolicy.OPEN;
 
-    public ChannelCreateRequest build() {
-        return new ChannelCreateRequest(
-                channelType, title, description, imageId, new ChannelSettingRequest(visibility, joinPolicy)
+    public ChannelUpdateRequest build() {
+        return new ChannelUpdateRequest(
+                title, description, imageId, new ChannelSettingRequest(visibility, joinPolicy)
         );
     }
 
-    public TestChannelCreateRequestBuilder setTitle(String title) {
+    public TestChannelUpdateRequestBuilder withTitle(String title) {
         this.title = title;
         return this;
     }
 
-    public TestChannelCreateRequestBuilder setContentVisibility(ChannelVisibility visibility) {
+    public TestChannelUpdateRequestBuilder withContentVisibility(ChannelVisibility visibility) {
         this.visibility = visibility;
         return this;
     }
 
-    public TestChannelCreateRequestBuilder setJoinPolicy(ChannelJoinPolicy joinPolicy) {
+    public TestChannelUpdateRequestBuilder withJoinPolicy(ChannelJoinPolicy joinPolicy) {
         this.joinPolicy = joinPolicy;
         return this;
     }
 
-    public TestChannelCreateRequestBuilder setImageId(Long imageId) {
+    public TestChannelUpdateRequestBuilder withImageId(Long imageId) {
         this.imageId = imageId;
         return this;
     }

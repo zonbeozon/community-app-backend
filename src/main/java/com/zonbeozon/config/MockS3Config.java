@@ -13,10 +13,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import java.net.URI;
 
 @Configuration
-@Profile({"local", "test"})
+@Profile({"local"})
 public class MockS3Config {
-    @Value("${mock.aws.host}")
-    private String host;
+    @Value("${mock.aws.docker.host}")
+    private String dockerHost;
+
+    @Value("${mock.aws.external.host}")
+    private String externHost;
 
     @Value("${mock.aws.s3.bucket}")
     private String bucket;
@@ -36,7 +39,7 @@ public class MockS3Config {
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
                 .forcePathStyle(true)
-                .endpointOverride(URI.create(String.format("http://%s/%s",host, bucket)))
+                .endpointOverride(URI.create(String.format("http://" + dockerHost)))
                 .build();
     }
 
@@ -50,12 +53,12 @@ public class MockS3Config {
 
             @Override
             public String getEndpoint() {
-                return String.format("http://%s/%s", host, bucket);
+                return String.format("http://%s/%s", externHost, bucket);
             }
 
             @Override
             public String getHost() {
-                return host;
+                return externHost;
             }
 
             @Override

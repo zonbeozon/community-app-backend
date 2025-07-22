@@ -45,7 +45,10 @@ public enum ErrorCode {
     MAX_POST_IMAGE_REACHED("Post 이미지 최대 업로드 개수를 초과했습니다"),
 
     //reaction
-    REACTION_NOT_FOUND("해당 reaction 기록이 없습니다");
+    REACTION_NOT_FOUND("해당 reaction 기록이 없습니다"),
+
+    //image
+    IMAGE_NOT_FOUND("해당 조건에 맞는 image가 존재하지 않습니다.");
 
     private final String message;
 }

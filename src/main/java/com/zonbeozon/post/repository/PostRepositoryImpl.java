@@ -6,14 +6,12 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.entity.QPost;
-import com.zonbeozon.post.entity.QPostImage;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.post.entity.QPost.post;
 import static com.zonbeozon.post.entity.QPostImage.*;
 
@@ -21,6 +19,7 @@ import static com.zonbeozon.post.entity.QPostImage.*;
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
 
     @Override
     public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
@@ -38,7 +37,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .join(post.author).fetchJoin()
                 .leftJoin(post.images, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
-                .orderBy(post.id.desc(), postImage.displayOrder.asc())
+                .orderBy(post.id.desc(), postImage.id.asc())
                 .limit(size + 1) //last 페이지인지 확인
                 .fetch();
 
@@ -68,5 +67,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         totalElement = totalElement == null ? 0L : totalElement;
 
         return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, posts.size());
+    }
+
+    @Override
+    public void softDeleteAllByChannelId(Long channelId) {
+        queryFactory.update(post)
+                .set(post.isDeleted, true)
+                .where(post.channel.id.eq(channelId))
+                .execute();
+
+        entityManager.clear();;
+
     }
 }

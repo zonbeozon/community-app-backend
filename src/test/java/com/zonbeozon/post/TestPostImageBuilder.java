@@ -8,16 +8,14 @@ import jakarta.persistence.EntityManager;
 public class TestPostImageBuilder {
     private Post post;
     private Image image;
-    private int displayOrder;
 
-    public TestPostImageBuilder(Post post, Image image, int displayOrder) {
+    public TestPostImageBuilder(Post post, Image image) {
         this.post = post;
         this.image = image;
-        this.displayOrder = displayOrder;
     }
 
     public PostImage build() {
-        return new PostImage(post, image, displayOrder);
+        return new PostImage(post, image);
     }
     public PostImage persist(EntityManager entityManager) {
         PostImage postImage = build();

@@ -16,7 +16,6 @@ public class CommunityBlogChannelCreateHandler implements ChannelCreateStrategy 
         return new BlogChannel(
                 command.title(),
                 command.description(),
-                command.profile(),
                 new ChannelSetting(command.visibility(), command.joinPolicy()),
                 ChannelCreatorType.COMMUNITY
         );

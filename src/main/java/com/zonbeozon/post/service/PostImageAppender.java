@@ -3,8 +3,8 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.image.entity.Image;
+import com.zonbeozon.image.service.ImageFinder;
 import com.zonbeozon.image.service.ImageOwnershipVerifier;
-import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.entity.PostImage;
 import com.zonbeozon.post.repository.PostImageRepository;
@@ -17,24 +17,24 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class PostImageCreator {
+public class PostImageAppender {
     private final PostImageRepository postImageRepository;
-    private final ImageRepository imageRepository;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final PostFinder postFinder;
+    private final ImageFinder imageFinder;
 
     public void addPostImages(Long postId, List<Long> imageIds) {
         Post post = postFinder.findById(postId);
         checkPostImageLimit(postId, imageIds);
         imageOwnershipVerifier.verify(imageIds);
-        List<Image> images = imageRepository.findAllById(imageIds);
-        int displayOrder = 0;
+        List<Image> images = imageFinder.findAllById(imageIds);
         for(Image image : images) {
-            PostImage postImage = new PostImage(post, image, displayOrder++);
+            PostImage postImage = new PostImage(post, image);
             postImageRepository.save(postImage);
             post.getImages().add(postImage);
         }
     }
+
 
     private void checkPostImageLimit(Long postId, List<Long> imageIds) {
         List<PostImage> postImages = postImageRepository.findAllByPostId(postId);

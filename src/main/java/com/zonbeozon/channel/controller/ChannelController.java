@@ -109,7 +109,7 @@ public class ChannelController {
                         request.channelType(),
                         request.title(),
                         request.description(),
-                        request.profile(),
+                        request.imageId(),
                         request.settings().visibility(),
                         request.settings().joinPolicy(),
                         ChannelCreatorType.COMMUNITY

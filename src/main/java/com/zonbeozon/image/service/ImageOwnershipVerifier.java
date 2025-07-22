@@ -16,16 +16,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ImageOwnershipVerifier {
-    private final ImageRepository imageRepository;
     private final AuthenticationService authenticationService;
+    private final ImageFinder imageFinder;
 
     public void verify(List<Long> imageIds) {
         Member member = authenticationService.getCurrentMember();
-        List<Image> images = imageRepository.findAllById(imageIds);
+        List<Image> images = imageFinder.findAllById(imageIds);
         images.forEach(image -> {
             if(!member.equals(image.getUploader())) {
                 throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
             }
         });
+    }
+
+    public void verify(Long imageId) {
+        Member member = authenticationService.getCurrentMember();
+        Image image = imageFinder.findById(imageId);
+        if(!member.equals(image.getUploader())) {
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        }
     }
 }

@@ -15,11 +15,10 @@ public class BlogChannel extends Channel {
     public BlogChannel(
             String title,
             String description,
-            String profile,
             ChannelSetting setting,
             ChannelCreatorType creatorType
     ) {
-        super(title, description, profile, setting, creatorType);
+        super(title, description, setting, creatorType);
     }
 
     //비정규화 필드

@@ -2,6 +2,7 @@ package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelType;
+import com.zonbeozon.image.entity.ImageResponse;
 import com.zonbeozon.post.dto.PostResponse;
 
 public record JoinedBlogChannelResponse(
@@ -9,13 +10,15 @@ public record JoinedBlogChannelResponse(
     ChannelType channelType,
     String title,
     String description,
-    String profile,
+    ImageResponse profile,
     ChannelSettingResponse settings,
     Long memberCount,
     PostResponse latestPost
 ) {
+
     public static JoinedBlogChannelResponse from(BlogChannelOverview blogChannelOverview) {
         Channel channel = blogChannelOverview.getBlogChannel();
+        ImageResponse imageResponse = channel.getProfile() == null ? null : ImageResponse.from(channel.getProfile().getImage());
         PostResponse postResponse = blogChannelOverview.getLatestPost() == null ?
                 null : PostResponse.from(blogChannelOverview.getLatestPost());
         return new JoinedBlogChannelResponse(
@@ -23,7 +26,7 @@ public record JoinedBlogChannelResponse(
                 channel.getChannelType(),
                 channel.getTitle(),
                 channel.getDescription(),
-                channel.getProfile(),
+                imageResponse,
                 ChannelSettingResponse.from(channel.getSetting()),
                 blogChannelOverview.getMemberCount(),
                 postResponse

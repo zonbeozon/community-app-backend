@@ -29,7 +29,7 @@ import java.util.List;
 @Transactional
 public class PostImageCreateTest {
     @Autowired
-    private PostImageCreator postImageCreator;
+    private PostImageAppender postImageAppender;
     @Autowired
     private EntityManager entityManager;
     @Autowired
@@ -60,7 +60,7 @@ public class PostImageCreateTest {
                 new TestImageBuilder(member, "6").persist(entityManager).getId()
         );
 
-        Assertions.assertThatThrownBy(() -> postImageCreator.addPostImages(post.getId(), imageIds))
+        Assertions.assertThatThrownBy(() -> postImageAppender.addPostImages(post.getId(), imageIds))
                 .isInstanceOf(BadRequestException.class)
                 .satisfies(e -> {
                     BadRequestException badRequestException = (BadRequestException) e;
@@ -75,7 +75,7 @@ public class PostImageCreateTest {
         Member otherMember = new TestMemberBuilder("yunghi", "yunghi@gmail.com").persist(entityManager);
         List<Long> imageIds = List.of(new TestImageBuilder(otherMember, "1").persist(entityManager).getId());
 
-        Assertions.assertThatThrownBy(() -> postImageCreator.addPostImages(post.getId(), imageIds))
+        Assertions.assertThatThrownBy(() -> postImageAppender.addPostImages(post.getId(), imageIds))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -87,7 +87,7 @@ public class PostImageCreateTest {
                 new TestImageBuilder(member, "2").persist(entityManager).getId()
         );
 
-        postImageCreator.addPostImages(post.getId(), imageIds);
+        postImageAppender.addPostImages(post.getId(), imageIds);
 
         List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
         Assertions.assertThat(postImages).hasSize(2);
@@ -96,7 +96,7 @@ public class PostImageCreateTest {
         });
         PostImage firstPostImage = postImages.get(0);
         PostImage secondPostImage = postImages.get(1);
-        Assertions.assertThat(firstPostImage.getDisplayOrder()).isEqualTo(0);
-        Assertions.assertThat(secondPostImage.getDisplayOrder()).isEqualTo(1);
+        Assertions.assertThat(firstPostImage.getImage().getObjectKey()).isEqualTo("1");
+        Assertions.assertThat(secondPostImage.getImage().getObjectKey()).isEqualTo("2");
     }
 }

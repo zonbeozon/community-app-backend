@@ -132,7 +132,7 @@ public class PostController {
                     description = "성공 - 응답 바디 없음"
             )
     })
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("post/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId
     ) {
@@ -153,7 +153,7 @@ public class PostController {
                     description = "성공 - 응답 바디 없음"
             )
     })
-    @PatchMapping("/{postId}")
+    @PatchMapping("post/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody

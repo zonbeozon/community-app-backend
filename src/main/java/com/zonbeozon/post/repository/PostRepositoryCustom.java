@@ -6,4 +6,5 @@ import com.zonbeozon.post.entity.Post;
 
 public interface PostRepositoryCustom {
     CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size);
+    void softDeleteAllByChannelId(Long channelId);
 }

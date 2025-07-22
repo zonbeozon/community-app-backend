@@ -38,9 +38,8 @@ public abstract class Channel extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotNull
-    @Column(columnDefinition = "TEXT")
-    private String profile;
+    @OneToOne(mappedBy = "channel")
+    private ChannelProfile profile;
 
     @NotNull
     private boolean isDeleted = false;
@@ -56,13 +55,11 @@ public abstract class Channel extends BaseTimeEntity {
     protected Channel(
             String title,
             String description,
-            String profile,
             ChannelSetting setting,
             ChannelCreatorType creatorType
     ) {
         this.title = title;
         this.description = description;
-        this.profile = profile;
         this.setting = setting;
         this.creatorType = creatorType;
     }
@@ -73,11 +70,11 @@ public abstract class Channel extends BaseTimeEntity {
         this.title = title;
     }
 
-    public void updateDescription(String description) {
-        this.description = description;
+    public void updateChannelProfile(ChannelProfile profile) {
+        this.profile = profile;
     }
 
-    public void updateProfile(String profile) {
-        this.profile = profile;
+    public void updateDescription(String description) {
+        this.description = description;
     }
 }

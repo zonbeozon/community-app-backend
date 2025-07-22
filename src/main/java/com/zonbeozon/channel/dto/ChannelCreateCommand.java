@@ -9,7 +9,7 @@ public record ChannelCreateCommand(
         ChannelType type,
         String title,
         String description,
-        String profile,
+        Long imageId,
         ChannelVisibility visibility,
         ChannelJoinPolicy joinPolicy,
         ChannelCreatorType creatorType

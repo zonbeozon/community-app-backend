@@ -2,11 +2,12 @@ package com.zonbeozon.post;
 
 import com.zonbeozon.post.dto.PostCreateRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestPostCreateRequestBuilder {
     private String content = "test post";
-    private List<Long> imageIds;
+    private List<Long> imageIds = new ArrayList<>();
 
     public PostCreateRequest build() {
         return new PostCreateRequest(content, imageIds);

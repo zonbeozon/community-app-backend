@@ -14,11 +14,10 @@ public class ChatChannel extends Channel {
     public ChatChannel(
             String title,
             String description,
-            String profile,
             ChannelSetting setting,
             ChannelCreatorType creatorType
     ) {
-        super(title, description, profile, setting, creatorType);
+        super(title, description, setting, creatorType);
     }
 
     @Override

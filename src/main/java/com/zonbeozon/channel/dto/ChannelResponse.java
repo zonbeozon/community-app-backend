@@ -4,12 +4,13 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
+import com.zonbeozon.image.entity.ImageResponse;
 
 public record ChannelResponse(
         Long channelId,
         ChannelType channelType,
         String title,
-        String profile,
+        ImageResponse profile,
         String description,
         ChannelJoinPolicy channelJoinPolicy,
         ChannelVisibility channelVisibility,
@@ -18,11 +19,12 @@ public record ChannelResponse(
 
     public static ChannelResponse from(ChannelWithMemberCount channelWithMemberCount) {
         Channel channel = channelWithMemberCount.getChannel();
+        ImageResponse imageResponse = channel.getProfile() == null ? null : ImageResponse.from(channel.getProfile().getImage());
         return new ChannelResponse(
                 channel.getId(),
                 channel.getChannelType(),
                 channel.getTitle(),
-                channel.getProfile(),
+                imageResponse,
                 channel.getDescription(),
                 channel.getSetting().getJoinPolicy(),
                 channel.getSetting().getVisibility(),

@@ -5,5 +5,6 @@ public enum ChannelAction {
 
     MODIFY_ROLE,
 
+    CHANNEL_UPDATE, CHANNEL_DELETE,
     KICK;
 }

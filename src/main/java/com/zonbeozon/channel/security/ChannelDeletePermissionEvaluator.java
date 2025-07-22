@@ -1,29 +1,25 @@
 package com.zonbeozon.channel.security;
 
+import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.global.AspectUtils;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class KickPermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler {
+public class ChannelDeletePermissionEvaluator implements ChannelActionPermissionEvaluateHandler {
     private final SimpleChannelPermissionEvaluator permissionEvaluator;
-    private final MemberFinder memberFinder;
 
     @Override
     public void handle(JoinPoint joinPoint) {
         Long channelId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
-        Long targetMemberId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.targetMemberIdParamName, Long.class);
-        Member targetMember = memberFinder.findById(targetMemberId);
-        //요청자가 채널에 가입되어있고 대상보다 권한이 높다면
-        if(permissionEvaluator.isMemberOfChannel(channelId) && permissionEvaluator.isSuperiorTo(channelId, targetMember)) {
+        //요청자가 채널에 가입되어있고 Owner라면
+        if(permissionEvaluator.isMemberOfChannel(channelId) && permissionEvaluator.hasMinimumRole(channelId, ChannelRole.CHANNEL_OWNER)) {
             return;
         }
         throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
@@ -31,6 +27,6 @@ public class KickPermissionEvaluateHandler implements ChannelActionPermissionEva
 
     @Override
     public boolean isSupport(ChannelAction action) {
-        return ChannelAction.KICK == action;
+        return ChannelAction.CHANNEL_UPDATE == action;
     }
 }

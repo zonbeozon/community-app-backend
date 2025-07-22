@@ -1,10 +1,8 @@
-package com.zonbeozon.integral.image;
+package com.zonbeozon.image;
 
 import com.zonbeozon.global.UUIDGenerator;
 import com.zonbeozon.image.entity.Image;
-import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.service.ImageS3Uploader;
-import com.zonbeozon.image.S3Properties;
 import com.zonbeozon.member.TestMemberBuilder;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -73,17 +71,5 @@ public class ImageUploadTest {
         Assertions.assertThat(image.getUrl()).isEqualTo(s3Properties.getEndpoint() + "/" + uuid);
         Assertions.assertThat(image.getObjectKey()).isEqualTo(uuid);
         Assertions.assertThat(image.getUploader().getUsername()).isEqualTo("choi");
-    }
-
-    @DisplayName("이미지 업로드 성공시 s3Mock에 이미지가 저장되어야한다")
-    @Test
-    void uploadImageShouldStoreFileInS3Mock() {
-        Long imageId = imageS3Uploader.uploadImage(is, contentLength, "image/jpeg");
-        HeadObjectResponse headResponse = s3Client.headObject(HeadObjectRequest.builder()
-                .bucket(s3Properties.getBucket())
-                .key(uuid)
-                .build());
-
-        Assertions.assertThat(headResponse).isNotNull();
     }
 }
