@@ -1,4 +1,4 @@
-package com.zonbeozon.test;
+package com.zonbeozon.global.exception.stomp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

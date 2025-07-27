@@ -1,28 +1,36 @@
-package com.zonbeozon.test;
+package com.zonbeozon.channel.websocket;
 
 import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.service.ChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
+import com.zonbeozon.global.exception.stomp.SubscriptionException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInterceptor {
 
     private final ChannelMemberFinder channelMemberFinder;
     private final ChannelFinder channelFinder;
     private final MemberFinder memberFinder;
+
+    private final ChannelRepository channelRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

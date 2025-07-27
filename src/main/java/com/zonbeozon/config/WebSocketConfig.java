@@ -1,7 +1,11 @@
-package com.zonbeozon.test;
+package com.zonbeozon.config;
 
+import com.zonbeozon.auth.StompConnectAuthenticationInterceptor;
+import com.zonbeozon.channel.websocket.StompChannelSubscribeAuthorizationInterceptor;
+import com.zonbeozon.global.exception.stomp.StompExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,14 +16,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final StompConnectAuthenticationInterceptor stompConnectAuthenticationInterceptor;
     private final StompChannelSubscribeAuthorizationInterceptor stompChannelSubscribeAuthorizationInterceptor;
+    private final StompConnectAuthenticationInterceptor stompConnectAuthenticationInterceptor;
+    private final StompExceptionHandler stompExceptionHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
+        registry.setErrorHandler(stompExceptionHandler)
+                .addEndpoint("/ws")
                 .setAllowedOriginPatterns("*");
-        registry.setErrorHandler(new StompExceptionHandler());
     }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

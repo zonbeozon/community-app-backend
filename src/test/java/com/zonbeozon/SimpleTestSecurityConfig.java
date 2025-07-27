@@ -2,7 +2,7 @@ package com.zonbeozon;
 
 import com.zonbeozon.auth.handler.CustomAccessDeniedHandler;
 import com.zonbeozon.auth.handler.CustomAuthenticationEntryPoint;
-import com.zonbeozon.config.UriAuthorizationConfig;
+import com.zonbeozon.config.SecurityPathConfig;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +28,7 @@ public class SimpleTestSecurityConfig {
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
-                .authorizeHttpRequests(UriAuthorizationConfig::configureAuthorization)
+                .authorizeHttpRequests(SecurityPathConfig::configureAuthorization)
                 .build();
     }
 }

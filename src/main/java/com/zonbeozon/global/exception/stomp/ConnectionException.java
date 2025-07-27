@@ -1,4 +1,4 @@
-package com.zonbeozon.test;
+package com.zonbeozon.global.exception.stomp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,8 @@ public class ConnectionException extends RuntimeException {
   @AllArgsConstructor
   @Getter
   public enum ErrorCode {
-    UNAUTHORIZED("인증 정보가 없거나 유효하지 않습니다.");
+    UNAUTHENTICATED("인증 정보가 없거나 유효하지 않습니다."),
+    EXPIRED_TOKEN("토큰이 만료되었습니다. 재발급이 필요합니다");
 
     private final String message;
   }

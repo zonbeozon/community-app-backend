@@ -30,8 +30,7 @@ import java.lang.annotation.Target;
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ReissueAccessTokenFilter.class),
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = TokenAuthenticationFilter.class),
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = TokenExceptionFilter.class)
-        },
-        excludeAutoConfiguration = {OAuth2ClientAutoConfiguration.class}
+        }
 )
 @Import({
         SimpleTestSecurityConfig.class
