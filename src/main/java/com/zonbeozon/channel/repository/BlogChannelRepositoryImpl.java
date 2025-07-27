@@ -3,6 +3,7 @@ package com.zonbeozon.channel.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.dto.BlogChannelOverview;
+import com.zonbeozon.channel.entity.QChannelMember;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +20,24 @@ import static com.zonbeozon.post.entity.QPost.post;
 public class BlogChannelRepositoryImpl implements BlogChannelRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
+    private final QChannelMember allChannelMembers = new QChannelMember("allChannelMembers");
+    private final QChannelMember requester = new QChannelMember("requester");
+
     @Override
     public List<BlogChannelOverview> getBlogChannelsByMember(Member member, ChannelCreatorType creatorType) {
         return queryFactory.select(Projections.constructor(BlogChannelOverview.class,
                         blogChannel,
-                        channelMember.count(),
+                        allChannelMembers.count(),
                         post
                 ))
                 .from(blogChannel)
-                .join(channelMember).on(
-                        channelMember.channel.id.eq(blogChannel.id)
+                .join(allChannelMembers).on(
+                        allChannelMembers.channel.id.eq(blogChannel.id)
                                 .and(ChannelMemberQuery.isActive())
+                )
+                .join(requester).on(
+                        requester.channel.id.eq(blogChannel.id)
+                                .and(requester.member.eq(member))
                 )
                 .leftJoin(post).on(post.id.eq(blogChannel.latestPostId)).fetchJoin()
                 .leftJoin(post.author).fetchJoin()

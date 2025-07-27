@@ -1,9 +1,9 @@
 package com.zonbeozon.auth.filter;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
+import com.zonbeozon.auth.service.TokenProvider;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.UnauthenticatedException;
-import com.zonbeozon.auth.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

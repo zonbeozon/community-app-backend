@@ -1,9 +1,11 @@
 package com.zonbeozon.auth.filter;
 
 import com.zonbeozon.auth.AuthenticationTokenUtils;
+import com.zonbeozon.auth.service.TokenParser;
+import com.zonbeozon.auth.service.TokenValidator;
+import com.zonbeozon.config.SecurityPathConfig;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.UnauthenticatedException;
-import com.zonbeozon.auth.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +22,13 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    private final TokenProvider tokenProvider;
+    private final TokenParser tokenParser;
+    private final TokenValidator tokenValidator;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return SecurityPathConfig.PERMITTED_MATCHER.matches(request);
+    }
 
     @Override
     protected void doFilterInternal(
@@ -35,7 +43,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         //accessToken이 유효하다면
-        if (tokenProvider.validateToken(accessToken)) {
+        if (tokenValidator.validateToken(accessToken)) {
             setAuthentication(accessToken);
             filterChain.doFilter(request, response);
         } else {
@@ -44,7 +52,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(String accessToken) {
-        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        Authentication authentication = tokenParser.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

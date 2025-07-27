@@ -49,7 +49,9 @@ public class LocalSecurityConfig {
 
     @PostConstruct
     public void init() {
-        memberCreator.createMemberWithRandomUsername("user@gmail.com", "", ServerRole.USER);
+        memberCreator.createMemberWithRandomUsername("user_1@gmail.com", "", ServerRole.USER);
+        memberCreator.createMemberWithRandomUsername("user_2@gmail.com", "", ServerRole.USER);
+        memberCreator.createMemberWithRandomUsername("user_3@gmail.com", "", ServerRole.USER);
         memberCreator.createMemberWithRandomUsername("admin@gmail.com", "", ServerRole.ADMIN);
     }
 

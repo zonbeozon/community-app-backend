@@ -67,7 +67,12 @@ public class SwaggerConfig {
                                 .description("정해진 이메일을 사용해야 한다 - 스키마를 참조.")
                                 .required(true)
                                 .schema(new StringSchema()
-                                        ._enum(List.of("user@gmail.com", "admin@gmail.com"))
+                                        ._enum(List.of(
+                                                "user_1@gmail.com",
+                                                "user_2@gmail.com",
+                                                "user_3@gmail.com",
+                                                "admin@gmail.com"
+                                        ))
                                 )
                         ).responses(new ApiResponses()
                                 .addApiResponse("302", new ApiResponse()
@@ -153,7 +158,7 @@ public class SwaggerConfig {
                                 )
                         )
                 );
-        paths.addPathItem("/ouath2/authorization/google", oauth2LoginPath);
+        paths.addPathItem("/oauth2/authorization/google", oauth2LoginPath);
 
         return paths;
     }

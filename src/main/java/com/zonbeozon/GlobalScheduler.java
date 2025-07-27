@@ -28,11 +28,11 @@ class GlobalScheduler {
         conversionRateService.updateConversionRate();
         log.debug("initial Conversion Rate added");
 
-        currencyLoadManager.loadThenAdd();
-        log.debug("initial Currency added");
-
-        marketLoadManager.loadThenAdd();
-        log.debug("initial Market added");
+//        currencyLoadManager.loadThenAdd();
+//        log.debug("initial Currency added");
+//
+//        marketLoadManager.loadThenAdd();
+//        log.debug("initial Market added");
     }
 
     @Scheduled(cron = "${scheduler.cron.conversion-rate}")
@@ -41,15 +41,15 @@ class GlobalScheduler {
         log.debug("Conversion Rate updated");
     }
 
-    @Scheduled(fixedDelayString = "${scheduler.delay.market}")
-    public void updateMarket() {
-        marketUpdater.update();
-        log.debug("Market updated");
-    }
-
-    @Scheduled(fixedDelayString = "${scheduler.delay.currency}")
-    public void updateCurrency() {
-        currencyUpdater.update();
-        log.debug("Currency updated");
-    }
+//    @Scheduled(fixedDelayString = "${scheduler.delay.market}")
+//    public void updateMarket() {
+//        marketUpdater.update();
+//        log.debug("Market updated");
+//    }
+//
+//    @Scheduled(fixedDelayString = "${scheduler.delay.currency}")
+//    public void updateCurrency() {
+//        currencyUpdater.update();
+//        log.debug("Currency updated");
+//    }
 }

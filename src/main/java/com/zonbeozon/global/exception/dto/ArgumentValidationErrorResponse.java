@@ -1,4 +1,4 @@
-package com.zonbeozon.global.exception;
+package com.zonbeozon.global.exception.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.zonbeozon.auth.handler;
 
-import com.zonbeozon.auth.jwt.TokenProvider;
+import com.zonbeozon.auth.service.TokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

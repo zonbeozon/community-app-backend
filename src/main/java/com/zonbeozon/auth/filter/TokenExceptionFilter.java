@@ -1,7 +1,7 @@
 package com.zonbeozon.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zonbeozon.global.exception.ErrorResponse;
+import com.zonbeozon.global.exception.dto.ErrorResponse;
 import com.zonbeozon.global.exception.UnauthenticatedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
