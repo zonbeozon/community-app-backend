@@ -13,19 +13,19 @@ services:
       - app-network
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: aaasssk/zonbeozon:latest
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
     environment:
+      SPRING_PROFILES_ACTIVE: local
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/zonbeozon
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
-      S3_MOCKER_URL: s3mock:9090
+      DOCKER_S3MOCK_URL: s3mock:9090
+      EXTERNAL_S3MOCK_URL: localhost:9090
     networks:
       - app-network
 

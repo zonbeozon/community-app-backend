@@ -13,14 +13,15 @@ public record JoinedBlogChannelResponse(
     ImageResponse profile,
     ChannelSettingResponse settings,
     Long memberCount,
-    PostResponse latestPost
+    PostResponse latestPost,
+    ChannelMemberResponse requester
 ) {
 
-    public static JoinedBlogChannelResponse from(BlogChannelOverview blogChannelOverview) {
-        Channel channel = blogChannelOverview.getBlogChannel();
+    public static JoinedBlogChannelResponse from(JoinedBlogChannelOverview joinedBlogChannelOverview) {
+        Channel channel = joinedBlogChannelOverview.getBlogChannel();
         ImageResponse imageResponse = channel.getProfile() == null ? null : ImageResponse.from(channel.getProfile().getImage());
-        PostResponse postResponse = blogChannelOverview.getLatestPost() == null ?
-                null : PostResponse.from(blogChannelOverview.getLatestPost());
+        PostResponse postResponse = joinedBlogChannelOverview.getLatestPost() == null ?
+                null : PostResponse.from(joinedBlogChannelOverview.getLatestPost());
         return new JoinedBlogChannelResponse(
                 channel.getId(),
                 channel.getChannelType(),
@@ -28,8 +29,9 @@ public record JoinedBlogChannelResponse(
                 channel.getDescription(),
                 imageResponse,
                 ChannelSettingResponse.from(channel.getSetting()),
-                blogChannelOverview.getMemberCount(),
-                postResponse
+                joinedBlogChannelOverview.getMemberCount(),
+                postResponse,
+                ChannelMemberResponse.from(joinedBlogChannelOverview.getRequester())
         );
     }
 }

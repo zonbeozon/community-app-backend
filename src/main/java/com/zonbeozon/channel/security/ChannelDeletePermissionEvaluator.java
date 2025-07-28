@@ -27,6 +27,6 @@ public class ChannelDeletePermissionEvaluator implements ChannelActionPermission
 
     @Override
     public boolean isSupport(ChannelAction action) {
-        return ChannelAction.CHANNEL_UPDATE == action;
+        return ChannelAction.CHANNEL_DELETE == action;
     }
 }

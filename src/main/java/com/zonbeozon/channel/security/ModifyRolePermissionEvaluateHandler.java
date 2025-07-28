@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ModifyRolePermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler{
+public class ModifyRolePermissionEvaluateHandler implements ChannelActionPermissionEvaluateHandler {
     private final MemberFinder memberFinder;
     private final SimpleChannelPermissionEvaluator permissionEvaluator;
 

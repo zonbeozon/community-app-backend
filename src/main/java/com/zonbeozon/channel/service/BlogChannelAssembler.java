@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.dto.BlogChannelOverview;
+import com.zonbeozon.channel.dto.JoinedBlogChannelOverview;
 import com.zonbeozon.channel.dto.JoinedBlogChannelListResponse;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.repository.BlogChannelRepository;
@@ -18,10 +18,11 @@ import java.util.List;
 public class BlogChannelAssembler {
     private final AuthenticationService authenticationService;
     private final BlogChannelRepository blogChannelRepository;
+    private final ChannelMemberFinder channelMemberFinder;
 
     public JoinedBlogChannelListResponse createJoinedCommunityBlogChannelResponse() {
         Member member = authenticationService.getCurrentMember();
-        List<BlogChannelOverview> joinedChannels = blogChannelRepository.getBlogChannelsByMember(member, ChannelCreatorType.COMMUNITY);
+        List<JoinedBlogChannelOverview> joinedChannels = blogChannelRepository.getBlogChannelsByMember(member, ChannelCreatorType.COMMUNITY);
         return JoinedBlogChannelListResponse.from(joinedChannels);
     }
 }

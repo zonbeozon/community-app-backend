@@ -176,59 +176,8 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = CursorBasedPostsResponse.class),
-                    examples = @ExampleObject(
-                            name = "게시글 목록 응답 예시",
-                            summary = "3개의 게시글과 2명의 작성자가 포함된 응답",
-                            value = """
-                                {
-                                  "authors": [
-                                    {
-                                      "memberId": 1,
-                                      "username": "user1",
-                                      "profile": "https://example.com/user1.png",
-                                      "role": "CHANNEL_OWNER"
-                                    },
-                                    {
-                                      "memberId": 2,
-                                      "username": "user2",
-                                      "profile": "https://example.com/user2.png",
-                                      "role": "CHANNEL_MEMBER"
-                                    }
-                                  ],
-                                  "posts": [
-                                    {
-                                      "postId": 101,
-                                      "content": "첫 번째 게시글 내용",
-                                      "images": [],
-                                      "authorId": 1,
-                                      "createdAt": "2024-07-01T10:00:00",
-                                      "updatedAt": "2024-07-01T10:00:00"
-                                    },
-                                    {
-                                      "postId": 102,
-                                      "content": "두 번째 게시글 내용",
-                                      "images": [],
-                                      "authorId": 2,
-                                      "createdAt": "2024-07-02T12:00:00",
-                                      "updatedAt": "2024-07-02T12:00:00"
-                                    },
-                                    {
-                                      "postId": 103,
-                                      "content": "세 번째 게시글 내용",
-                                      "images": ["http://example.com/123"],
-                                      "authorId": 1,
-                                      "createdAt": "2024-07-03T14:00:00",
-                                      "updatedAt": "2024-07-03T14:30:00"
-                                    }
-                                  ],
-                                  "size": 3,
-                                  "cursorId": 3,
-                                  "totalElements": 100,
-                                  "isLast": false,
-                                }
-                                """
-                    ))
+                    schema = @Schema(implementation = CursorBasedPostsResponse.class)
+            )
             ),
             @ApiResponse(
                     responseCode = "403",

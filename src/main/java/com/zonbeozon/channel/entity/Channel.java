@@ -18,7 +18,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "channel_type")
 @SQLRestriction("is_deleted = false")
-@SQLDelete(sql = "UPDATE channel SET is_deleted = true WHERE id = ?")
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 32;
@@ -76,5 +75,9 @@ public abstract class Channel extends BaseTimeEntity {
 
     public void updateDescription(String description) {
         this.description = description;
+    }
+
+    public void deleteChannel() {
+        this.isDeleted = true;
     }
 }

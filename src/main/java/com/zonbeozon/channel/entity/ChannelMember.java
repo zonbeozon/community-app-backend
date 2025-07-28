@@ -61,10 +61,6 @@ public class ChannelMember extends BaseTimeEntity {
         this.status = ChannelMemberStatus.KICKED;
     }
 
-    public void updateStatusToActive() {
-        this.status = ChannelMemberStatus.ACTIVE;
-    }
-
     public static ChannelMember create(Member member, Channel channel, ChannelRole role, ChannelMemberStatus status) {
         ChannelMember channelMember = new ChannelMember();
         channelMember.member = member;
@@ -82,7 +78,7 @@ public class ChannelMember extends BaseTimeEntity {
         return role != ChannelRole.CHANNEL_OWNER;
     }
 
-    public boolean isActiveStatus() {
-        return status == ChannelMemberStatus.ACTIVE;
+    public void updateStatusToChannelDeleted() {
+        this.status = ChannelMemberStatus.CHANNEL_DELETED;
     }
 }

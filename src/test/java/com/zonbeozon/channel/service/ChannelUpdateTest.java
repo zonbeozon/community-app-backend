@@ -8,7 +8,6 @@ import com.zonbeozon.channel.dto.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelProfile;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.image.TestImageBuilder;
