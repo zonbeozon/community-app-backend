@@ -17,7 +17,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @ToString
 public class Post extends BaseTimeEntity {
@@ -60,5 +59,9 @@ public class Post extends BaseTimeEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void deletePost() {
+        isDeleted = true;
     }
 }

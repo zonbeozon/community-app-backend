@@ -23,6 +23,6 @@ public class ChannelSecurityAspect {
 
     @Before("@annotation(memberOfChannelOnly)")
     public void checkMemberJoined(JoinPoint joinPoint, MemberOfChannelOnly memberOfChannelOnly) {
-        channelActionPermissionEvaluator.evaluateMemberJoined(joinPoint);
+        channelActionPermissionEvaluator.evaluateMemberJoined(joinPoint, memberOfChannelOnly.evaluateBy());
     }
 }

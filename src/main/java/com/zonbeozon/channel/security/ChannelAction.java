@@ -6,5 +6,8 @@ public enum ChannelAction {
     MODIFY_ROLE,
 
     CHANNEL_UPDATE, CHANNEL_DELETE,
+
+    READ_KICKED_MEMBER,
+    COMMENT_CREATE, COMMENT_DELETE,
     KICK;
 }

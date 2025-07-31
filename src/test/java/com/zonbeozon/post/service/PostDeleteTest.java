@@ -58,7 +58,7 @@ public class PostDeleteTest {
         new TestChannelMemberBuilder(requester, blogChannel).withRole(ChannelRole.CHANNEL_ADMIN).persist(entityManager);
         postRemover.deletePost(post.getId());
 
-        Assertions.assertThat(postRepository.findById(post.getId())).isEmpty();
+        Assertions.assertThat(postRepository.findById(post.getId()).get().isDeleted()).isTrue();
     }
 
     @Test
@@ -83,7 +83,7 @@ public class PostDeleteTest {
 
         postRemover.deletePost(post.getId());
 
-        Assertions.assertThat(postRepository.findById(post.getId())).isEmpty();
+        Assertions.assertThat(postRepository.findById(post.getId()).get().isDeleted()).isTrue();
     }
 
     @Test

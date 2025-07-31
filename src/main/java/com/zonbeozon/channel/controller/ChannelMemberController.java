@@ -1,10 +1,13 @@
 package com.zonbeozon.channel.controller;
 
+import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.JoinResultStatus;
+import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.ChannelMemberJoiner;
 import com.zonbeozon.channel.service.ChannelMemberRemover;
 import com.zonbeozon.channel.service.ChannelMemberRoleModifier;
+import com.zonbeozon.global.SortExcludedPageRequest;
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,8 +18,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +34,7 @@ public class ChannelMemberController {
     private final ChannelMemberJoiner channelMemberJoiner;
     private final ChannelMemberRemover channelMemberRemover;
     private final ChannelMemberRoleModifier channelMemberRoleModifier;
+    private final ChannelMemberAssembler channelMemberAssembler;
 
     @Operation(
             summary = "채널 참가",
@@ -91,7 +100,7 @@ public class ChannelMemberController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "성공", content = @Content(schema = @Schema())),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
     })
     @PatchMapping("/{targetMemberId}/role")
     public ResponseEntity<Void> modifyRole(
@@ -101,6 +110,49 @@ public class ChannelMemberController {
     ) {
         channelMemberRoleModifier.modifyChannelMemberRole(channelId, targetMemberId, wantTo);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "활성 채널 맴버 조회",
+            description = """
+                    활성화된 채널 맴버를 조회한다.
+                    
+                    채널에 속해있는 활성맴버만 호출가능하다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
+    })
+    @GetMapping
+    public ResponseEntity<Page<ChannelMemberResponse>> getActiveChannelMembers(
+            @PathVariable Long channelId,
+            SortExcludedPageRequest pageRequest
+    ) {
+        return ResponseEntity.ok(
+                channelMemberAssembler.createPagedActiveChannelMemberResponse(channelId, pageRequest)
+        );
+    }
+
+    @Operation(
+            summary = "강퇴된 맴버 조회",
+            description = """
+                    Owner만 호출가능하다.
+                    강제퇴장된 맴버를 조회한다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+    })
+    @GetMapping("/kicked")
+    public ResponseEntity<Page<ChannelMemberResponse>> getKickedChannelMembers(
+            @PathVariable Long channelId,
+            SortExcludedPageRequest pageRequest
+    ) {
+        return ResponseEntity.ok(
+                channelMemberAssembler.createPagedKickedChannelMemberResponse(channelId, pageRequest)
+        );
     }
 
 

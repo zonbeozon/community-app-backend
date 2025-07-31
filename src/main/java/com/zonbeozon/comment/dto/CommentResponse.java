@@ -1,19 +1,21 @@
-package com.zonbeozon.comment.service.dto;
+package com.zonbeozon.comment.dto;
 
+import com.zonbeozon.channel.dto.ChannelMemberResponse;
+import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.comment.entity.Comment;
 
 import java.time.LocalDateTime;
 
 public record CommentResponse(
         String content,
-        long memberId,
+        ChannelMemberResponse author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static CommentResponse fromEntity(Comment comment) {
+    public static CommentResponse from(Comment comment, ChannelMember author) {
         return new CommentResponse(
                 comment.getContent(),
-                comment.getAuthor().getId(),
+                ChannelMemberResponse.from(author),
                 comment.getCreatedAt(),
                 comment.getModifiedAt()
         );

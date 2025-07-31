@@ -17,15 +17,12 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.scheduling.TaskScheduler;
@@ -132,9 +129,9 @@ public class ChannelSubscribeTest {
 
     private void clearAll() {
         transactionTemplate.execute(status -> {
+            channelMemberRepository.deleteAllInBatch();
             memberRepository.deleteAllInBatch();
             channelRepository.deleteAllInBatch();
-            channelMemberRepository.deleteAllInBatch();
             return null;
         });
     }

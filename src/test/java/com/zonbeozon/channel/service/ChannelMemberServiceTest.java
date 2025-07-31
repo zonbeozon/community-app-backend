@@ -3,7 +3,7 @@ package com.zonbeozon.channel.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-//public class ChannelMemberServiceTest {
+public class ChannelMemberServiceTest {
 //    @Test
 //    @DisplayName("채널 맴버가 나가면 status가 delete상태로 전환되어야 한다.")
 //
@@ -39,14 +39,7 @@ import org.junit.jupiter.api.Test;
 //
 //    @Test
 //    @DisplayName("서버 맴버가 삭제되면 채널 맴버도 전부 삭제되어야 한다.")
-//
-//
-//
-//    //Invitation service
-//
-//    @Test
-//    @DisplayName("초대코드 발행 권한이 없는 채널 맴버가 초대 코드 발행시 예외가 발생한다.")
-//
-//    @Test
-//    @DisplayName("초대코드 발행 권한이 있는 맴버가 초대 코드 발행시 정상적으로 발급되어야 한다.")
-//}
+}
+
+
+

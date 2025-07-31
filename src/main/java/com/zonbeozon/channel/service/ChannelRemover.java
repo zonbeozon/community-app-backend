@@ -18,12 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChannelRemover {
     private final ChannelFinder channelFinder;
     private final ApplicationEventPublisher eventPublisher;
-    private final ChannelMemberRepository channelMemberRepository;
 
     @CheckChannelAccess(ChannelAction.CHANNEL_DELETE)
     public void removeChannel(Long channelId) {
         Channel channel = channelFinder.findById(channelId);
-        channelMemberRepository.findAll().forEach(ChannelMember::updateStatusToChannelDeleted);
         channel.deleteChannel();
         eventPublisher.publishEvent(new ChannelDeletedEvent(channelId));
     }

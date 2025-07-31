@@ -21,7 +21,10 @@ public record JoinedBlogChannelResponse(
         Channel channel = joinedBlogChannelOverview.getBlogChannel();
         ImageResponse imageResponse = channel.getProfile() == null ? null : ImageResponse.from(channel.getProfile().getImage());
         PostResponse postResponse = joinedBlogChannelOverview.getLatestPost() == null ?
-                null : PostResponse.from(joinedBlogChannelOverview.getLatestPost());
+                null : PostResponse.from(
+                        joinedBlogChannelOverview.getLatestPost(),
+                        joinedBlogChannelOverview.getRequester(),
+                        joinedBlogChannelOverview.getLatestPost().getImages());
         return new JoinedBlogChannelResponse(
                 channel.getId(),
                 channel.getChannelType(),

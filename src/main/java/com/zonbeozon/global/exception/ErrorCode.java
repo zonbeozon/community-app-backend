@@ -48,7 +48,10 @@ public enum ErrorCode {
     REACTION_NOT_FOUND("해당 reaction 기록이 없습니다"),
 
     //image
-    IMAGE_NOT_FOUND("해당 조건에 맞는 image가 존재하지 않습니다.");
+    IMAGE_NOT_FOUND("해당 조건에 맞는 image가 존재하지 않습니다."),
+
+    //comment
+    COMMENT_NOT_FOUND("해당 조건에 맞는 comment가 존재하지 않습니다.");
 
     private final String message;
 }

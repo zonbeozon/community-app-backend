@@ -24,7 +24,7 @@ public class PostRemover {
     @Transactional
     public void deletePost(Long postId) {
         Post post = postFinder.findById(postId);
-        postRepository.delete(post);
+        post.deletePost();
         eventPublisher.publishEvent(new PostDeletedEvent(post.getChannel().getId(), postId));
     }
 

@@ -9,6 +9,7 @@ import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.service.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
+import com.zonbeozon.channel.service.ChannelRemover;
 import com.zonbeozon.channel.service.ChannelUpdater;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +36,8 @@ public class ChannelControllerTest {
     private ChannelUpdater channelUpdater;
     @MockitoBean
     private BlogChannelAssembler blogChannelAssembler;
+    @MockitoBean
+    private ChannelRemover channelRemover;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

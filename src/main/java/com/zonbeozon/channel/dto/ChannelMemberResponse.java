@@ -3,7 +3,7 @@ package com.zonbeozon.channel.dto;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
 
-public record ChannelMemberResponse(
+public record ChannelMemberResponse (
         Long memberId,
         String username,
         String profile,

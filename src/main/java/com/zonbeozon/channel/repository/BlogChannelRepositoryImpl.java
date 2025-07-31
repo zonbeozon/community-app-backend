@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
+import static com.zonbeozon.image.entity.QImage.image;
+import static com.zonbeozon.post.entity.QPostImage.postImage;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,14 +42,16 @@ public class BlogChannelRepositoryImpl implements BlogChannelRepositoryCustom {
                 .join(requester).on(
                         requester.channel.id.eq(blogChannel.id)
                                 .and(requester.member.eq(member))
-                )
+                ).fetchJoin()
                 .leftJoin(latestPost).on(latestPost.id.eq(blogChannel.latestPostId)).fetchJoin()
                 .leftJoin(latestPost.author).fetchJoin()
+                .leftJoin(latestPost.images, postImage).fetchJoin()
+                .leftJoin(postImage.image, image).fetchJoin()
                 .where(
                         blogChannel.isDeleted.eq(false)
                                 .and(blogChannel.creatorType.eq(creatorType))
                 )
-                .groupBy(blogChannel, latestPost)
+                .groupBy(requester, blogChannel, latestPost, postImage, image)
                 .orderBy(latestPost.createdAt.desc().nullsLast())
                 .fetch();
     }

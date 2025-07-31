@@ -2,6 +2,7 @@ package com.zonbeozon.comment.entity;
 
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.reaction.entity.CommentReaction;
 import jakarta.persistence.*;
@@ -21,10 +22,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SQLDelete(sql = "UPDATE comment SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 public class Comment extends BaseTimeEntity {
-    public static final int MAX_CONTENT_LENGTH = 500;
+    public static final int MAX_CONTENT_LENGTH = 496;
     public static final int MIN_CONTENT_LENGTH = 1;
 
     @Id
@@ -37,23 +37,30 @@ public class Comment extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "channel_member_id")
+    @JoinColumn(name = "author_id")
     @NotNull
-    private ChannelMember author;
+    private Member author;
 
     @NotNull
     @ColumnDefault("false")
     private boolean isDeleted;
-
-    @OneToMany(mappedBy = "comment")
-    private List<CommentReaction> commentReactions;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public void updateContent(final String content) {
+    public Comment(String content, Member author, Post post) {
         this.content = content;
+        this.author = author;
+        this.post = post;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void deleteComment() {
+        isDeleted = true;
     }
 }

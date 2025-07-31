@@ -30,13 +30,13 @@ public class StompChannelSubscribeAuthorizationInterceptor implements ChannelInt
     private final ChannelFinder channelFinder;
     private final MemberFinder memberFinder;
 
-    private final ChannelRepository channelRepository;
-
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String destination = accessor.getDestination();
-        if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) && isChannelSubscriptionDestination(destination)) {
+        if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            if(!isChannelSubscriptionDestination(destination))
+                throw new SubscriptionException(SubscriptionException.ErrorCode.INVALID_DESTINATION);
             Principal principal = accessor.getUser();
             if (principal == null) {
                 throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);

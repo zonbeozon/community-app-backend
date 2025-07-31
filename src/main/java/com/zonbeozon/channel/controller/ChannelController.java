@@ -4,6 +4,7 @@ import com.zonbeozon.channel.dto.*;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.service.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
+import com.zonbeozon.channel.service.ChannelRemover;
 import com.zonbeozon.channel.service.ChannelUpdater;
 import com.zonbeozon.config.SwaggerConfig;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ public class ChannelController {
     private final ChannelCreator channelCreator;
     private final ChannelUpdater channelUpdater;
     private final BlogChannelAssembler blogChannelAssembler;
+    private final ChannelRemover channelRemover;
 
     @Operation(
             summary = "채널 추가",
@@ -200,22 +202,21 @@ public class ChannelController {
 //        return ResponseEntity.ok(channelService.createChannelSearchResponse(searchParam, page, size, sort, direction, type, contentOpenLevel, joinLevel));
 //    }
 //
-//    @Operation(
-//            summary = "채널 삭제",
-//            description = "채널 Owner만 허용",
-//            security = @SecurityRequirement(name = "bearerAuth")
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "204", description = "삭제 성공시"),
-//    })
-//    @DeleteMapping("/{channelId}")
-//    public ResponseEntity<Void> deleteChannel(
-//            @Parameter(hidden = true) Member member,
-//            @PathVariable Long channelId
-//            ) {
-//        channelService.deleteChannel(member, channelId);
-//        return ResponseEntity.noContent().build();
-//    }
+    @Operation(
+            summary = "채널 삭제",
+            description = "채널 Owner만 허용",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "삭제 성공시"),
+    })
+    @DeleteMapping("/{channelId}")
+    public ResponseEntity<Void> deleteChannel(
+            @PathVariable Long channelId
+            ) {
+        channelRemover.removeChannel(channelId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

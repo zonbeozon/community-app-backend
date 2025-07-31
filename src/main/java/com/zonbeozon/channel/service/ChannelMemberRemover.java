@@ -1,6 +1,7 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
+import com.zonbeozon.channel.dto.ChannelDeletedEvent;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
@@ -13,10 +14,11 @@ import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ChannelMemberRemover {
     private final ChannelFinder channelFinder;
     private final ChannelMemberFinder channelMemberFinder;
@@ -24,6 +26,7 @@ public class ChannelMemberRemover {
     private final AuthenticationService authenticationService;
     private final MemberFinder memberFinder;
 
+    @Transactional
     public void leaveChannel(Long channelId) {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findById(channelId);
@@ -35,11 +38,17 @@ public class ChannelMemberRemover {
         channelMemberRepository.delete(channelMember);
     }
 
+    @Transactional
     @CheckChannelAccess(ChannelAction.KICK)
     public void kickMember(Long channelId, Long targetMemberId) {
         Member targetMember = memberFinder.findById(targetMemberId);
         Channel channel = channelFinder.findById(channelId);
         ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannel(targetMember, channel);
         targetChannelMember.updateStatusToKicked();
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handleChannelDeleted(ChannelDeletedEvent event) {
+        channelMemberRepository.findAll().forEach(ChannelMember::updateStatusToChannelDeleted);
     }
 }
