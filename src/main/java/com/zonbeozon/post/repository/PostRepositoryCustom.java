@@ -4,7 +4,10 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.post.entity.Post;
 
+import java.util.Optional;
+
 public interface PostRepositoryCustom {
+    Optional<Post> findById(Long id, PostFetchOptions options);
     CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size);
     void softDeleteAllByChannelId(Long channelId);
 }

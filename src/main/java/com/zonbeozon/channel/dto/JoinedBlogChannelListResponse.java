@@ -7,11 +7,8 @@ public record JoinedBlogChannelListResponse(
         int totalElements
 ) {
     public static JoinedBlogChannelListResponse from(
-            List<JoinedBlogChannelOverview> channels
+            List<JoinedBlogChannelResponse> channels
     ) {
-        return new JoinedBlogChannelListResponse(
-                channels.stream().map(JoinedBlogChannelResponse::from).toList(),
-                channels.size()
-        );
+        return new JoinedBlogChannelListResponse(channels, channels.size());
     }
 }

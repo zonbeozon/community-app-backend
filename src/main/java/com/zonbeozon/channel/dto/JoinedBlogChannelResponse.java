@@ -1,9 +1,13 @@
 package com.zonbeozon.channel.dto;
 
-import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.BlogChannel;
+import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.ChannelType;
+import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.image.entity.ImageResponse;
-import com.zonbeozon.post.dto.PostResponse;
+import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.post.entity.Post;
 
 public record JoinedBlogChannelResponse(
     Long channelId,
@@ -13,18 +17,22 @@ public record JoinedBlogChannelResponse(
     ImageResponse profile,
     ChannelSettingResponse settings,
     Long memberCount,
-    PostResponse latestPost,
+    LatestPostResponse latestPost,
     ChannelMemberResponse requester
 ) {
-
-    public static JoinedBlogChannelResponse from(JoinedBlogChannelOverview joinedBlogChannelOverview) {
-        Channel channel = joinedBlogChannelOverview.getBlogChannel();
-        ImageResponse imageResponse = channel.getProfile() == null ? null : ImageResponse.from(channel.getProfile().getImage());
-        PostResponse postResponse = joinedBlogChannelOverview.getLatestPost() == null ?
-                null : PostResponse.from(
-                        joinedBlogChannelOverview.getLatestPost(),
-                        joinedBlogChannelOverview.getRequester(),
-                        joinedBlogChannelOverview.getLatestPost().getImages());
+    public static JoinedBlogChannelResponse from(
+            Member requester,
+            ChannelRole requesterRole,
+            BlogChannel channel,
+            Image profile,
+            Long memberCount,
+            Post latestPost,
+            ChannelRole latestPostAuthorRole,
+            Member latestPostAuthor,
+            Long postImageCount
+    ) {
+        ImageResponse imageResponse = profile == null ? null : ImageResponse.from(profile);
+        LatestPostResponse latestPostResponse = latestPost == null ? null : LatestPostResponse.from(latestPostAuthorRole, latestPostAuthor, latestPost, postImageCount);
         return new JoinedBlogChannelResponse(
                 channel.getId(),
                 channel.getChannelType(),
@@ -32,9 +40,9 @@ public record JoinedBlogChannelResponse(
                 channel.getDescription(),
                 imageResponse,
                 ChannelSettingResponse.from(channel.getSetting()),
-                joinedBlogChannelOverview.getMemberCount(),
-                postResponse,
-                ChannelMemberResponse.from(joinedBlogChannelOverview.getRequester())
+                memberCount,
+                latestPostResponse,
+                ChannelMemberResponse.from(requester, requesterRole)
         );
     }
 }

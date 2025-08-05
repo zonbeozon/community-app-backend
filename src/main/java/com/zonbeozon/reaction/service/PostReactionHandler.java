@@ -24,13 +24,12 @@ public class PostReactionHandler implements ReactionMarkHandler, ReactionUnmarkH
     private final PostFinder postFinder;
     private final AuthenticationService authenticationService;
     private final PostReactionRepository postReactionRepository;
-    private final SimpleChannelPermissionEvaluator channelRoleBasedPermissionEvaluator;
 
     @Override
     @MemberOfChannelOnly
-    public void mark(Long contentId, ReactionType reactionType) {
+    public void mark(Long postId, ReactionType reactionType) {
         Member requester = authenticationService.getCurrentMember();
-        Post post = postFinder.findById(contentId);
+        Post post = postFinder.findById(postId);
         //이미 해당 post에 대해 리엑션이 있다면 기존 리엑션을 삭제
         postReactionRepository.findByPostAndAuthor(post, requester)
                 .ifPresent(postReactionRepository::delete);
@@ -41,9 +40,9 @@ public class PostReactionHandler implements ReactionMarkHandler, ReactionUnmarkH
 
     @Override
     @MemberOfChannelOnly
-    public void unmark(Long contentId) {
+    public void unmark(Long postId) {
         Member requester = authenticationService.getCurrentMember();
-        Post post = postFinder.findById(contentId);
+        Post post = postFinder.findById(postId);
         PostReaction reaction = postReactionRepository.findByPostAndAuthor(post, requester)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.REACTION_NOT_FOUND));
         postReactionRepository.delete(reaction);

@@ -7,6 +7,10 @@ import com.zonbeozon.comment.service.CommentCreator;
 import com.zonbeozon.comment.service.CommentRemover;
 import com.zonbeozon.config.SwaggerConfig;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +35,12 @@ public class CommentController {
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
+    @ApiResponses(
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "commentId 반환"
+            )
+    )
     @PostMapping("/post/{postId}/comment")
     public ResponseEntity<Long> createComment(
             @PathVariable Long postId,
@@ -46,6 +56,12 @@ public class CommentController {
                     글쓴이 혹은 글쓴이 보다 권한이 높은 유저가 호출가능하다.
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "성공"
+            )
     )
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Void> deleteComment(

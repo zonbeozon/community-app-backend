@@ -7,17 +7,17 @@ import com.zonbeozon.comment.entity.Comment;
 import java.time.LocalDateTime;
 
 public record CommentResponse(
+        Long commentId,
         String content,
         ChannelMemberResponse author,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime createdAt
 ) {
     public static CommentResponse from(Comment comment, ChannelMember author) {
         return new CommentResponse(
+                comment.getId(),
                 comment.getContent(),
                 ChannelMemberResponse.from(author),
-                comment.getCreatedAt(),
-                comment.getModifiedAt()
+                comment.getCreatedAt()
         );
     }
 }

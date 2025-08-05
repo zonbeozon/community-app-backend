@@ -1,6 +1,7 @@
 package com.zonbeozon.post.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.post.entity.QPost.post;
 import static com.zonbeozon.post.entity.QPostImage.*;
 
@@ -20,6 +23,22 @@ import static com.zonbeozon.post.entity.QPostImage.*;
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final EntityManager entityManager;
+
+    @Override
+    public Optional<Post> findById(Long id, PostFetchOptions options) {
+         JPAQuery<Post> query = queryFactory.selectFrom(post);
+        if (options.isWithAuthor()) {
+            query.join(post.author).fetchJoin();
+        }
+
+        if (options.isWithImages()) {
+            query.leftJoin(post.images, postImage).fetchJoin()
+                    .leftJoin(postImage.image, image).fetchJoin();
+        }
+
+        query.where(post.id.eq(id).and(post.isDeleted.eq(false)));
+        return Optional.ofNullable(query.fetchOne());
+    }
 
     @Override
     public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
@@ -60,7 +79,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         Long totalElement = queryFactory
                 .select(post.count()) // count 함수 사용
                 .from(post)
-                .where(post.isDeleted.isFalse().and(post.channel.eq(channel))) // 채널 조건
+                .where(whereClause) // 채널 조건
                 .fetchOne();
 
         //조회되는 값 없을때 Null 대신 반환

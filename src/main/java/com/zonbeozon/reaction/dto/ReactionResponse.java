@@ -1,30 +1,23 @@
 package com.zonbeozon.reaction.dto;
 
 import com.zonbeozon.reaction.enums.ReactionType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 public class ReactionResponse {
     private Long likeCount;
     private Long dislikeCount;
     private boolean likedByCurrentMember;
     private boolean dislikeByCurrentMember;
 
-    public ReactionResponse(Map<ReactionType, Long> reactionTypeCount) {
-        this.likeCount = reactionTypeCount.getOrDefault(ReactionType.LIKE, 0L);
-        this.dislikeCount = reactionTypeCount.getOrDefault(ReactionType.DISLIKE, 0L);
-    }
-
-    public void setReactionByCurrentMember(ReactionType reactionType) {
-        if(reactionType.equals(ReactionType.LIKE)) {
-            likedByCurrentMember = true;
-        }
-        if(reactionType.equals(ReactionType.DISLIKE)) {
-            dislikeByCurrentMember = true;
-        }
+    public ReactionResponse(Map<ReactionType, Long> reactionCounts, boolean likedByCurrentMember, boolean dislikeByCurrentMember) {
+        this.likeCount = reactionCounts.get(ReactionType.LIKE);
+        this.dislikeCount = reactionCounts.get(ReactionType.DISLIKE);
+        this.likedByCurrentMember = likedByCurrentMember;
+        this.dislikeByCurrentMember = dislikeByCurrentMember;
     }
 }

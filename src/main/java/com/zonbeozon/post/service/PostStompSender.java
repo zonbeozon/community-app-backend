@@ -1,7 +1,6 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.post.dto.*;
-import com.zonbeozon.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ class PostStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        PostResponse body = postAssembler.createPostResponse(event.postId());
+        PostResponse body = postAssembler.createPostResponseByPostId(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.CREATED, event.postId(), body)
@@ -36,7 +35,7 @@ class PostStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostUpdated(PostUpdatedEvent event) {
-        PostResponse body = postAssembler.createPostResponse(event.postId());
+        PostResponse body = postAssembler.createPostResponseByPostId(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.UPDATED, event.postId(), body)

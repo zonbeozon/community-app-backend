@@ -2,6 +2,7 @@ package com.zonbeozon.global;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class CursorPageImpl<T> implements CursorPage<T> {
     private final List<T> content;
@@ -39,5 +40,20 @@ public class CursorPageImpl<T> implements CursorPage<T> {
     @Override
     public boolean isLast() {
         return isLast;
+    }
+
+    @Override
+    public <U> CursorPage<U> map(Function<T, U> converter) {
+        List<U> convertedContent = this.content.stream()
+                .map(converter)
+                .toList();
+
+        return new CursorPageImpl<>(
+                convertedContent,
+                this.cursorId,
+                this.totalElements,
+                this.isLast,
+                this.size
+        );
     }
 }

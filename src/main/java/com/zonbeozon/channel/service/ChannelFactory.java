@@ -13,7 +13,6 @@ public class ChannelFactory {
     private final List<ChannelCreateStrategy> strategies;
 
     public Channel createChannel(ChannelCreateCommand channelCreateCommand, Member creator) {
-
          return strategies.stream()
                 .filter(strategy->strategy.isSupport(channelCreateCommand))
                 .findAny()

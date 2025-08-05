@@ -5,17 +5,17 @@ import com.zonbeozon.comment.entity.Comment;
 import java.time.LocalDateTime;
 
 public record SimplifiedCommentResponse(
+        Long commentId,
         String content,
-        long authorId,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        Long authorId,
+        LocalDateTime createdAt
 ) {
     public static SimplifiedCommentResponse from(Comment comment) {
         return new SimplifiedCommentResponse(
+                comment.getId(),
                 comment.getContent(),
                 comment.getAuthor().getId(),
-                comment.getCreatedAt(),
-                comment.getModifiedAt()
+                comment.getCreatedAt()
         );
     }
 }

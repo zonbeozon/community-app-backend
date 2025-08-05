@@ -14,19 +14,22 @@ public record CursorBasedPostsResponse(
         long totalElements,
         boolean isLast
 ) {
-    public static CursorBasedPostsResponse from(List<ChannelMemberResponse> authors, CursorPage<Post> posts) {
+    public static CursorBasedPostsResponse from(List<ChannelMemberResponse> authors, CursorPage<PostWithStats> posts) {
 
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
-                .map(SimplifiedPostResponse::from)  // SimplifiedPostResponse로 변환
+                .map(postWithStats -> SimplifiedPostResponse.from(
+                        postWithStats.getPost(),
+                        postWithStats.getCommentCount(),
+                        postWithStats.getReactionResponse()))
                 .toList();
 
         return new CursorBasedPostsResponse(
                 authors,
                 simplifiedPosts,
-                posts.getSize(),             // 페이지 크기 (size)
-                posts.getCursorId(),           // 현재 페이지 번호 (page)
-                posts.getTotalElements(),     // 총 아이템 수 (totalElements)
-                posts.isLast()               // 마지막 페이지 여부 (isLastPage)
+                posts.getSize(),
+                posts.getCursorId(),
+                posts.getTotalElements(),
+                posts.isLast()
         );
     }
 }

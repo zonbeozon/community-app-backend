@@ -1,6 +1,5 @@
 package com.zonbeozon.reaction.entity;
 
-import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.reaction.enums.ReactionType;
@@ -8,11 +7,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
+@Getter
 public class PostReaction extends Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,5 @@
 package com.zonbeozon.reaction.enums;
 
 public enum ReactionContentType {
-    POST, COMMENT, DISCUSSION;
+    POST, COMMENT, CHAT;
 }

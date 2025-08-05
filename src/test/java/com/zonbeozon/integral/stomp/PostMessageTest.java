@@ -1,6 +1,7 @@
 package com.zonbeozon.integral.stomp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.zonbeozon.auth.TestAuthenticationBuilder;
 import com.zonbeozon.auth.service.TokenService;
 import com.zonbeozon.channel.TestChannelBuilder;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -39,6 +39,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -75,7 +76,7 @@ public class PostMessageTest {
     private Member member;
     private String accessToken;
     private StompSession stompSession;
-    private CompletableFuture<PostEventResponse> cfPayload = new CompletableFuture<>();
+    private CompletableFuture<String> cfPayload = new CompletableFuture<>();
 
     @BeforeEach
     void setUp() throws ExecutionException, InterruptedException, TimeoutException {
@@ -90,11 +91,13 @@ public class PostMessageTest {
         stompSession.subscribe("/topic/channel/" + channel.getId() + "/post", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return PostEventResponse.class;
+                return Object.class;
             }
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                cfPayload.complete((PostEventResponse) payload);
+                byte[] payloadBytes = (byte[]) payload;
+                String jsonString = new String(payloadBytes, StandardCharsets.UTF_8);
+                cfPayload.complete(jsonString);
             }
         });
     }
@@ -104,12 +107,13 @@ public class PostMessageTest {
         clearAll();
     }
 
-    @DisplayName("post생성시 채널생성 메시지가 브로드케스트되어야 한다.")
+    @DisplayName("post생성시 post생성 메시지가 브로드케스트되어야 한다.")
     @Test
-    void postCreationBroadcastsChannelMessage() throws ExecutionException, InterruptedException, TimeoutException {
+    void postCreationBroadcastsPostCreationMessage() throws ExecutionException, InterruptedException, TimeoutException {
         Long postId = postCreator.addPost(channel.getId(), new PostCreateCommand("content", List.of()));
-        PostEventResponse payload = cfPayload.get(2, TimeUnit.SECONDS);
-        Assertions.assertThat(payload.postId()).isEqualTo(postId);
+        String payload = cfPayload.get(2, TimeUnit.SECONDS);
+        Number actual = JsonPath.read(payload, "$.body.postId");
+        Assertions.assertThat(actual).isEqualTo((postId.intValue()));
     }
 
     private void clearAll() {
@@ -132,7 +136,6 @@ public class PostMessageTest {
                 headers,
                 new AbstractTestSessionHandler()
         );
-
         stompSession = cfSession.get(2, TimeUnit.SECONDS);
     }
 
