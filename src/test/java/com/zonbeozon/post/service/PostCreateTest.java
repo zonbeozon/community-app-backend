@@ -42,7 +42,7 @@ public class PostCreateTest {
     @Autowired
     private EntityManager entityManager;
     @MockitoBean
-    private PostImageAppender postImageAppender;
+    private PostImageUpdater postImageUpdater;
     @Autowired
     private ApplicationEvents applicationEvents;
     @Autowired

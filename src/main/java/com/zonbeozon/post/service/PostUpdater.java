@@ -2,6 +2,7 @@ package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.security.ChannelAction;
 import com.zonbeozon.channel.security.CheckChannelAccess;
+import com.zonbeozon.post.dto.PostUpdateRequest;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.dto.PostUpdatedEvent;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PostUpdater {
     private final PostFinder postFinder;
+    private final PostImageUpdater postImageUpdater;
     private final ApplicationEventPublisher eventPublisher;
 
     @CheckChannelAccess(ChannelAction.POST_UPDATE)
-    public void updateContent(Long postId, String content) {
+    public void updateContent(Long postId, PostUpdateRequest request) {
         Post post = postFinder.findById(postId);
-        post.updateContent(content);
+        post.updateContent(request.content());
+        postImageUpdater.updatePostImages(postId, request.imageIds());
         eventPublisher.publishEvent(new PostUpdatedEvent(post.getChannel().getId(), postId));
     }
-
 }

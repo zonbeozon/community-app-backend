@@ -5,8 +5,6 @@ import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import jakarta.persistence.EntityManager;
 
-import java.util.List;
-
 public class TestPostBuilder {
     private String content= "test content";
     private BlogChannel channel;

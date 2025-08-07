@@ -18,7 +18,8 @@ public class SubscriptionException extends RuntimeException {
         UNAUTHORIZED("인증 정보가 없거나 유효하지 않습니다."),
         FORBIDDEN("접근할 권한이 없습니다."),
         INVALID_DESTINATION("잘못된 구독 주소입니다."),
-        CHANNEL_NOT_FOUND("존재하지 않는 채널입니다.");
+        CHANNEL_NOT_FOUND("존재하지 않는 채널입니다."),
+        POST_NOT_FOUND("존재하지 않는 포스트입니다.");
 
         private final String message;
     }

@@ -1,11 +1,10 @@
 package com.zonbeozon.config;
 
 import com.zonbeozon.auth.StompConnectAuthenticationInterceptor;
-import com.zonbeozon.channel.websocket.StompChannelSubscribeAuthorizationInterceptor;
+import com.zonbeozon.global.StompSubscriptionValidator;
 import com.zonbeozon.global.exception.stomp.StompExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -16,7 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final StompChannelSubscribeAuthorizationInterceptor stompChannelSubscribeAuthorizationInterceptor;
+    private final StompSubscriptionValidator stompSubscriptionValidator;
     private final StompConnectAuthenticationInterceptor stompConnectAuthenticationInterceptor;
     private final StompExceptionHandler stompExceptionHandler;
 
@@ -36,7 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(
                 stompConnectAuthenticationInterceptor,
-                stompChannelSubscribeAuthorizationInterceptor
+                stompSubscriptionValidator
         );
     }
 }

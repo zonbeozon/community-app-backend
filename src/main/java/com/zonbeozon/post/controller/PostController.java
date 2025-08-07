@@ -160,7 +160,7 @@ public class PostController {
             @Valid
             PostUpdateRequest request
     ) {
-        postUpdater.updateContent(postId, request.content());
+        postUpdater.updateContent(postId, request);
         return ResponseEntity.noContent().build();
     }
 

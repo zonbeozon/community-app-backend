@@ -17,14 +17,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class TestMemberBuilder {
-    private String username;
-    private String email;
+    private String username = "choi";
+    private String email = "choi@gmail.com";
     private String profile = "exampleProfile";
     private ServerRole role = ServerRole.USER;
 
     public TestMemberBuilder(String username, String email) {
         this.username = username;
         this.email = email;
+    }
+
+    public TestMemberBuilder() {
     }
 
     public TestMemberBuilder setRole(ServerRole role) {

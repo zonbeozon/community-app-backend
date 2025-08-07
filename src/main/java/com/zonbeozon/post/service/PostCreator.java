@@ -26,7 +26,7 @@ public class PostCreator {
     private final ApplicationEventPublisher eventPublisher;
     private final AuthenticationService authenticationService;
     private final ChannelFinder channelFinder;
-    private final PostImageAppender postImageAppender;
+    private final PostImageUpdater postImageUpdater;
 
     @CheckChannelAccess(ChannelAction.POST_CREATE)
     public Long addPost(Long channelId, PostCreateCommand command) {
@@ -35,7 +35,7 @@ public class PostCreator {
         if(channel instanceof BlogChannel blogChannel) {
             Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
-            if(!command.imageIds().isEmpty()) postImageAppender.addPostImages(post.getId(), command.imageIds());
+            if(!command.imageIds().isEmpty()) postImageUpdater.updatePostImages(post.getId(), command.imageIds());
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();
         }

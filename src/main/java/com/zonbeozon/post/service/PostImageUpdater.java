@@ -17,16 +17,20 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class PostImageAppender {
+public class PostImageUpdater {
     private final PostImageRepository postImageRepository;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final PostFinder postFinder;
     private final ImageFinder imageFinder;
 
-    public void addPostImages(Long postId, List<Long> imageIds) {
+    /**
+     * todo: image cascade 삭제 처리
+     */
+    public void updatePostImages(Long postId, List<Long> imageIds) {
         Post post = postFinder.findById(postId);
-        checkPostImageLimit(postId, imageIds);
+        checkPostImageLimit(imageIds);
         imageOwnershipVerifier.verify(imageIds);
+        postImageRepository.deleteAllByPostId(postId);
         List<Image> images = imageFinder.findAllById(imageIds);
         for(Image image : images) {
             PostImage postImage = new PostImage(post, image);
@@ -35,10 +39,8 @@ public class PostImageAppender {
         }
     }
 
-
-    private void checkPostImageLimit(Long postId, List<Long> imageIds) {
-        List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
-        if(postImages.size() + imageIds.size() > Post.MAX_IMAGE_COUNT) {
+    private void checkPostImageLimit(List<Long> imageIds) {
+        if(imageIds.size() > Post.MAX_IMAGE_COUNT) {
             throw new BadRequestException(ErrorCode.MAX_POST_IMAGE_REACHED);
         }
     }

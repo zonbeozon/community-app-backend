@@ -4,24 +4,16 @@ import com.zonbeozon.post.dto.PostImageCount;
 import com.zonbeozon.post.entity.PostImage;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface PostImageRepository extends JpaRepository<PostImage, Long> {
+public interface PostImageRepository extends JpaRepository<PostImage, Long>, PostImageRepositoryCustom {
     @EntityGraph(attributePaths = {"image"})
     List<PostImage> findAllByPostId(Long postId);
 
-    @EntityGraph(attributePaths = {"image"})
-    List<PostImage> findAllByPostIdIn(List<Long> postId);
-
-    @Query(
-            """
-            SELECT new com.zonbeozon.post.dto.PostImageCount(pi.post.id, COUNT(pi.id))
-            FROM PostImage pi
-            WHERE pi.post.id IN :postIds
-            GROUP BY pi.post.id
-            """
-    )
-    List<PostImageCount> countImagesByPostIds(List<Long> postIds);
+    @Modifying
+    @Query("DELETE FROM PostImage pi WHERE pi.post.id = :postId")
+    void deleteAllByPostId(Long postId);
 }

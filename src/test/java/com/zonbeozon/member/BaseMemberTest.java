@@ -1,15 +1,5 @@
 package com.zonbeozon.member;
 
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.domain.ServerRole;
-import com.zonbeozon.post.service.NoOpEventPublisherTestConfig;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.transaction.annotation.Transactional;
-
 //@Transactional
 //@SpringBootTest(classes = NoOpEventPublisherTestConfig.class)
 //public abstract class BaseMemberTest {

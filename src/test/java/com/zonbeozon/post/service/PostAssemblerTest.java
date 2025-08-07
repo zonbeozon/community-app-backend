@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class PostAssemblerTest {
-
     @Autowired
     private PostAssembler postAssembler;
     @Autowired
@@ -34,9 +33,9 @@ public class PostAssemblerTest {
     private BlogChannel blogChannel;
     private Member member;
 
-    Post post_1, post_2, post_3, post_4, post_5;
+    private Post post_1, post_2, post_3, post_4, post_5;
 
-    Image image_1, image_2;
+    private Image image_1, image_2;
 
 
     @BeforeEach

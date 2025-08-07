@@ -32,7 +32,7 @@ public class ChannelActionPermissionEvaluator {
             channelId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
         }
         else if(evaluateBy.equals(ChannelSecurityAspect.postIdParamName)) {
-            Long postId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.channelIdParamName, Long.class);
+            Long postId = AspectUtils.extractParameter(joinPoint, ChannelSecurityAspect.postIdParamName, Long.class);
             channelId = postFinder.findById(postId).getChannel().getId();
         }
         else {

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.zonbeozon.comment.entity.QComment.comment;
+import static com.zonbeozon.post.entity.QPost.post;
+
 @Repository
 @RequiredArgsConstructor
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
@@ -29,15 +31,13 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     public List<CommentCountResult> countCommentsByPostIds(List<Long> postIds) {
         return queryFactory
                 .select(Projections.constructor(CommentCountResult.class,
-                        comment.post.id,
-                        comment.id.count()
+                        post.id,
+                        comment.count()
                 ))
-                .from(comment)
-                .where(
-                        comment.post.id.in(postIds),
-                        comment.isDeleted.eq(false)
-                )
-                .groupBy(comment.post.id)
+                .from(post)
+                .leftJoin(comment).on(comment.post.id.eq(post.id).and(comment.isDeleted.eq(false)))
+                .where(post.id.in(postIds))
+                .groupBy(post)
                 .fetch();
     }
 }
