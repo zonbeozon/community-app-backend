@@ -1,14 +1,8 @@
 package com.zonbeozon.post.controller;
 
 import com.zonbeozon.config.SwaggerConfig;
-import com.zonbeozon.post.dto.PostCreateRequest;
-import com.zonbeozon.post.dto.CursorBasedPostsResponse;
-import com.zonbeozon.post.dto.PostCreateCommand;
-import com.zonbeozon.post.dto.PostUpdateRequest;
-import com.zonbeozon.post.service.PostAssembler;
-import com.zonbeozon.post.service.PostCreator;
-import com.zonbeozon.post.service.PostRemover;
-import com.zonbeozon.post.service.PostUpdater;
+import com.zonbeozon.post.dto.*;
+import com.zonbeozon.post.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -33,7 +27,7 @@ public class PostController {
     private final PostCreator postCreator;
     private final PostUpdater postUpdater;
     private final PostRemover postRemover;
-    private final PostAssembler postAssembler;
+    private final SecuredPostAssembler securedPostAssembler;
 
     @Operation(
             summary = "Post 생성",
@@ -201,6 +195,7 @@ public class PostController {
     @Parameters({
             @Parameter(name = "cursorPostId", description = """
                     해당 postId보다 작은 PostId를 size만큼 반환(cursor)
+                    
                     cursorPostId를 가장 최신 post로 설정하고 싶다면 null로 설정
                     """),
             @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10")
@@ -211,11 +206,50 @@ public class PostController {
             @RequestParam(required = false) Long cursorPostId,
             @RequestParam(defaultValue = "20") int size
     ) {
-        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(
+        CursorBasedPostsResponse response = securedPostAssembler.createCursorBasedPostResponse(
                 channelId,
                 cursorPostId,
                 size
         );
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "단일 POST 검색",
+            description = """
+                    채널에 가입해야지만 호출 가능
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = PostResponse.class)
+            )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "호출 권한 없음",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = {
+                                    @ExampleObject(
+                                            name = "해당 채널의 맴버가 아닐때",
+                                            value = """
+                                                {
+                                                  "code": "ACCESS_DENIED",
+                                                  "message": "접근 권한이 없습니다."
+                                                }
+                                                """
+                                    )
+                            }
+                    )
+            )
+    })
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostResponse> getPostResponse(
+            @PathVariable Long postId
+    ) {
+        return ResponseEntity.ok(securedPostAssembler.createPostResponse(postId));
     }
 }

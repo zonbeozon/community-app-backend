@@ -2,27 +2,19 @@ package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.security.ChannelAction;
-import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.channel.security.MemberOfChannelOnly;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.BlogChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
-import com.zonbeozon.comment.dto.CommentCountResult;
 import com.zonbeozon.comment.service.CommentCounter;
 import com.zonbeozon.global.CursorPage;
-import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
 import com.zonbeozon.post.dto.PostResponse;
 import com.zonbeozon.post.dto.PostWithStats;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.entity.PostImage;
 import com.zonbeozon.post.repository.PostFetchOptions;
-import com.zonbeozon.post.repository.PostImageRepository;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.reaction.dto.ReactionResponse;
 import com.zonbeozon.reaction.service.PostReactionAssembler;
@@ -32,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +37,6 @@ public class PostAssembler {
     private final CommentCounter commentCounter;
     private final PostReactionAssembler postReactionAssembler;
 
-    @MemberOfChannelOnly
     public CursorBasedPostsResponse createCursorBasedPostResponse(
             Long channelId,
             Long cursorPostId,
@@ -71,7 +61,7 @@ public class PostAssembler {
         return CursorBasedPostsResponse.from(authorResponse, postWithStats);
     }
 
-    public PostResponse createPostResponseByPostId(Long postId) {
+    public PostResponse createPostResponse(Long postId) {
         Post post = postFinder.findById(
                 postId,
                 new PostFetchOptions.Builder().withImages(true).withAuthor(true).build()

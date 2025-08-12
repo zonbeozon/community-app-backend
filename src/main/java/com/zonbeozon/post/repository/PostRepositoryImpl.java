@@ -57,7 +57,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(post.images, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
                 .orderBy(post.id.desc(), postImage.id.asc())
-                .limit(size + 1) //last 페이지인지 확인
+                .limit(size + 1)
                 .fetch();
 
         List<Post> contentToReturn;
@@ -86,16 +86,5 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         totalElement = totalElement == null ? 0L : totalElement;
 
         return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, posts.size());
-    }
-
-    @Override
-    public void softDeleteAllByChannelId(Long channelId) {
-        queryFactory.update(post)
-                .set(post.isDeleted, true)
-                .where(post.channel.id.eq(channelId))
-                .execute();
-
-        entityManager.clear();;
-
     }
 }

@@ -31,7 +31,7 @@ public class PostCreator {
     @CheckChannelAccess(ChannelAction.POST_CREATE)
     public Long addPost(Long channelId, PostCreateCommand command) {
         Member requester = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel instanceof BlogChannel blogChannel) {
             Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
