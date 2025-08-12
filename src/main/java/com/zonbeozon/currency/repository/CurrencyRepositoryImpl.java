@@ -1,7 +1,7 @@
 package com.zonbeozon.currency.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import jakarta.persistence.EntityManager;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.service.dto;
 
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.fiat.entity.FiatType;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 package com.zonbeozon.currency.updater;
 
+import com.zonbeozon.crypto.entity.CurrencyQuote;
 import com.zonbeozon.global.AbstractFetchBasedUpdater;
 import com.zonbeozon.global.fetch.FetchManager;
 import com.zonbeozon.currency.CurrencyHolder;
 import com.zonbeozon.currency.CurrencyHolderSupplier;
-import com.zonbeozon.currency.entity.Currency;
-import com.zonbeozon.currency.entity.CurrencyFiatMetric;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.currency.fetch.CurrencyFetchContext;
 import com.zonbeozon.currency.fetch.CurrencyQuotesFetchData;
 import com.zonbeozon.currency.fetch.CurrencyQuotesFetchResult;
@@ -63,19 +63,19 @@ public class CurrencyUpdater
     }
 
     private void ifFiatMetricExistDoUpdateOrAdd(Currency currency, CurrencyQuotesFetchData quotesFetchData) {
-        CurrencyFiatMetric newCurrencyFiatMetric = createCurrencyFiatMetric(currency, quotesFetchData);
-        Optional<CurrencyFiatMetric> optCurrencyFiatMetric = currency.getCurrencyFiatMetrics().stream()
-                .filter(marketFiatMetric -> marketFiatMetric.getFiatType() == newCurrencyFiatMetric.getFiatType())
+        CurrencyQuote newCurrencyQuote = createCurrencyFiatMetric(currency, quotesFetchData);
+        Optional<CurrencyQuote> optCurrencyFiatMetric = currency.getCurrencyQuotes().stream()
+                .filter(marketFiatMetric -> marketFiatMetric.getFiatType() == newCurrencyQuote.getFiatType())
                 .findAny();
         if(optCurrencyFiatMetric.isPresent()) {
-            optCurrencyFiatMetric.get().update(newCurrencyFiatMetric);
+            optCurrencyFiatMetric.get().update(newCurrencyQuote);
             return;
         }
-        currencyFiatMetricService.addCurrencyFiatMetric(newCurrencyFiatMetric);
+        currencyFiatMetricService.addCurrencyFiatMetric(newCurrencyQuote);
     }
 
-    private CurrencyFiatMetric createCurrencyFiatMetric(Currency currency, CurrencyQuotesFetchData quotesFetchData) {
-        return CurrencyFiatMetric.create(
+    private CurrencyQuote createCurrencyFiatMetric(Currency currency, CurrencyQuotesFetchData quotesFetchData) {
+        return CurrencyQuote.create(
                 quotesFetchData.fiatType(),
                 currency,
                 quotesFetchData.marketCap(),

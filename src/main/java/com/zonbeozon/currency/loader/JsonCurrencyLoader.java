@@ -1,5 +1,7 @@
 package com.zonbeozon.currency.loader;
 
+import com.zonbeozon.crypto.loader.CurrencyRegistry;
+import com.zonbeozon.crypto.loader.CurrencyRegistryHolder;
 import com.zonbeozon.global.ListFileLoaderTemplate;
 
 import java.util.function.Supplier;

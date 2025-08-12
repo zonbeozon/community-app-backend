@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.service.dto;
 
-import com.zonbeozon.currency.entity.CurrencyFiatMetric;
+import com.zonbeozon.crypto.entity.CurrencyQuote;
 import com.zonbeozon.fiat.entity.FiatType;
 
 import java.math.BigDecimal;
@@ -11,12 +11,12 @@ public record CurrencyFiatMetricResponse(
         BigDecimal fullyDilutedMarketCap,
         BigDecimal volume
 ) {
-    public static CurrencyFiatMetricResponse from(CurrencyFiatMetric currencyFiatMetric) {
+    public static CurrencyFiatMetricResponse from(CurrencyQuote currencyQuote) {
         return new CurrencyFiatMetricResponse(
-                currencyFiatMetric.getFiatType(),
-                currencyFiatMetric.getMarketCap(),
-                currencyFiatMetric.getFullyDilutedMarketCap(),
-                currencyFiatMetric.getVolume()
+                currencyQuote.getFiatType(),
+                currencyQuote.getMarketCap(),
+                currencyQuote.getFullyDilutedMarketCap(),
+                currencyQuote.getVolume()
         );
     }
 }

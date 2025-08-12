@@ -1,4 +1,4 @@
-package com.zonbeozon.currency.fetch;
+package com.zonbeozon.crypto.fetcher;
 
 import com.zonbeozon.global.fetch.FetchException;
 import jakarta.validation.ConstraintViolation;
@@ -25,12 +25,12 @@ abstract class CMCAbstractFetcher {
             RestClient.Builder restClientBuilder,
             Validator validator
     ) {
-        this.restClient = restClientBuilder.build();
         this.key = key;
+        this.restClient = restClientBuilder.build();
         this.validator = validator;
     }
 
-    protected <T> T basicFetch(Collection<String> symbols, Class<T> clazz) {
+    protected <T> T fetch(Collection<String> symbols, Class<T> clazz) {
         String joinedSymbol = String.join(",", symbols);
         try {
             T response = Optional.ofNullable(restClient.get()
@@ -53,6 +53,7 @@ abstract class CMCAbstractFetcher {
             throw new FetchException(e);
         }
     }
+
     protected abstract String getPath();
     protected abstract String getAux();
 }

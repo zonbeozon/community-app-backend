@@ -1,7 +1,7 @@
 package com.zonbeozon.currency;
 
 import com.zonbeozon.global.fetch.FetchContextSupplier;
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.currency.fetch.CurrencyFetchContext;
 
 import java.util.function.Consumer;

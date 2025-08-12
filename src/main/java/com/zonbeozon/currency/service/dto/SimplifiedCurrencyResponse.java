@@ -1,7 +1,7 @@
 package com.zonbeozon.currency.service.dto;
 
-import com.zonbeozon.currency.entity.Currency;
-import com.zonbeozon.currency.entity.CurrencyFiatMetric;
+import com.zonbeozon.crypto.entity.Currency;
+import com.zonbeozon.crypto.entity.CurrencyQuote;
 import com.zonbeozon.fiat.entity.FiatType;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ public record SimplifiedCurrencyResponse (
     CurrencyFiatMetricResponse fiatMetric
 ) {
     public static SimplifiedCurrencyResponse from(Currency currency, FiatType fiatType) {
-        CurrencyFiatMetric currencyFiatMetric = currency.getCurrencyFiatMetrics().stream()
+        CurrencyQuote currencyQuote = currency.getCurrencyQuotes().stream()
                 .filter(metric -> metric.getFiatType() == fiatType)
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(fiatType + "에 해당하는 객체를 찾을 수 없습니다."));
@@ -31,7 +31,7 @@ public record SimplifiedCurrencyResponse (
                 currency.getCurrencyRank(),
                 currency.getCirculatingSupply(),
                 currency.getTotalSupply(),
-                CurrencyFiatMetricResponse.from(currencyFiatMetric)
+                CurrencyFiatMetricResponse.from(currencyQuote)
         );
     }
 }

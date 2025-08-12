@@ -1,6 +1,6 @@
 package com.zonbeozon.currency.repository;
 
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 
 import java.util.Map;
 

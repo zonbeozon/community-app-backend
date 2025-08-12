@@ -1,4 +1,4 @@
-package com.zonbeozon.currency.fetch;
+package com.zonbeozon.crypto.fetcher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
@@ -19,8 +19,8 @@ record CMCMetadataResponse(
         ) {
         public record CMCMetadata(
                 @JsonProperty("name")
-                @NotBlank(message = "english name cannot be blank")
-                String englishName,
+                @NotBlank(message = "name cannot be blank")
+                String name,
 
                 @JsonProperty("symbol")
                 @NotBlank(message = "symbol cannot be blank")
@@ -31,35 +31,21 @@ record CMCMetadataResponse(
                 String logo,
 
                 @JsonProperty("description")
-                @NotBlank(message = "english description cannot be blank")
-                String englishDescription,
+                @NotBlank(message = "description cannot be blank")
+                String description,
 
                 @JsonProperty("urls")
                 @NotNull
                 @Valid
-                CMCUrls urls
+                Urls urls
         ) {
         }
 
-        public record CMCUrls (
+        public record Urls (
                 @JsonProperty("website")
                 @Size(min = 1, message = "at least one website needed")
-                List<String> website
+                List<String> websites
         ) {
-        }
-
-        public CurrencyMetadataFetchResult toResult() {
-                return new CurrencyMetadataFetchResult(
-                        metadataMap.values().stream()
-                                .map(cmcMetadata -> new CurrencyFetchMetaData(
-                                        cmcMetadata.symbol,
-                                        cmcMetadata.englishName,
-                                        cmcMetadata.englishDescription,
-                                        cmcMetadata.logo,
-                                        cmcMetadata.urls.website.getFirst()
-                                ))
-                                .toList()
-                );
         }
 }
 

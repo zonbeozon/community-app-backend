@@ -1,6 +1,7 @@
 package com.zonbeozon.currency.loader;
 
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
+import com.zonbeozon.crypto.loader.CurrencyRegistryHolder;
 import com.zonbeozon.currency.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class CurrencyLoadManager {
 
     public void loadThenAdd() {
         CurrencyRegistryHolder registryHolder = currencyLoader.load();
-        List<Currency> currencies =  registryHolder.toEntity();
+        List<Currency> currencies = registryHolder.toEntity();
         currencyService.addCurrencies(currencies);
     }
 }

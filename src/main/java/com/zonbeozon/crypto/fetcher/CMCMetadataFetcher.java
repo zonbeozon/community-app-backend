@@ -1,15 +1,18 @@
-package com.zonbeozon.currency.fetch;
+package com.zonbeozon.crypto.fetcher;
 
-import com.zonbeozon.global.fetch.FetchContextSupplier;
-import com.zonbeozon.global.fetch.FetchManager;
+import com.zonbeozon.crypto.enums.LanguageCode;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Component
-class CMCMetadataFetcher extends CMCAbstractFetcher implements FetchManager<CurrencyFetchContext, CurrencyMetadataFetchResult> {
+class CMCMetadataFetcher extends CMCAbstractFetcher implements MetadataFetcher {
     private final static String METADATA_RESOURCE_URL = "/v1/cryptocurrency/info";
     private final static String METADATA_AUX = "urls,logo,description";
 
@@ -23,8 +26,18 @@ class CMCMetadataFetcher extends CMCAbstractFetcher implements FetchManager<Curr
     }
 
     @Override
-    public CurrencyMetadataFetchResult fetch(FetchContextSupplier<CurrencyFetchContext> contextSupplier) {
-        return super.basicFetch(contextSupplier.getContext().getSymbols(), CMCMetadataResponse.class).toResult();
+    public MetadataFetchResult fetch(Collection<String> symbols) {
+        CMCMetadataResponse response = super.fetch(symbols, CMCMetadataResponse.class);
+        Set<CurrencyMetaData> metaDataSet = response.metadataMap().values().stream()
+                .map(metadata -> new CurrencyMetaData(
+                        metadata.symbol(),
+                        metadata.name(),
+                        metadata.description(),
+                        metadata.logo(),
+                        metadata.urls().websites().getFirst()))
+                .collect(Collectors.toSet());
+
+        return new MetadataFetchResult(LanguageCode.EN, metaDataSet);
     }
     @Override
     protected String getPath() {

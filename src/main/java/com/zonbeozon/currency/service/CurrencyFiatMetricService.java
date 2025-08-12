@@ -1,8 +1,8 @@
 package com.zonbeozon.currency.service;
 
+import com.zonbeozon.crypto.entity.CurrencyQuote;
 import com.zonbeozon.global.EntityValidator;
-import com.zonbeozon.currency.entity.Currency;
-import com.zonbeozon.currency.entity.CurrencyFiatMetric;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.currency.repository.CurrencyFiatMetricRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,13 +17,13 @@ public class CurrencyFiatMetricService {
     private final CurrencyFiatMetricRepository currencyFiatMetricRepository;
 
     @Transactional
-    public void addCurrencyFiatMetric(CurrencyFiatMetric currencyFiatMetric) {
-        entityValidator.validate(currencyFiatMetric);
-        currencyFiatMetricRepository.save(currencyFiatMetric);
+    public void addCurrencyFiatMetric(CurrencyQuote currencyQuote) {
+        entityValidator.validate(currencyQuote);
+        currencyFiatMetricRepository.save(currencyQuote);
     }
 
     @Transactional(readOnly = true)
-    public List<CurrencyFiatMetric> getCurrencyFiatMetricsByCurrency(Currency currency) {
+    public List<CurrencyQuote> getCurrencyFiatMetricsByCurrency(Currency currency) {
         return currencyFiatMetricRepository.findByCurrency(currency);
     }
 

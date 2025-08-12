@@ -3,7 +3,7 @@ package com.zonbeozon.currency.service;
 import com.zonbeozon.global.EntityValidator;
 import com.zonbeozon.currency.service.dto.CurrenciesOverviewResponse;
 import com.zonbeozon.currency.service.dto.CurrencyResponse;
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.currency.exception.CurrencyNotFoundException;
 import com.zonbeozon.currency.repository.CurrencyRepository;
 import com.zonbeozon.fiat.entity.FiatType;
