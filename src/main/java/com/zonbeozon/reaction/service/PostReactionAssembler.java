@@ -49,7 +49,9 @@ public class PostReactionAssembler {
                                     PostReaction::getReactionType,
                                     Collectors.counting()
                             ));
-
+                    for (ReactionType type : ReactionType.values()) {
+                        reactionCounts.putIfAbsent(type, 0L);
+                    }
                     PostReaction requesterReaction = reactionByRequesterByPostId.get(post.getId());
 
                     boolean likedByCurrentUser = false;

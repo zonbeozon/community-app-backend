@@ -43,9 +43,4 @@ public class ChannelMemberRemover {
         ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannel(targetMember, channel);
         targetChannelMember.updateStatusToKicked();
     }
-
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void handleChannelDeleted(ChannelDeletedEvent event) {
-        channelMemberRepository.findAll().forEach(ChannelMember::updateStatusToChannelDeleted);
-    }
 }

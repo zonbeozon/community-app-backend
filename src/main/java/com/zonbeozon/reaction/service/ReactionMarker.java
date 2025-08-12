@@ -1,6 +1,5 @@
 package com.zonbeozon.reaction.service;
 
-import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.reaction.enums.ReactionContentType;
 import com.zonbeozon.reaction.enums.ReactionType;
 import lombok.RequiredArgsConstructor;
