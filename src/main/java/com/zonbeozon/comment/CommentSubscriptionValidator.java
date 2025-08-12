@@ -26,7 +26,6 @@ import java.util.Map;
 public class CommentSubscriptionValidator implements StompSubscriptionValidateHandler {
     private static final String COMMENT_SUBSCRIPTION_PATTERN = "/topic/post/{postId}/comment";
     private final PathMatcher pathMatcher = new AntPathMatcher();
-    private final ChannelFinder channelFinder;
     private final MemberFinder memberFinder;
     private final ChannelMemberFinder channelMemberFinder;
     private final PostFinder postFinder;
@@ -67,7 +66,7 @@ public class CommentSubscriptionValidator implements StompSubscriptionValidateHa
     }
 
     private Long extractPostIdFromDestination(String destination) {
-        Map<String, String> variables = pathMatcher.extractUriTemplateVariables(destination, COMMENT_SUBSCRIPTION_PATTERN);
+        Map<String, String> variables = pathMatcher.extractUriTemplateVariables(COMMENT_SUBSCRIPTION_PATTERN, destination);
         String postId = variables.get("postId");
         try {
             return Long.parseLong(postId);

@@ -45,7 +45,7 @@ public class PostSubscriptionValidator implements StompSubscriptionValidateHandl
         Channel foundChannel;
         Member member;
         try {
-            foundChannel = channelFinder.findById(channelId);
+            foundChannel = channelFinder.findByIdElseThrow(channelId);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
         }
@@ -62,8 +62,7 @@ public class PostSubscriptionValidator implements StompSubscriptionValidateHandl
     }
 
     private Long extractChannelIdFromDestination(String destination) {
-        // 예: /topic/channel/123 → 123
-        Map<String, String> variables = pathMatcher.extractUriTemplateVariables(destination, POST_SUBSCRIPTION_PATTERN);
+        Map<String, String> variables = pathMatcher.extractUriTemplateVariables(POST_SUBSCRIPTION_PATTERN, destination);
         String channelId = variables.get("channelId");
         try {
             return Long.parseLong(channelId);
