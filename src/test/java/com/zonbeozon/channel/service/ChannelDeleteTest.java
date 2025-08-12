@@ -4,15 +4,11 @@ import com.zonbeozon.channel.TestChannelBuilder;
 import com.zonbeozon.channel.TestChannelMemberBuilder;
 import com.zonbeozon.channel.dto.ChannelDeletedEvent;
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.repository.ChannelRepository;
 
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.member.TestMemberBuilder;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.dto.PostCreatedEvent;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,12 +66,10 @@ public class ChannelDeleteTest {
     }
 
     @Test
-    @DisplayName("채널 맴버는 비활성화 상태로 전환된다")
-    void channelMembersStatusShouldBeChannelDeletedOnChannelRemoval() {
-        ChannelMember channelMember_1 = new TestChannelMemberBuilder(member_1, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
-        ChannelMember channelMember_2 = new TestChannelMemberBuilder(member_2, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
+    @DisplayName("채널 삭제시 채널 상태는 DELETE로 변경 되어야한다.")
+    void ChangeStatusToDeletedWhenChannelIsRemoved() {
+        new TestChannelMemberBuilder(member_1, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
         channelRemover.removeChannel(channel.getId());
-        Assertions.assertThat(channelMember_1.getStatus()).isEqualTo(ChannelMemberStatus.CHANNEL_DELETED);
-        Assertions.assertThat(channelMember_2.getStatus()).isEqualTo(ChannelMemberStatus.CHANNEL_DELETED);
+        Assertions.assertThat(channel.isDeleted()).isTrue();
     }
 }

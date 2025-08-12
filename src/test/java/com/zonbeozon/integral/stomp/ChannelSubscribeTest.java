@@ -101,7 +101,7 @@ public class ChannelSubscribeTest {
         CompletableFuture<Object> cfReceipt = new CompletableFuture<>();
 
         doConnect();
-        stompSession.subscribe("/topic/channel/" + channel.getId(), new AbstractTestStompFrameHandler())
+        stompSession.subscribe("/topic/channel/" + channel.getId() + "/post", new AbstractTestStompFrameHandler())
                 .addReceiptTask(stompHeaders -> {
                     cfReceipt.complete(null);
                 });
@@ -120,7 +120,7 @@ public class ChannelSubscribeTest {
         });
 
         doConnect();
-        stompSession.subscribe("/topic/channel/" + channel.getId(), new AbstractTestStompFrameHandler());
+        stompSession.subscribe("/topic/channel/" + channel.getId() + "/post", new AbstractTestStompFrameHandler());
 
         String payload = cfError.get(5, TimeUnit.SECONDS);
         String code = JsonPath.read(payload, "$.code");
