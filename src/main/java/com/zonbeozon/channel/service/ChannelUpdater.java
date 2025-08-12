@@ -25,7 +25,7 @@ public class ChannelUpdater {
             Long channelId,
             ChannelUpdateRequest request
     ) {
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(!channel.getTitle().equals(request.title())) {
             if(isDuplicateTitle(request.title()))
                 throw new ConflictException(ErrorCode.DUPLICATE_CHANNEL_TITLE);

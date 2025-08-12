@@ -40,6 +40,7 @@ public class BlogChannelAssembler {
                 .filter(Objects::nonNull)
                 .map(Post::getId)
                 .toList();
+
         Map<Long, Long> postImageCount = postImageRepository.countImagesByPostIds(postIds).stream()
                 .collect(Collectors.toMap(PostImageCount::getPostId, PostImageCount::getCount));
 

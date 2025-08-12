@@ -47,7 +47,7 @@ public class ChannelCreateTest {
     void createsChannelSuccessfullyFromCommand() {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
-        Channel channel = channelFinder.findById(id);
+        Channel channel = channelFinder.findByIdElseThrow(id);
         assertChannelMetadataEquals(channel, command);
     }
 
@@ -56,7 +56,7 @@ public class ChannelCreateTest {
     void registerRequesterAsOwnerWhenChannelIsCreated() {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
-        Channel channel = channelFinder.findById(id);
+        Channel channel = channelFinder.findByIdElseThrow(id);
         ChannelMember channelMember = channelMemberFinder.findByMemberAndChannel(member, channel);
         assertThat(channelMember.getMember()).isEqualTo(member);
         assertThat(channelMember.isOwner()).isTrue();
@@ -84,7 +84,7 @@ public class ChannelCreateTest {
         Image image = new TestImageBuilder(member, "1234").persist(entityManager);
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().setImageId(image.getId()).build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
-        Channel channel = channelFinder.findById(id);
+        Channel channel = channelFinder.findByIdElseThrow(id);
 
         Assertions.assertThat(channel.getProfile()).isNotNull();
         Assertions.assertThat(channel.getProfile().getImage().getId()).isEqualTo(image.getId());

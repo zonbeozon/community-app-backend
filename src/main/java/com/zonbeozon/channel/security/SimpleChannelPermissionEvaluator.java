@@ -20,12 +20,12 @@ public class SimpleChannelPermissionEvaluator {
 
     public boolean isMemberOfChannel(Long channelId) {
         Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         return channelMemberFinder.existsByMemberAndChannel(member, channel);
     }
 
     public boolean isMemberOfChannel(Long channelId, Member member) {
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         return channelMemberFinder.existsByMemberAndChannel(member, channel);
     }
 
@@ -34,7 +34,7 @@ public class SimpleChannelPermissionEvaluator {
      */
     public boolean hasMinimumRole(Long channelId, ChannelRole requiredRole) {
         Member requester = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         ChannelRole requesterRole = channelMemberFinder.findByMemberAndChannel(requester, channel).getRole();
         //권한이 요구 권한보다 높거나 같다면
         return requesterRole.isHigherThan(requiredRole) || requesterRole.isEqual(requiredRole);
@@ -45,7 +45,7 @@ public class SimpleChannelPermissionEvaluator {
      */
     public boolean isSuperiorTo(Long channelId, Member targetMember) {
         Member requester = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         ChannelRole requesterRole = channelMemberFinder.findByMemberAndChannel(requester, channel).getRole();
         ChannelRole targetRole = channelMemberFinder.findByMemberAndChannel(targetMember, channel).getRole();
         //권한이 타겟 맴버보다 더 높다면

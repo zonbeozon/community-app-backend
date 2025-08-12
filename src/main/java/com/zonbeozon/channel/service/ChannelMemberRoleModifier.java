@@ -26,7 +26,7 @@ public class ChannelMemberRoleModifier {
 
     @CheckChannelAccess(ChannelAction.MODIFY_ROLE)
     public void modifyChannelMemberRole(Long channelId, Long targetMemberId, ChannelRole newRole) {
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         Member requestMember = authenticationService.getCurrentMember();
         ChannelMember requestChannelMember = channelMemberFinder.findByMemberAndChannel(requestMember, channel);
         Member targetMember = memberFinder.findById(targetMemberId);

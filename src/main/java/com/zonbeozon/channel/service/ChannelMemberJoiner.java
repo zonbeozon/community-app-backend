@@ -35,7 +35,7 @@ public class ChannelMemberJoiner {
 
     public JoinResultStatus joinAsMember(Long channelId) {
         Member requester = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel.getSetting().getJoinPolicy() == ChannelJoinPolicy.DENY) {
             throw new AccessDeniedException(ErrorCode.CHANNEL_JOIN_DENIED);
         }

@@ -1,7 +1,6 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.dto.ChannelDeletedEvent;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
@@ -14,8 +13,6 @@ import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class ChannelMemberRemover {
     @Transactional
     public void leaveChannel(Long channelId) {
         Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         ChannelMember channelMember = channelMemberFinder.findByMemberAndChannel(member, channel);
 
         if(!channelMember.canLeaveChannel()) {
@@ -42,7 +39,7 @@ public class ChannelMemberRemover {
     @CheckChannelAccess(ChannelAction.KICK)
     public void kickMember(Long channelId, Long targetMemberId) {
         Member targetMember = memberFinder.findById(targetMemberId);
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
         ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannel(targetMember, channel);
         targetChannelMember.updateStatusToKicked();
     }

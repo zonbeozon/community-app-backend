@@ -87,7 +87,7 @@ public class ChannelResponseTest {
         new TestChannelMemberBuilder(requester, blogChannel_1).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
         channelRemover.removeChannel(blogChannel_1.getId());
         JoinedBlogChannelListResponse response = channelAssembler.createJoinedCommunityBlogChannelResponse();
-        assertThat(response.channels()).isEmpty();
+        assertThat(response.totalElements()).isEqualTo(0);
     }
 
     @Test

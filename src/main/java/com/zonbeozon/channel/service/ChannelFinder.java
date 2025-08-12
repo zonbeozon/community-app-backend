@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChannelFinder {
     private final ChannelRepository channelRepository;
 
-    public Channel findById(Long id) {
+    public Channel findByIdElseThrow(Long id) {
         return channelRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND));
     }
 }

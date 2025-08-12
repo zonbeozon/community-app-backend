@@ -18,7 +18,6 @@ import java.util.List;
 import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
 import static com.zonbeozon.channel.entity.QChannelProfile.channelProfile;
 import static com.zonbeozon.image.entity.QImage.image;
-import static com.zonbeozon.post.entity.QPostImage.postImage;
 
 @Repository
 @RequiredArgsConstructor

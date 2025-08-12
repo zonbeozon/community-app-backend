@@ -77,8 +77,4 @@ public class ChannelMember extends BaseTimeEntity {
     public boolean canLeaveChannel() {
         return role != ChannelRole.CHANNEL_OWNER;
     }
-
-    public void updateStatusToChannelDeleted() {
-        this.status = ChannelMemberStatus.CHANNEL_DELETED;
-    }
 }

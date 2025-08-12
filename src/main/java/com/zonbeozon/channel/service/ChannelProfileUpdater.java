@@ -20,15 +20,15 @@ public class ChannelProfileUpdater {
     private final ChannelProfileRepository channelProfileRepository;
 
     public void updateImage(Long channelId, Long imageId) {
-        Channel channel = channelFinder.findById(channelId);
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
 
         if(imageId == null) {
             channel.updateChannelProfile(null);
             return;
         }
 
-        imageOwnershipVerifier.verify(imageId);
         Image image = imageFinder.findById(imageId);
+        imageOwnershipVerifier.verify(imageId);
 
         //기존 프로필이 없다면
         if(channel.getProfile() == null) {
