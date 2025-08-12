@@ -26,7 +26,7 @@ public class PostReactionHandler implements ReactionMarkHandler, ReactionUnmarkH
     private final PostReactionRepository postReactionRepository;
 
     @Override
-    @MemberOfChannelOnly
+    @MemberOfChannelOnly(evaluateBy = "postId")
     public void mark(Long postId, ReactionType reactionType) {
         Member requester = authenticationService.getCurrentMember();
         Post post = postFinder.findById(postId);
@@ -39,7 +39,7 @@ public class PostReactionHandler implements ReactionMarkHandler, ReactionUnmarkH
     }
 
     @Override
-    @MemberOfChannelOnly
+    @MemberOfChannelOnly(evaluateBy = "postId")
     public void unmark(Long postId) {
         Member requester = authenticationService.getCurrentMember();
         Post post = postFinder.findById(postId);
