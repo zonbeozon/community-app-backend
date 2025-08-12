@@ -1,6 +1,6 @@
 package com.zonbeozon.market.loader;
 
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.exchange.Exchange;
 import com.zonbeozon.market.entity.MarketType;
 import lombok.Data;

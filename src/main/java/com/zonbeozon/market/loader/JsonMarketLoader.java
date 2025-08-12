@@ -11,17 +11,17 @@ import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 class JsonMarketLoader implements MarketLoader {
-    private final static String DELIMITER = ":";
+    private static final String FILE_PATH = "/data/markets.json";
+    private static final String DELIMITER = ":";
 
     private final ListFileLoaderTemplate<MarketJsonMappingDto> jsonFileLoaderTemplate = new ListFileLoaderTemplate<>(MarketJsonMappingDto.class);
     private final MarketCodeResolver marketCodeResolver;
-    private final String filePath;
     private final Supplier<MarketRegistryHolder> registryHolderSupplier;
 
     @Override
     public MarketRegistryHolder load() {
         MarketRegistryHolder registryHolder = registryHolderSupplier.get();
-        jsonFileLoaderTemplate.load(filePath).stream()
+        jsonFileLoaderTemplate.load(FILE_PATH).stream()
                 .map(this::createMarkets)
                 .flatMap(List::stream)
                 .forEach(registryHolder::add);

@@ -2,7 +2,7 @@ package com.zonbeozon.market.entity;
 
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.global.utils.BigDecimalUtils;
-import com.zonbeozon.currency.entity.Currency;
+import com.zonbeozon.crypto.entity.Currency;
 import com.zonbeozon.exchange.Exchange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -9,13 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 class MarketLoaderConfig {
-    private static final String FILE_PATH = "/data/markets.json";
     private final CurrencyService currencyService;
     private final MarketCodeResolver marketCodeResolver;
 
     @Bean
     public MarketLoader marketLoader() {
-        JsonMarketLoader jsonMarketLoader = new JsonMarketLoader(marketCodeResolver, FILE_PATH, MarketRegistryHolder::new);
+        JsonMarketLoader jsonMarketLoader = new JsonMarketLoader(marketCodeResolver, MarketRegistryHolder::new);
         return new CurrencyDecorator(jsonMarketLoader, currencyService);
     }
 }
