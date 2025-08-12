@@ -12,10 +12,10 @@ public abstract class BigDecimalUtils {
     public static final int PERCENT_PRECISION = 10;
 
     public static final int CRYPTO_SCALE = 8;
-    public static final int CRYPTO_PRECISION = 23;
+    public static final int CRYPTO_PRECISION = 38;
 
-    public static final int FIAT_SCALE = 4;
-    public static final int FIAT_PRECISION = 23;
+    public static final int FIAT_SCALE = 2;
+    public static final int FIAT_PRECISION = 20;
 
     public static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 
