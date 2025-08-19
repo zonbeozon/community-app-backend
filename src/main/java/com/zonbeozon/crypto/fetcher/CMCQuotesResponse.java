@@ -1,6 +1,7 @@
-package com.zonbeozon.currency.fetch;
+package com.zonbeozon.crypto.fetcher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.zonbeozon.crypto.dto.CurrencyQuotesDto;
 import com.zonbeozon.fiat.entity.FiatType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -41,15 +42,15 @@ record CMCQuotesResponse(
     @JsonProperty("quote")
     @NotNull(message = "cmc currency quote price detail cannot be null")
     @Valid
-    USDDetails UsdDetails
+    QuotesDetails quotesDetails
     ) {
     }
 
-    public record USDDetails(
+    public record QuotesDetails(
         @JsonProperty("USD")
         @NotNull(message = "cmc currency quote price detail cannot be null")
         @Valid
-        QuotePriceDetail quoteUsdPriceDetails
+        QuotePriceDetail quoteUsdDetails
     ) {
     }
 
@@ -66,20 +67,5 @@ record CMCQuotesResponse(
             @NotNull(message = "fdv cannot be null")
             BigDecimal fullyDilutedMarketCap
     ) {
-    }
-
-    public CurrencyQuotesFetchResult toResult() {
-        return new CurrencyQuotesFetchResult(
-                quoteMap.values().stream().map(
-                        cmcQuote -> new CurrencyQuotesFetchData(
-                                cmcQuote.symbol,
-                                FiatType.USD,
-                                cmcQuote.rank,
-                                cmcQuote.circulatingSupply,
-                                cmcQuote.totalSupply,
-                                cmcQuote.UsdDetails.quoteUsdPriceDetails.volume,
-                                cmcQuote.UsdDetails.quoteUsdPriceDetails.marketCap,
-                                cmcQuote.UsdDetails.quoteUsdPriceDetails.fullyDilutedMarketCap
-                        )).toList());
     }
 }

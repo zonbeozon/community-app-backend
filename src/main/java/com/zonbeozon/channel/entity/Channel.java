@@ -17,7 +17,6 @@ import org.hibernate.annotations.SQLRestriction;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "channel_type")
-@SQLRestriction("is_deleted = false")
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 32;
@@ -37,7 +36,7 @@ public abstract class Channel extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne(mappedBy = "channel")
+    @OneToOne(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private ChannelProfile profile;
 
     @NotNull
@@ -75,9 +74,5 @@ public abstract class Channel extends BaseTimeEntity {
 
     public void updateDescription(String description) {
         this.description = description;
-    }
-
-    public void deleteChannel() {
-        this.isDeleted = true;
     }
 }

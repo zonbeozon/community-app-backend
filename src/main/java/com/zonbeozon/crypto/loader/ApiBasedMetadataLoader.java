@@ -1,43 +1,53 @@
 package com.zonbeozon.crypto.loader;
 
 
-import com.zonbeozon.crypto.enums.LanguageCode;
-import com.zonbeozon.crypto.fetcher.MetadataFetchResult;
+import com.zonbeozon.crypto.dto.CurrencyMetadataDto;
+import com.zonbeozon.crypto.entity.Currency;
+import com.zonbeozon.crypto.entity.LocalizedCurrencyInfo;
 import com.zonbeozon.crypto.fetcher.MetadataFetcher;
+import com.zonbeozon.crypto.service.CurrencyCreator;
+import com.zonbeozon.crypto.service.CurrencyFinder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ApiBasedMetadataLoader implements MetadataLoader {
     private final MetadataFetcher metadataFetcher;
     private final SymbolLoader symbolLoader;
+    private final CurrencyCreator currencyCreator;
+    private final CurrencyFinder currencyFinder;
 
     @Override
-    public CurrencyRegistryHolder load() {
+    public void load() {
         List<String> symbols = symbolLoader.load();
-        MetadataFetchResult fetchResult = metadataFetcher.fetch(symbols);
-        Set<CurrencyRegistry> registries = fetchResult.getContent().stream().map(
+        Set<String> existSymbols = currencyFinder.findAllSymbols();
+        Set<String> duplicateSymbolFiltered = symbols.stream()
+                .filter(symbol -> !existSymbols.contains(symbol))
+                .collect(Collectors.toSet());
+        log.debug("{} symbols loaded, {} symbols filtered", symbols.size(), duplicateSymbolFiltered.size() - symbols.size());
+        Set<CurrencyMetadataDto> metaDataDtoSet = metadataFetcher.fetch(symbols);
+        List<Currency> currencies = metaDataDtoSet.stream().map(
                 metadata -> {
-                    Map<LanguageCode, String> names = new HashMap<>();
-                    names.put(fetchResult.getLanguageCode(), metadata.name());
-                    Map<LanguageCode, String> descriptions = new HashMap<>();
-                    names.put(fetchResult.getLanguageCode(), metadata.description());
-                    return CurrencyRegistry.builder()
-                            .symbol(metadata.symbol())
-                            .names(names)
-                            .descriptions(descriptions)
-                            .logo(metadata.logo())
-                            .website(metadata.website())
-                            .build();
+                    Currency currency = new Currency(metadata.symbol(), metadata.logo(), metadata.website());
+                    List<LocalizedCurrencyInfo> infos = metadata.localizedMetadata().stream()
+                            .map(localizedMetadata -> new LocalizedCurrencyInfo(
+                                    currency,
+                                    localizedMetadata.languageCode(),
+                                    localizedMetadata.name(),
+                                    localizedMetadata.description()
+                            ))
+                            .toList();
+                    currency.getLocalizedInfo().addAll(infos);
+                    return currency;
                 }
-        ).collect(Collectors.toSet());
-        return new HashMapCurrencyRegistryHolder(registries);
+        ).toList();
+
+        currencyCreator.addCurrencies(currencies);
     }
 }

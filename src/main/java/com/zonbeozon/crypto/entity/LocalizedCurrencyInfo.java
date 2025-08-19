@@ -31,9 +31,10 @@ public class LocalizedCurrencyInfo {
     @Setter
     private String description;
 
-    public LocalizedCurrencyInfo(Currency currency, LanguageCode languageCode) {
-        this.id = new LocalizedCurrencyInfoId(currency.getId(), languageCode);
+    public LocalizedCurrencyInfo(Currency currency, LanguageCode languageCode, String name, String description) {
         this.currency = currency;
         this.languageCode = languageCode;
+        this.name = name;
+        this.description = description;
     }
 }

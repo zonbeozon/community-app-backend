@@ -5,13 +5,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE channel_profile SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
 @Getter
 public class ChannelProfile {
     @Id

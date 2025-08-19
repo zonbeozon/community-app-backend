@@ -1,5 +1,7 @@
 package com.zonbeozon.crypto.fetcher;
 
+import com.zonbeozon.crypto.dto.CurrencyLocalizedMetadataDto;
+import com.zonbeozon.crypto.dto.CurrencyMetadataDto;
 import com.zonbeozon.crypto.enums.LanguageCode;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,18 +29,19 @@ class CMCMetadataFetcher extends CMCAbstractFetcher implements MetadataFetcher {
     }
 
     @Override
-    public MetadataFetchResult fetch(Collection<String> symbols) {
+    public Set<CurrencyMetadataDto> fetch(Collection<String> symbols) {
         CMCMetadataResponse response = super.fetch(symbols, CMCMetadataResponse.class);
-        Set<CurrencyMetaData> metaDataSet = response.metadataMap().values().stream()
-                .map(metadata -> new CurrencyMetaData(
+        return response.metadataMap().values().stream()
+                .map(metadata -> {
+                    Set<CurrencyLocalizedMetadataDto> localizedMetadataSet = new HashSet<>();
+                    localizedMetadataSet.add(new CurrencyLocalizedMetadataDto(LanguageCode.EN, metadata.name(), metadata.description()));
+                    return new CurrencyMetadataDto(
                         metadata.symbol(),
-                        metadata.name(),
-                        metadata.description(),
+                        localizedMetadataSet,
                         metadata.logo(),
-                        metadata.urls().websites().getFirst()))
+                        metadata.urls().websites().getFirst());
+                })
                 .collect(Collectors.toSet());
-
-        return new MetadataFetchResult(LanguageCode.EN, metaDataSet);
     }
     @Override
     protected String getPath() {

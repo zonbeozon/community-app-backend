@@ -1,10 +1,10 @@
-package com.zonbeozon.currency.fetch;
+package com.zonbeozon.crypto.dto;
 
 import com.zonbeozon.fiat.entity.FiatType;
 
 import java.math.BigDecimal;
 
-public record CurrencyQuotesFetchData(
+public record CurrencyQuotesDto (
         String symbol,
         FiatType fiatType,
         Long rank,
