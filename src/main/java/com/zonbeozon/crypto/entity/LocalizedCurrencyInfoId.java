@@ -5,7 +5,7 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public record LocalizedCurrencyInfoId(
-        Long CurrencyId,
+        Long currencyId,
         LanguageCode languageCode
 ) {
 }

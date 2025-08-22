@@ -1,6 +1,6 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.enums.ChannelVisibility;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -18,17 +18,17 @@ import lombok.NoArgsConstructor;
 public class ChannelSetting {
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ChannelVisibility visibility;
+    private ChannelContentVisibility contentVisibility;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private ChannelJoinPolicy joinPolicy;
 
     public void updateSettings(
-            ChannelVisibility visibility,
+            ChannelContentVisibility visibility,
             ChannelJoinPolicy joinLevel
     ) {
-        this.visibility = visibility;
+        this.contentVisibility = visibility;
         this.joinPolicy = joinLevel;
     }
 }

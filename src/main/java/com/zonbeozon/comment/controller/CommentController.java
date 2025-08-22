@@ -3,12 +3,14 @@ package com.zonbeozon.comment.controller;
 import com.zonbeozon.comment.dto.CommentAddRequest;
 import com.zonbeozon.comment.dto.CommentListResponse;
 import com.zonbeozon.comment.service.CommentAssembler;
+import com.zonbeozon.comment.service.CommentAuthorizationCheckService;
 import com.zonbeozon.comment.service.CommentCreator;
 import com.zonbeozon.comment.service.CommentRemover;
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,6 +28,8 @@ public class CommentController {
     private final CommentCreator commentCreator;
     private final CommentRemover commentRemover;
     private final CommentAssembler commentAssembler;
+    private final PostAuthorizationCheckService postAuthorizationCheckService;
+    private final CommentAuthorizationCheckService commentAuthorizationCheckService;
 
 
     @Operation(
@@ -44,7 +48,9 @@ public class CommentController {
     @PostMapping("/post/{postId}/comment")
     public ResponseEntity<Long> createComment(
             @PathVariable Long postId,
-            @Valid @RequestBody CommentAddRequest request) {
+            @Valid @RequestBody CommentAddRequest request)
+    {
+        if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         Long commentId = commentCreator.addComment(postId, request.content());
         return ResponseEntity.status(HttpStatus.CREATED).body(commentId);
     }
@@ -67,6 +73,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId
     ) {
+        if(!commentAuthorizationCheckService.isAuthorOrHasHigherRoleThanAuthor(commentId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         commentRemover.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
@@ -85,6 +92,7 @@ public class CommentController {
     public ResponseEntity<CommentListResponse> getComments(
             @PathVariable Long postId
     ) {
+        if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         return ResponseEntity.ok(commentAssembler.createCommentListResponse(postId));
     }
 }

@@ -22,7 +22,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         return queryFactory
                 .selectFrom(comment)
                 .join(comment.author).fetchJoin()
-                .where(comment.post.id.eq(postId).and(comment.isDeleted.eq(false)))
+                .where(comment.post.id.eq(postId))
                 .orderBy(comment.createdAt.desc())
                 .fetch();
     }
@@ -35,7 +35,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                         comment.count()
                 ))
                 .from(post)
-                .leftJoin(comment).on(comment.post.id.eq(post.id).and(comment.isDeleted.eq(false)))
+                .leftJoin(comment).on(comment.post.id.eq(post.id))
                 .where(post.id.in(postIds))
                 .groupBy(post)
                 .fetch();

@@ -2,7 +2,7 @@ package com.zonbeozon.channel;
 
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
 import com.zonbeozon.channel.dto.ChannelSettingRequest;
-import com.zonbeozon.channel.enums.ChannelVisibility;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
 
@@ -10,7 +10,7 @@ public class TestChannelCreateRequestBuilder {
     private String title = "example title";
     private String description = "example description";
     private Long imageId;
-    private ChannelVisibility visibility = ChannelVisibility.PUBLIC;
+    private ChannelContentVisibility visibility = ChannelContentVisibility.PUBLIC;
     private ChannelType channelType = ChannelType.BLOG;
     private ChannelJoinPolicy joinPolicy = ChannelJoinPolicy.OPEN;
 
@@ -25,7 +25,7 @@ public class TestChannelCreateRequestBuilder {
         return this;
     }
 
-    public TestChannelCreateRequestBuilder setContentVisibility(ChannelVisibility visibility) {
+    public TestChannelCreateRequestBuilder setContentVisibility(ChannelContentVisibility visibility) {
         this.visibility = visibility;
         return this;
     }

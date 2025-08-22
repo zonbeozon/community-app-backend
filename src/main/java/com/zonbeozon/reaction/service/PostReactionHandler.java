@@ -1,9 +1,6 @@
 package com.zonbeozon.reaction.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.security.MemberOfChannelOnly;
-import com.zonbeozon.channel.security.SimpleChannelPermissionEvaluator;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
@@ -26,25 +23,25 @@ public class PostReactionHandler implements ReactionMarkHandler, ReactionUnmarkH
     private final PostReactionRepository postReactionRepository;
 
     @Override
-    @MemberOfChannelOnly(evaluateBy = "postId")
     public void mark(Long postId, ReactionType reactionType) {
         Member requester = authenticationService.getCurrentMember();
-        Post post = postFinder.findById(postId);
+        Post post = postFinder.findByIdElseThrow(postId);
         //이미 해당 post에 대해 리엑션이 있다면 기존 리엑션을 삭제
         postReactionRepository.findByPostAndAuthor(post, requester)
                 .ifPresent(postReactionRepository::delete);
 
         PostReaction reaction = PostReaction.create(post, reactionType, requester);
+        post.getReactions().add(reaction);
         postReactionRepository.save(reaction);
     }
 
     @Override
-    @MemberOfChannelOnly(evaluateBy = "postId")
     public void unmark(Long postId) {
         Member requester = authenticationService.getCurrentMember();
-        Post post = postFinder.findById(postId);
+        Post post = postFinder.findByIdElseThrow(postId);
         PostReaction reaction = postReactionRepository.findByPostAndAuthor(post, requester)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.REACTION_NOT_FOUND));
+        post.getReactions().remove(reaction);
         postReactionRepository.delete(reaction);
     }
 

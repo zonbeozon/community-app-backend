@@ -36,7 +36,7 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
     }
 
     @Override
-    public Page<ChannelMember> findByChannelId(Long channelId, ChannelMemberStatus status, Pageable pageable) {
+    public Page<ChannelMember> findByChannelIdWithMemberOrderByCreatedAtDesc(Long channelId, ChannelMemberStatus status, Pageable pageable) {
         List<ChannelMember> content = queryFactory
                 .selectFrom(channelMember)
                 .join(channelMember.member, member).fetchJoin()

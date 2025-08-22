@@ -50,12 +50,12 @@ public class PostSubscriptionValidator implements StompSubscriptionValidateHandl
             throw new SubscriptionException(SubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
         }
         try {
-            member = memberFinder.findById(memberId);
+            member = memberFinder.findByIdElseThrow(memberId);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
         }
         try {
-            channelMemberFinder.findByMemberAndChannel(member, foundChannel);
+            channelMemberFinder.findByMemberAndChannelElseThrow(member, foundChannel);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
         }

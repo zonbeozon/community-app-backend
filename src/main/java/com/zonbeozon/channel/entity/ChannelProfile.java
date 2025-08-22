@@ -22,8 +22,6 @@ public class ChannelProfile {
     @JoinColumn(name = "image_id", nullable = false)
     private Image image;
 
-    private boolean isDeleted = false;
-
     public ChannelProfile(Channel channel, Image image) {
         this.channel = channel;
         this.image = image;

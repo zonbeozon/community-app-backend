@@ -4,8 +4,6 @@ import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.security.ChannelAction;
-import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +22,12 @@ public class ChannelMemberRoleModifier {
     private final AuthenticationService authenticationService;
     private final List<ModifyChannelRoleHandler> modifyChannelRoleHandlers;
 
-    @CheckChannelAccess(ChannelAction.MODIFY_ROLE)
     public void modifyChannelMemberRole(Long channelId, Long targetMemberId, ChannelRole newRole) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         Member requestMember = authenticationService.getCurrentMember();
-        ChannelMember requestChannelMember = channelMemberFinder.findByMemberAndChannel(requestMember, channel);
-        Member targetMember = memberFinder.findById(targetMemberId);
-        ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannel(targetMember, channel);
+        ChannelMember requestChannelMember = channelMemberFinder.findByMemberAndChannelElseThrow(requestMember, channel);
+        Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
+        ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannelElseThrow(targetMember, channel);
         modifyChannelRoleHandlers.stream()
                 .filter(handler -> handler.isSupport(newRole))
                 .findAny()

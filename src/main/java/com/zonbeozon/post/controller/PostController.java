@@ -1,7 +1,12 @@
 package com.zonbeozon.post.controller;
 
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import com.zonbeozon.post.dto.*;
+import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import com.zonbeozon.post.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +32,10 @@ public class PostController {
     private final PostCreator postCreator;
     private final PostUpdater postUpdater;
     private final PostRemover postRemover;
-    private final SecuredPostAssembler securedPostAssembler;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
+    private final PostAssembler postAssembler;
+    private final PostAuthorizationCheckService postAuthorizationCheckService;
+    private final ImageOwnershipVerifier imageOwnershipVerifier;
 
     @Operation(
             summary = "Post 생성",
@@ -109,6 +117,8 @@ public class PostController {
             @Valid
             PostCreateRequest request
     ) {
+        if(!channelAuthorizationCheckService.isAtLeastAdmin(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        if(!request.imageIds().isEmpty()) imageOwnershipVerifier.verify(request.imageIds());
         Long postId = postCreator.addPost(channelId, new PostCreateCommand(request.content(), request.imageIds()));
         return ResponseEntity.status(HttpStatus.CREATED).body(postId);
     }
@@ -130,6 +140,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId
     ) {
+        if(!postAuthorizationCheckService.isAuthorOrHasHigherRoleThanAuthor(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         postRemover.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
@@ -154,6 +165,8 @@ public class PostController {
             @Valid
             PostUpdateRequest request
     ) {
+        if(!postAuthorizationCheckService.isAuthor(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        if(!request.imageIds().isEmpty()) imageOwnershipVerifier.verify(request.imageIds());
         postUpdater.updateContent(postId, request);
         return ResponseEntity.noContent().build();
     }
@@ -206,11 +219,14 @@ public class PostController {
             @RequestParam(required = false) Long cursorPostId,
             @RequestParam(defaultValue = "20") int size
     ) {
-        CursorBasedPostsResponse response = securedPostAssembler.createCursorBasedPostResponse(
+        if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+
+        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(
                 channelId,
                 cursorPostId,
                 size
         );
+
         return ResponseEntity.ok(response);
     }
 
@@ -250,6 +266,7 @@ public class PostController {
     public ResponseEntity<PostResponse> getPostResponse(
             @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(securedPostAssembler.createPostResponse(postId));
+        if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        return ResponseEntity.ok(postAssembler.createPostResponse(postId));
     }
 }

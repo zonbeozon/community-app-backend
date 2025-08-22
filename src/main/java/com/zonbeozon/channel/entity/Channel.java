@@ -28,19 +28,15 @@ public abstract class Channel extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(length = MAX_TITLE_LENGTH)
+    @Column(length = MAX_TITLE_LENGTH, unique = true, nullable = false)
     private String title;
 
     @NotNull
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "channel")
     private ChannelProfile profile;
-
-    @NotNull
-    private boolean isDeleted = false;
 
     @NotNull
     @Embedded
@@ -75,4 +71,5 @@ public abstract class Channel extends BaseTimeEntity {
     public void updateDescription(String description) {
         this.description = description;
     }
+
 }

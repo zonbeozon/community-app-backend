@@ -3,8 +3,6 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.security.ChannelAction;
-import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.channel.service.ChannelFinder;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
@@ -26,16 +24,15 @@ public class PostCreator {
     private final ApplicationEventPublisher eventPublisher;
     private final AuthenticationService authenticationService;
     private final ChannelFinder channelFinder;
-    private final PostImageUpdater postImageUpdater;
+    private final PostImageService postImageService;
 
-    @CheckChannelAccess(ChannelAction.POST_CREATE)
     public Long addPost(Long channelId, PostCreateCommand command) {
         Member requester = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel instanceof BlogChannel blogChannel) {
             Post post = Post.create(command.content(), blogChannel, requester);
             postRepository.save(post);
-            if(!command.imageIds().isEmpty()) postImageUpdater.updatePostImages(post.getId(), command.imageIds());
+            if(!command.imageIds().isEmpty()) postImageService.updatePostImages(post.getId(), command.imageIds());
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();
         }

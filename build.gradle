@@ -46,8 +46,9 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	implementation platform('software.amazon.awssdk:bom:2.27.21')
 	implementation 'software.amazon.awssdk:s3'
-}
 
+	testImplementation 'com.h2database:h2'
+}
 
 
 tasks.named('test') {

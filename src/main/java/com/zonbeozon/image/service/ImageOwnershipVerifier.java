@@ -3,7 +3,6 @@ package com.zonbeozon.image.service;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class ImageOwnershipVerifier {
 
     public void verify(List<Long> imageIds) {
         Member member = authenticationService.getCurrentMember();
-        List<Image> images = imageFinder.findAllById(imageIds);
+        List<Image> images = imageFinder.findAllByIds(imageIds);
         images.forEach(image -> {
             if(!member.equals(image.getUploader())) {
                 throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
@@ -31,7 +30,7 @@ public class ImageOwnershipVerifier {
 
     public void verify(Long imageId) {
         Member member = authenticationService.getCurrentMember();
-        Image image = imageFinder.findById(imageId);
+        Image image = imageFinder.findByIdElseThrow(imageId);
         if(!member.equals(image.getUploader())) {
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }

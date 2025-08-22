@@ -6,6 +6,7 @@ import com.zonbeozon.channel.repository.ChannelProfileRepository;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.image.service.ImageFinder;
 import com.zonbeozon.image.service.ImageOwnershipVerifier;
+import com.zonbeozon.image.service.ImageDeleter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,22 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ChannelProfileUpdater {
+public class ChannelProfileService {
     private final ImageFinder imageFinder;
     private final ChannelFinder channelFinder;
-    private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final ChannelProfileRepository channelProfileRepository;
+    private final ImageDeleter imageDeleter;
 
     public void updateImage(Long channelId, Long imageId) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
 
         if(imageId == null) {
-            channel.updateChannelProfile(null);
+            deleteProfile(channelId);
             return;
         }
 
-        Image image = imageFinder.findById(imageId);
-        imageOwnershipVerifier.verify(imageId);
+        Image image = imageFinder.findByIdElseThrow(imageId);
 
         //기존 프로필이 없다면
         if(channel.getProfile() == null) {
@@ -43,5 +43,14 @@ public class ChannelProfileUpdater {
         }
         //프로필이 있지만 이미지 업데이트가 필요한 경우
         channel.getProfile().updateImage(image);
+    }
+
+    public void deleteProfile(Long channelId) {
+        Channel channel = channelFinder.findChannelByIdWithChannelProfileElseThrow(channelId);
+        if(channel.getProfile() == null) return;
+        Long imageId = channel.getProfile().getImage().getId();
+        channelProfileRepository.delete(channel.getProfile());
+        channel.updateChannelProfile(null);
+        imageDeleter.deleteImage(imageId);
     }
 }

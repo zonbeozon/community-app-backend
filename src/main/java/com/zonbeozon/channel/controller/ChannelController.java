@@ -2,11 +2,15 @@ package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.dto.*;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.channel.service.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelRemover;
 import com.zonbeozon.channel.service.ChannelUpdater;
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -31,6 +35,8 @@ public class ChannelController {
     private final ChannelUpdater channelUpdater;
     private final BlogChannelAssembler blogChannelAssembler;
     private final ChannelRemover channelRemover;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
+    private final ImageOwnershipVerifier imageOwnershipVerifier;
 
     @Operation(
             summary = "채널 추가",
@@ -106,13 +112,15 @@ public class ChannelController {
             @RequestBody
             ChannelCreateRequest request
     ) {
+        if(request.imageId() != null) imageOwnershipVerifier.verify(request.imageId());
+
         Long channelId = channelCreator.addChannel(
                 new ChannelCreateCommand(
                         request.channelType(),
                         request.title(),
                         request.description(),
                         request.imageId(),
-                        request.settings().visibility(),
+                        request.settings().contentVisibility(),
                         request.settings().joinPolicy(),
                         ChannelCreatorType.COMMUNITY
                 ));
@@ -129,6 +137,9 @@ public class ChannelController {
             @Valid @RequestBody ChannelUpdateRequest channelUpdateRequest,
             @PathVariable Long channelId
     ) {
+        if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        if(channelUpdateRequest.imageId() != null) imageOwnershipVerifier.verify(channelUpdateRequest.imageId());
+
         channelUpdater.updateChannel(channelId, channelUpdateRequest);
         return ResponseEntity.ok().build();
     }
@@ -189,7 +200,7 @@ public class ChannelController {
 //            @Parameter(name = "채널 타입")
 //            @RequestParam(required = false) ChannelType type,
 //            @Parameter(name = "채널 컨텐츠 공개 수준")
-//            @RequestParam(required = false) ChannelVisibility contentOpenLevel,
+//            @RequestParam(required = false) ChannelContentVisibility contentOpenLevel,
 //            @Parameter(name = "채널 검색 허용 수준")
 //            @RequestParam(required = false) ChannelJoinPolicy joinLevel,
 //            @Parameter(name = "정렬 기준")
@@ -214,6 +225,7 @@ public class ChannelController {
     public ResponseEntity<Void> deleteChannel(
             @PathVariable Long channelId
             ) {
+        if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         channelRemover.removeChannel(channelId);
         return ResponseEntity.noContent().build();
     }

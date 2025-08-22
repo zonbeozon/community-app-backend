@@ -9,14 +9,12 @@ import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 public class ChannelMemberFinder {
     private final ChannelMemberRepository channelMemberRepository;
 
-    public ChannelMember findByMemberAndChannel(Member member, Channel channel) {
+    public ChannelMember findByMemberAndChannelElseThrow(Member member, Channel channel) {
         return channelMemberRepository.findByMemberAndChannel(member, channel)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND));
     }

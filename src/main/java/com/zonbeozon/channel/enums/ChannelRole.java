@@ -17,4 +17,12 @@ public enum ChannelRole {
     public boolean isEqual(ChannelRole other) {
         return this.level == other.level;
     }
+
+    public boolean isAtLeastAdmin() {
+        return this.level >= 1;
+    }
+
+    public boolean isOwner() {
+        return this == CHANNEL_OWNER;
+    }
 }

@@ -2,7 +2,6 @@ package com.zonbeozon.crypto.entity;
 
 import com.zonbeozon.crypto.enums.LanguageCode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

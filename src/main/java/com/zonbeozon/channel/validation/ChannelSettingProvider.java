@@ -1,9 +1,9 @@
 package com.zonbeozon.channel.validation;
 
-import com.zonbeozon.channel.enums.ChannelVisibility;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 
 public interface ChannelSettingProvider {
-    ChannelVisibility visibility();
+    ChannelContentVisibility contentVisibility();
     ChannelJoinPolicy joinPolicy();
 }

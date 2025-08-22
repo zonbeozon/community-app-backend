@@ -17,17 +17,21 @@ import java.util.List;
 public class PostFinder {
     private final PostRepository postRepository;
 
-    public Post findById(Long postId) {
+    public Post findByIdElseThrow(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
-    public Post findById(Long postId, PostFetchOptions options) {
+    public Post findByIdElseThrow(Long postId, PostFetchOptions options) {
         return postRepository.findById(postId, options)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
     public List<Post> findByIdIn(List<Long> postIds) {
         return postRepository.findAllById(postIds);
+    }
+
+    public List<Post> findByChannelId(Long channelId) {
+        return postRepository.findByChannelId(channelId);
     }
 }

@@ -3,7 +3,6 @@ package com.zonbeozon.member.service;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.exception.MemberNotFoundException;
 import com.zonbeozon.member.respository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberFinder {
     private final MemberRepository memberRepository;
 
-    public Member findById(Long id) {
+    public Member findByIdElseThrow(Long id) {
         return memberRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 

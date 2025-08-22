@@ -10,12 +10,12 @@ public record ChannelMemberResponse (
         String profile,
         ChannelRole role
 ) {
-    public static ChannelMemberResponse from(ChannelMember chMember) {
+    public static ChannelMemberResponse from(ChannelMember channelMember) {
         return new ChannelMemberResponse(
-                chMember.getMember().getId(),
-                chMember.getMember().getUsername(),
-                chMember.getMember().getProfile(),
-                chMember.getRole());
+                channelMember.getMember().getId(),
+                channelMember.getMember().getUsername(),
+                channelMember.getMember().getProfile(),
+                channelMember.getRole());
     }
 
     public static ChannelMemberResponse from(Member member, ChannelRole role) {

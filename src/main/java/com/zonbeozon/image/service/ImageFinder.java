@@ -16,11 +16,11 @@ import java.util.List;
 public class ImageFinder {
     private final ImageRepository imageRepository;
 
-    public Image findById(Long imageId) {
+    public Image findByIdElseThrow(Long imageId) {
         return imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
-    public List<Image> findAllById(List<Long> imageIds) {
+    public List<Image> findAllByIds(List<Long> imageIds) {
         List<Image> images = imageRepository.findAllById(imageIds);
         if(images.size() != imageIds.size()) {
             throw new NotFoundException(ErrorCode.IMAGE_NOT_FOUND);

@@ -3,14 +3,15 @@ package com.zonbeozon.channel.controller;
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.JoinResultStatus;
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.ChannelMemberJoiner;
 import com.zonbeozon.channel.service.ChannelMemberRemover;
 import com.zonbeozon.channel.service.ChannelMemberRoleModifier;
 import com.zonbeozon.global.SortExcludedPageRequest;
-import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,12 +20,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +32,7 @@ public class ChannelMemberController {
     private final ChannelMemberRemover channelMemberRemover;
     private final ChannelMemberRoleModifier channelMemberRoleModifier;
     private final ChannelMemberAssembler channelMemberAssembler;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
 
     @Operation(
             summary = "채널 참가",
@@ -71,6 +69,8 @@ public class ChannelMemberController {
             @PathVariable Long channelId,
             @PathVariable Long targetMemberId
     ) {
+        if(!channelAuthorizationCheckService.hasHigherRoleThanTargetMember(channelId, targetMemberId))
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         channelMemberRemover.kickMember(channelId, targetMemberId);
         return ResponseEntity.ok().build();
     }
@@ -108,6 +108,7 @@ public class ChannelMemberController {
             @PathVariable Long targetMemberId,
             @RequestParam ChannelRole wantTo
     ) {
+        if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         channelMemberRoleModifier.modifyChannelMemberRole(channelId, targetMemberId, wantTo);
         return ResponseEntity.ok().build();
     }
@@ -129,6 +130,7 @@ public class ChannelMemberController {
             @PathVariable Long channelId,
             SortExcludedPageRequest pageRequest
     ) {
+        if(!channelAuthorizationCheckService.isAtLeastMember(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         return ResponseEntity.ok(
                 channelMemberAssembler.createPagedActiveChannelMemberResponse(channelId, pageRequest)
         );
@@ -150,6 +152,8 @@ public class ChannelMemberController {
             @PathVariable Long channelId,
             SortExcludedPageRequest pageRequest
     ) {
+        if(channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+
         return ResponseEntity.ok(
                 channelMemberAssembler.createPagedKickedChannelMemberResponse(channelId, pageRequest)
         );

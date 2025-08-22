@@ -22,6 +22,6 @@ public class AuthenticationService {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             throw new UnauthenticatedException(ErrorCode.UNAUTHENTICATED);
         }
-        return memberFinder.findById(Long.parseLong(authentication.getName()));
+        return memberFinder.findByIdElseThrow(Long.parseLong(authentication.getName()));
     }
 }

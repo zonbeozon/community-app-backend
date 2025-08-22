@@ -124,7 +124,7 @@ public class TokenService implements TokenProvider, TokenValidator, TokenParser 
     }
 
     public void save(String memberId, String accessToken, String refreshToken) {
-        Member member = memberFinder.findById(Long.parseLong(memberId));
+        Member member = memberFinder.findByIdElseThrow(Long.parseLong(memberId));
         Token token = new Token(member, accessToken, refreshToken);
         tokenRepository.save(token);
     }

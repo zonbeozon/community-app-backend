@@ -57,7 +57,7 @@ public class ChannelCreateTest {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
         Channel channel = channelFinder.findByIdElseThrow(id);
-        ChannelMember channelMember = channelMemberFinder.findByMemberAndChannel(member, channel);
+        ChannelMember channelMember = channelMemberFinder.findByMemberAndChannelElseThrow(member, channel);
         assertThat(channelMember.getMember()).isEqualTo(member);
         assertThat(channelMember.isOwner()).isTrue();
     }
@@ -80,7 +80,7 @@ public class ChannelCreateTest {
 
     @Test
     @DisplayName("이미지 id가 포함되어 있다면 채널 프로필로 등록한다.")
-    void d() {
+    void RegisterProfileWhenChannelIsCreatedWithImageId() {
         Image image = new TestImageBuilder(member, "1234").persist(entityManager);
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().setImageId(image.getId()).build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
@@ -94,7 +94,7 @@ public class ChannelCreateTest {
         assertThat(channel.getChannelType()).isEqualTo(command.type());
         assertThat(channel.getTitle()).isEqualTo(command.title());
         assertThat(channel.getDescription()).isEqualTo(command.description());
-        assertThat(channel.getSetting().getVisibility()).isEqualTo(command.visibility());
+        assertThat(channel.getSetting().getContentVisibility()).isEqualTo(command.visibility());
         assertThat(channel.getSetting().getJoinPolicy()).isEqualTo(command.joinPolicy());
 
         if(command.imageId() != null) {

@@ -3,14 +3,10 @@ package com.zonbeozon.channel.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SecurityTestUtils;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
-import com.zonbeozon.channel.enums.ChannelVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.service.BlogChannelAssembler;
-import com.zonbeozon.channel.service.ChannelCreator;
-import com.zonbeozon.channel.service.ChannelRemover;
-import com.zonbeozon.channel.service.ChannelUpdater;
+import com.zonbeozon.channel.service.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SimpleSecurityEnabledWebMvcTest(value = ChannelController.class)
-public class ChannelControllerTest {
+public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -63,21 +59,6 @@ public class ChannelControllerTest {
         @DisplayName("로그인된 사용자자 아니라면 접근 불가")
         void notAuthenticatedShouldReturnUnauthorized() throws Exception {
             SecurityTestUtils.assertNotAuthenticated(mockMvc, HttpMethod.POST, "/channel");
-        }
-
-        @Test
-        @DisplayName("셋팅 값 조합 조건 맞지 않으면 예외 발생")
-        @WithMockUser
-        void InvalidSettingCombinationShouldReturnBadRequest() throws Exception {
-            ChannelCreateRequest request = new TestChannelCreateRequestBuilder()
-                    .setJoinPolicy(ChannelJoinPolicy.DENY)
-                    .setContentVisibility(ChannelVisibility.PUBLIC)
-                    .build();
-            mockMvc.perform(post("/channel")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.code").value("INVALID_ARGUMENT"));
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.enums.ChannelVisibility;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.image.entity.ImageResponse;
@@ -13,7 +13,7 @@ public record ChannelResponse(
         ImageResponse profile,
         String description,
         ChannelJoinPolicy channelJoinPolicy,
-        ChannelVisibility channelVisibility,
+        ChannelContentVisibility channelContentVisibility,
         int memberCount
 ) {
 
@@ -27,7 +27,7 @@ public record ChannelResponse(
                 imageResponse,
                 channel.getDescription(),
                 channel.getSetting().getJoinPolicy(),
-                channel.getSetting().getVisibility(),
+                channel.getSetting().getContentVisibility(),
                 channelWithMemberCount.getMemberCount()
         );
     }

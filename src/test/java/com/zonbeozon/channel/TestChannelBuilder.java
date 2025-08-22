@@ -4,16 +4,16 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.entity.ChatChannel;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
-import com.zonbeozon.channel.enums.ChannelVisibility;
 import jakarta.persistence.EntityManager;
 
 public class TestChannelBuilder {
     private String title = "example title";
     private String description = "example description";
-    private ChannelVisibility visibility = ChannelVisibility.PUBLIC;
+    private ChannelContentVisibility visibility = ChannelContentVisibility.PUBLIC;
     private ChannelJoinPolicy joinPolicy = ChannelJoinPolicy.OPEN;
     private ChannelCreatorType creatorType = ChannelCreatorType.COMMUNITY;
     private ChannelType channelType = ChannelType.BLOG;

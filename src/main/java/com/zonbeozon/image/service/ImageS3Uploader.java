@@ -18,7 +18,7 @@ import java.io.InputStream;
 public class ImageS3Uploader {
     private final S3Client s3Client;
     private final S3Properties s3Properties;
-    private final ImageDbUploader imageDbUploader;
+    private final ImageDbService imageDbService;
     private final AuthenticationService authenticationService;
     private final UUIDGenerator uuidGenerator;
     private final S3UriBuilder s3UriBuilder;
@@ -38,6 +38,6 @@ public class ImageS3Uploader {
                 key,
                 authenticationService.getCurrentMember()
         );
-        return imageDbUploader.saveImage(image);
+        return imageDbService.saveImage(image);
     }
 }

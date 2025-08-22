@@ -3,6 +3,7 @@ package com.zonbeozon.post.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.post.TestPostCreateRequestBuilder;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SimpleSecurityEnabledWebMvcTest(PostController.class)
-public class PostControllerTest {
+public class PostControllerTest extends AuthorizationCheckDisabledTest {
     @Autowired
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();

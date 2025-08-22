@@ -1,13 +1,10 @@
 package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.enums.*;
-import com.zonbeozon.channel.validation.ChannelSettingProvider;
 import com.zonbeozon.channel.validation.ChannelTitleProvider;
-import com.zonbeozon.channel.validation.ValidChannelSetting;
 import com.zonbeozon.channel.validation.ValidChannelTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -30,7 +27,7 @@ public record ChannelCreateRequest(
 ) implements ChannelTitleProvider {
         public ChannelCreateCommand toCommand(ChannelCreatorType creatorType) {
                 return new ChannelCreateCommand(
-                        channelType, title, description, imageId, settings.visibility(), settings.joinPolicy(), creatorType
+                        channelType, title, description, imageId, settings.contentVisibility(), settings.joinPolicy(), creatorType
                 );
         }
 }

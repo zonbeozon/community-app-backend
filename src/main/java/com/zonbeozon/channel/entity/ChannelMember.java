@@ -57,8 +57,8 @@ public class ChannelMember extends BaseTimeEntity {
         this.role = role;
     }
 
-    public void updateStatusToKicked() {
-        this.status = ChannelMemberStatus.KICKED;
+    public void updateStatus(ChannelMemberStatus status) {
+        this.status = status;
     }
 
     public static ChannelMember create(Member member, Channel channel, ChannelRole role, ChannelMemberStatus status) {

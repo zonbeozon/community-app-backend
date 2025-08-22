@@ -8,10 +8,12 @@ import lombok.Getter;
 public class PostFetchOptions {
     private final boolean isWithAuthor;
     private final boolean isWithImages;
+    private final boolean isWithChannel;
 
     public static class Builder {
         private boolean isWithAuthor = false;
         private boolean isWithImages = false;
+        private boolean isWithChannel = false;
 
         public Builder withAuthor(boolean isWithAuthor) {
             this.isWithAuthor = isWithAuthor;
@@ -23,8 +25,13 @@ public class PostFetchOptions {
             return this;
         }
 
+        public Builder withChannel(boolean isWithChannel) {
+            this.isWithChannel = isWithChannel;
+            return this;
+        }
+
         public PostFetchOptions build() {
-            return new PostFetchOptions(isWithAuthor, isWithImages);
+            return new PostFetchOptions(isWithAuthor, isWithImages, isWithChannel);
         }
     }
 }

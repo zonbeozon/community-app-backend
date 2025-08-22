@@ -1,7 +1,6 @@
 package com.zonbeozon.comment;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.service.ChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -48,18 +47,18 @@ public class CommentSubscriptionValidator implements StompSubscriptionValidateHa
         Channel channel;
         Member member;
         try {
-            post = postFinder.findById(postId);
+            post = postFinder.findByIdElseThrow(postId);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.POST_NOT_FOUND);
         }
         channel = post.getChannel();
         try {
-            member = memberFinder.findById(memberId);
+            member = memberFinder.findByIdElseThrow(memberId);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
         }
         try {
-            channelMemberFinder.findByMemberAndChannel(member, channel);
+            channelMemberFinder.findByMemberAndChannelElseThrow(member, channel);
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
         }

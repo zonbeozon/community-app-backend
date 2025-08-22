@@ -1,0 +1,46 @@
+package com.zonbeozon.post.service;
+
+import com.zonbeozon.auth.service.AuthenticationService;
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
+import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.repository.PostFetchOptions;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.CheckReturnValue;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class PostAuthorizationCheckService {
+    private final AuthenticationService authenticationService;
+    private final PostFinder postFinder;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
+
+    @CheckReturnValue
+    public boolean isAuthorOrHasHigherRoleThanAuthor(Long postId) {
+        Member actor = authenticationService.getCurrentMember();
+        Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withAuthor(true).withChannel(true).build());
+        return actor.equals(post.getAuthor()) || channelAuthorizationCheckService.hasHigherRoleThanTargetMember(post.getChannel().getId(), post.getAuthor().getId());
+    }
+
+    @CheckReturnValue
+    public boolean isAuthor(Long postId) {
+        Member actor = authenticationService.getCurrentMember();
+        Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withAuthor(true).build());
+        return actor.equals(post.getAuthor());
+    }
+
+    @CheckReturnValue
+    public boolean canAccessChannelContent(Long postId) {
+        Long channelId = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build()).getChannel().getId();
+        return channelAuthorizationCheckService.canAccessChannelContent(channelId);
+    }
+
+    @CheckReturnValue
+    public boolean isAtLeastMember(Long postId) {
+        Long channelId = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build()).getChannel().getId();
+        return channelAuthorizationCheckService.isAtLeastMember(channelId);
+    }
+}

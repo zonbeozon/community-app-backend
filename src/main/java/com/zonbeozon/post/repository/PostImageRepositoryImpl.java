@@ -2,7 +2,6 @@ package com.zonbeozon.post.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.comment.dto.CommentCountResult;
 import com.zonbeozon.post.dto.PostImageCount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -8,7 +8,6 @@ import com.zonbeozon.member.service.dto.PagedMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,7 @@ public class MemberAssembler {
     private final MemberRepository memberRepository;
 
     public MemberResponse createMemberResponse(Long memberId) {
-        Member member = memberFinder.findById(memberId);
+        Member member = memberFinder.findByIdElseThrow(memberId);
         return MemberResponse.from(member);
     }
 

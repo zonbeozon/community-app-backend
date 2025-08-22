@@ -1,8 +1,6 @@
 package com.zonbeozon.comment.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.security.ChannelAction;
-import com.zonbeozon.channel.security.CheckChannelAccess;
 import com.zonbeozon.comment.dto.CommentCreatedEvent;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;
@@ -23,9 +21,8 @@ public class CommentCreator {
     private final CommentRepository commentRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    @CheckChannelAccess(ChannelAction.COMMENT_CREATE)
     public Long addComment(Long postId, String content) {
-        Post post = postFinder.findById(postId);
+        Post post = postFinder.findByIdElseThrow(postId);
         Member member = authenticationService.getCurrentMember();
         Comment comment = new Comment(content, member, post);
         commentRepository.save(comment);

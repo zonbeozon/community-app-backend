@@ -3,11 +3,6 @@ package com.zonbeozon;
 import com.zonbeozon.auth.filter.ReissueAccessTokenFilter;
 import com.zonbeozon.auth.filter.TokenAuthenticationFilter;
 import com.zonbeozon.auth.filter.TokenExceptionFilter;
-import com.zonbeozon.channel.validation.ChannelSettingValidator;
-import com.zonbeozon.channel.validation.ChannelTitleValidator;
-import com.zonbeozon.channel.validation.ValidChannelSetting;
-import com.zonbeozon.config.SecurityConfig;
-import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -20,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 로그인 기능이 제거된 매우 단순화된 webMvcTest에 사용된다.
+ * 로그인 기능이 제거된 단순화된 webMvcTest에 사용된다.
  * 인증을 위해서는 withMockUser를 사용한다.
  */
 @Target(ElementType.TYPE)

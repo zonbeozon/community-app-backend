@@ -51,8 +51,7 @@ public class BlogChannelRepositoryImpl implements BlogChannelRepositoryCustom {
                         latestPostAuthor.channel.id.eq(blogChannel.id)
                                 .and(latestPostAuthor.member.id.eq(latestPost.author.id)))
                 .leftJoin(latestPostAuthor.member, authorMember)
-                .where(blogChannel.isDeleted.eq(false)
-                        .and(blogChannel.creatorType.eq(creatorType)))
+                .where(blogChannel.creatorType.eq(creatorType))
                 .groupBy(requester, blogChannel, latestPost, latestPostAuthor, authorMember, image)
                 .orderBy(latestPost.createdAt.desc().nullsLast())
                 .fetch();

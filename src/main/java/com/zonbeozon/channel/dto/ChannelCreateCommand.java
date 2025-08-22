@@ -1,8 +1,8 @@
 package com.zonbeozon.channel.dto;
 
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelVisibility;
 import com.zonbeozon.channel.enums.ChannelType;
 
 public record ChannelCreateCommand(
@@ -10,7 +10,7 @@ public record ChannelCreateCommand(
         String title,
         String description,
         Long imageId,
-        ChannelVisibility visibility,
+        ChannelContentVisibility visibility,
         ChannelJoinPolicy joinPolicy,
         ChannelCreatorType creatorType
 ) {

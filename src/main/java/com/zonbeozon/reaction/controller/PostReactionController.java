@@ -1,6 +1,9 @@
 package com.zonbeozon.reaction.controller;
 
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.global.exception.AccessDeniedException;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import com.zonbeozon.reaction.enums.ReactionContentType;
 import com.zonbeozon.reaction.enums.ReactionType;
 import com.zonbeozon.reaction.service.ReactionMarker;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/post/{postId}/reaction")
 public class PostReactionController {
     private final ReactionMarker reactionMarker;
+    private final PostAuthorizationCheckService postAuthorizationCheckService;
 
     @Operation(
             summary = "리엑션 생성",
@@ -41,6 +45,7 @@ public class PostReactionController {
             @PathVariable Long postId,
             @RequestParam ReactionType reactionType
     ) {
+        if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         reactionMarker.mark(postId, ReactionContentType.POST, reactionType);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -66,6 +71,7 @@ public class PostReactionController {
     public ResponseEntity<Void> unmarkReaction(
             @PathVariable Long postId
     ) {
+        if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         reactionMarker.unmark(postId, ReactionContentType.POST);
         return ResponseEntity.noContent().build();
     }

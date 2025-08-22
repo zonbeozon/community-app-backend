@@ -2,7 +2,6 @@ package com.zonbeozon.comment.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.security.MemberOfChannelOnly;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
 import com.zonbeozon.comment.dto.CommentListResponse;
@@ -29,9 +28,8 @@ public class CommentAssembler {
     private final ChannelMemberAssembler channelMemberAssembler;
     private final ChannelMemberFinder channelMemberFinder;
 
-    @MemberOfChannelOnly(evaluateBy = "postId")
     public CommentListResponse createCommentListResponse(Long postId) {
-        Post post = postFinder.findById(postId);
+        Post post = postFinder.findByIdElseThrow(postId);
         List<Comment> comments = commentRepository.getCommentsByPostIdOrderByCreatedAtDesc(postId);
         List<SimplifiedCommentResponse> commentResponse = comments.stream()
                 .map(SimplifiedCommentResponse::from)
@@ -42,8 +40,8 @@ public class CommentAssembler {
     }
 
     public CommentResponse createCommentResponse(Long commentId) {
-        Comment comment = commentFinder.findById(commentId);
-        ChannelMember author = channelMemberFinder.findByMemberAndChannel(comment.getAuthor(), comment.getPost().getChannel());
+        Comment comment = commentFinder.findByIdElseThrow(commentId);
+        ChannelMember author = channelMemberFinder.findByMemberAndChannelElseThrow(comment.getAuthor(), comment.getPost().getChannel());
         return CommentResponse.from(comment, author);
     }
 }

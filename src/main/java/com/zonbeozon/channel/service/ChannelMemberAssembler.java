@@ -4,9 +4,6 @@ import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
-import com.zonbeozon.channel.security.ChannelAction;
-import com.zonbeozon.channel.security.CheckChannelAccess;
-import com.zonbeozon.channel.security.MemberOfChannelOnly;
 import com.zonbeozon.global.SortExcludedPageRequest;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +28,14 @@ public class ChannelMemberAssembler {
                 .toList();
     }
 
-    @MemberOfChannelOnly
     public Page<ChannelMemberResponse> createPagedActiveChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
-        return channelMemberRepository.findByChannelId(channelId, ChannelMemberStatus.ACTIVE, pageable).map(ChannelMemberResponse::from);
+        return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.ACTIVE, pageable).map(ChannelMemberResponse::from);
     }
 
-    @CheckChannelAccess(ChannelAction.READ_KICKED_MEMBER)
     public Page<ChannelMemberResponse> createPagedKickedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
-        return channelMemberRepository.findByChannelId(channelId, ChannelMemberStatus.KICKED, pageable).map(ChannelMemberResponse::from);
+        return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.KICKED, pageable).map(ChannelMemberResponse::from);
 
     }
 }

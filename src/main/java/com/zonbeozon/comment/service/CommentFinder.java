@@ -14,7 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentFinder {
     private final CommentRepository commentRepository;
 
-    public Comment findById(Long id) {
+    public Comment findByIdElseThrow(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    public Comment findByIdWithPostElseThrow(Long id) {
+        return commentRepository.findByIdWithPost(id).orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 }

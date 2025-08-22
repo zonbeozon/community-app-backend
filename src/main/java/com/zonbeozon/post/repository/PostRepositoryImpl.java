@@ -22,7 +22,6 @@ import static com.zonbeozon.post.entity.QPostImage.*;
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
 
     @Override
     public Optional<Post> findById(Long id, PostFetchOptions options) {
@@ -31,12 +30,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             query.join(post.author).fetchJoin();
         }
 
+        if (options.isWithChannel()) {
+            query.join(post.channel).fetchJoin();
+        }
+
         if (options.isWithImages()) {
             query.leftJoin(post.images, postImage).fetchJoin()
                     .leftJoin(postImage.image, image).fetchJoin();
         }
 
-        query.where(post.id.eq(id).and(post.isDeleted.eq(false)));
+        query.where(post.id.eq(id));
         return Optional.ofNullable(query.fetchOne());
     }
 
@@ -44,7 +47,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
 
         BooleanBuilder whereClause = new BooleanBuilder()
-                .and(PostQuery.isNotDeleted())
                 .and(post.channel.eq(channel));
 
         if(cursorPostId != null) {

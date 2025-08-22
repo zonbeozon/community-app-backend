@@ -22,7 +22,6 @@ public class Member extends BaseTimeEntity {
     @NotNull
     @Column(unique = true)
     private String email;
-    @NotNull
     @Column(columnDefinition = "TEXT")
     private String profile;
     @NotNull
@@ -46,6 +45,14 @@ public class Member extends BaseTimeEntity {
 
     public void updateUsername(String username) {
         this.username = username;
+    }
+
+    public void updateProfile(String profile) {
+        this.profile = profile;
+    }
+
+    public void updateServerRole(ServerRole role) {
+        this.role = role;
     }
 
     public void deleteMember() {

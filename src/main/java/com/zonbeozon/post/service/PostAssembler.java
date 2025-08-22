@@ -3,7 +3,6 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.security.MemberOfChannelOnly;
 import com.zonbeozon.channel.service.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.BlogChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
@@ -62,11 +61,11 @@ public class PostAssembler {
     }
 
     public PostResponse createPostResponse(Long postId) {
-        Post post = postFinder.findById(
+        Post post = postFinder.findByIdElseThrow(
                 postId,
                 new PostFetchOptions.Builder().withImages(true).withAuthor(true).build()
         );
-        ChannelRole authorRole = channelMemberFinder.findByMemberAndChannel(post.getAuthor(), post.getChannel()).getRole();
+        ChannelRole authorRole = channelMemberFinder.findByMemberAndChannelElseThrow(post.getAuthor(), post.getChannel()).getRole();
         Long commentCount = commentCounter.countCommentsByPostId(postId);
         ReactionResponse reactionResponse = postReactionAssembler.createReactionResponseByPostId(postId);
         return PostResponse.from(post, commentCount, reactionResponse, authorRole);
@@ -75,5 +74,4 @@ public class PostAssembler {
     private List<Member> getDistinctAuthorsFromPosts(List<Post> posts) {
         return posts.stream().map(Post::getAuthor).distinct().toList();
     }
-
 }
