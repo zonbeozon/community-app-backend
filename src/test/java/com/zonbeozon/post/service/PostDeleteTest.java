@@ -83,7 +83,7 @@ public class PostDeleteTest extends AbstractChannelIntegrationTest {
 //
 //        postRemover.deletePost(post.getId());
 //
-//        Assertions.assertThat(postRepository.findById(post.getId())).isEmpty();
+//        Assertions.assertThat(postRepository.findByIdElseThrow(post.getId())).isEmpty();
 //    }
 
     /**

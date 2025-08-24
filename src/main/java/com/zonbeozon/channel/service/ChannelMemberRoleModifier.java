@@ -3,6 +3,7 @@ package com.zonbeozon.channel.service;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
@@ -25,9 +26,9 @@ public class ChannelMemberRoleModifier {
     public void modifyChannelMemberRole(Long channelId, Long targetMemberId, ChannelRole newRole) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         Member requestMember = authenticationService.getCurrentMember();
-        ChannelMember requestChannelMember = channelMemberFinder.findByMemberAndChannelElseThrow(requestMember, channel);
+        ChannelMember requestChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, requestMember));
         Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
-        ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannelElseThrow(targetMember, channel);
+        ChannelMember targetChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember));
         modifyChannelRoleHandlers.stream()
                 .filter(handler -> handler.isSupport(newRole))
                 .findAny()

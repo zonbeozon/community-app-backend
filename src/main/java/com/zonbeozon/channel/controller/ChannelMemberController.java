@@ -4,7 +4,7 @@ import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.JoinResultStatus;
 import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
-import com.zonbeozon.channel.service.ChannelMemberAssembler;
+import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.ChannelMemberJoiner;
 import com.zonbeozon.channel.service.ChannelMemberRemover;
 import com.zonbeozon.channel.service.ChannelMemberRoleModifier;

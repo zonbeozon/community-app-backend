@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,11 @@ import java.util.stream.Collectors;
 public class CommentCounter {
     private final CommentRepository commentRepository;
 
-    public Map<Long, Long> countCommentsByPostIdIn(List<Long> postIds) {
+    /**
+     *
+     * @return postId, post당 comment 개수로 이루어진 Map
+     */
+    public Map<Long, Long> countCommentsByPostIdIn(Collection<Long> postIds) {
         if(postIds == null || postIds.isEmpty()) {
             return new HashMap<>();
         }

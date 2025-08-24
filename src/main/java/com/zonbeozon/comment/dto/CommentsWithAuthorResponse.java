@@ -4,7 +4,7 @@ import com.zonbeozon.channel.dto.ChannelMemberResponse;
 
 import java.util.List;
 
-public record CommentListResponse (
+public record CommentsWithAuthorResponse(
         List<ChannelMemberResponse> authors,
         List<SimplifiedCommentResponse> comments,
         int totalElements

@@ -24,9 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-public class PostAssemblerTest {
+public class SimplePostAssemblerTest {
     @Autowired
-    private PostAssembler postAssembler;
+    private SimplePostAssembler simplePostAssembler;
     @Autowired
     private EntityManager entityManager;
 
@@ -62,7 +62,7 @@ public class PostAssemblerTest {
     @DisplayName("커서 ID로 3번째 포스트 ID가 주어졌을 때, 이전 2개 포스트(2번, 1번)가 조회되어야 한다")
     @Test
     void returnTwoPreviousPostsWhenCursorIsThirdPostId() {
-        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 2);
+        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 2);
         Assertions.assertThat(response.authors()).hasSize(1);
         Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(2);
@@ -73,7 +73,7 @@ public class PostAssemblerTest {
     @DisplayName("조회 사이즈가 1인 경우, 커서 ID 이전의 가장 최근 포스트 1개만 조회되어야 한다.")
     @Test
     void returnOnlyOnePostWhenSizeIsOne() {
-        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 1);
+        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 1);
         Assertions.assertThat(response.authors()).hasSize(1);
         Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(1);
@@ -83,7 +83,7 @@ public class PostAssemblerTest {
     @DisplayName("포스트에 이미지가 포함된 경우, 이미지 URL이 displayOrder 순서대로 포함되어 조회되어야 한다.")
     @Test
     void includeImageUrlsInDisplayOrderWhenPostHasImages() {
-        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(blogChannel.getId(), post_2.getId(), 10);
+        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_2.getId(), 10);
         Assertions.assertThat(response.authors()).hasSize(1);
         Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(1);

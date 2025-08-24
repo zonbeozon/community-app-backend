@@ -5,9 +5,8 @@ import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 
 public record ChannelSettingResponse(
-        ChannelContentVisibility visibility,
+        ChannelContentVisibility contentVisibility,
         ChannelJoinPolicy joinPolicy
-
 ) {
     public static ChannelSettingResponse from(ChannelSetting setting) {
         return new ChannelSettingResponse(

@@ -8,5 +8,5 @@ import lombok.Getter;
 @Getter
 public class ChannelWithMemberCount {
     private Channel channel;
-    private int memberCount;
+    private Long memberCount;
 }

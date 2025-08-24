@@ -2,6 +2,7 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -25,7 +26,7 @@ public class ChannelAuthorizationCheckService {
     public boolean isAtLeastMember(Long channelId) {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
-        return channelMemberFinder.existsByMemberAndChannel(member, channel);
+        return channelMemberFinder.existsById(ChannelMemberId.from(channel, member));
     }
 
     @CheckReturnValue
@@ -33,7 +34,7 @@ public class ChannelAuthorizationCheckService {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         try {
-            return channelMemberFinder.findByMemberAndChannelElseThrow(member, channel).getRole().isAtLeastAdmin();
+            return channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member)).getRole().isAtLeastAdmin();
         } catch (NotFoundException e) {
             return false;
         }
@@ -44,7 +45,7 @@ public class ChannelAuthorizationCheckService {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         try {
-            return channelMemberFinder.findByMemberAndChannelElseThrow(member, channel).getRole().isOwner();
+            return channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member)).getRole().isOwner();
         } catch (NotFoundException e) {
             return false;
         }
@@ -58,11 +59,11 @@ public class ChannelAuthorizationCheckService {
 
         ChannelRole actorRole;
         try {
-            actorRole = channelMemberFinder.findByMemberAndChannelElseThrow(actor, channel).getRole();
+            actorRole = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, actor)).getRole();
         } catch (NotFoundException e) {
             return false;
         }
-        ChannelRole targetMemberRole = channelMemberFinder.findByMemberAndChannelElseThrow(targetMember, channel).getRole();
+        ChannelRole targetMemberRole = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember)).getRole();
 
         return actorRole.isHigherThan(targetMemberRole);
     }
@@ -73,7 +74,7 @@ public class ChannelAuthorizationCheckService {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel.getSetting().getContentVisibility() == ChannelContentVisibility.PUBLIC) return true;
-        return channelMemberFinder.existsByMemberAndChannel(member, channel);
+        return channelMemberFinder.existsById(ChannelMemberId.from(channel, member));
     }
 
 }

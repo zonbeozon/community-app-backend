@@ -1,6 +1,7 @@
 package com.zonbeozon.post;
 
 import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.service.ChannelFinder;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
@@ -55,7 +56,7 @@ public class PostSubscriptionValidator implements StompSubscriptionValidateHandl
             throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
         }
         try {
-            channelMemberFinder.findByMemberAndChannelElseThrow(member, foundChannel);
+            channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(foundChannel, member));
         } catch (NotFoundException e) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
         }

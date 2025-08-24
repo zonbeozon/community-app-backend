@@ -221,7 +221,7 @@ public class PostController {
     ) {
         if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
 
-        CursorBasedPostsResponse response = postAssembler.createCursorBasedPostResponse(
+        CursorBasedPostsResponse response = postAssembler.getCursorBasedPostResponse(
                 channelId,
                 cursorPostId,
                 size
@@ -267,6 +267,6 @@ public class PostController {
             @PathVariable Long postId
     ) {
         if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        return ResponseEntity.ok(postAssembler.createPostResponse(postId));
+        return ResponseEntity.ok(postAssembler.getPostResponse(postId));
     }
 }

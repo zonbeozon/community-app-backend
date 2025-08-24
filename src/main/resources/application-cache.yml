@@ -1,0 +1,6 @@
+app:
+  cache:
+    channel-info-response:
+      enabled: true
+      expire-after-write-minutes: 10
+      maximum-size: 1000

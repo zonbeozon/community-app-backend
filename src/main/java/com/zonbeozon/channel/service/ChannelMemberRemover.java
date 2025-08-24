@@ -3,6 +3,7 @@ package com.zonbeozon.channel.service;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.global.exception.ConflictException;
@@ -26,7 +27,7 @@ public class ChannelMemberRemover {
     public void leaveChannel(Long channelId) {
         Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
-        ChannelMember channelMember = channelMemberFinder.findByMemberAndChannelElseThrow(member, channel);
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member));
 
         if(!channelMember.canLeaveChannel()) {
             throw new ConflictException(ErrorCode.CHANNEL_LEAVE_NOT_ALLOWED);
@@ -37,7 +38,7 @@ public class ChannelMemberRemover {
     public void kickMember(Long channelId, Long targetMemberId) {
         Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
         Channel channel = channelFinder.findByIdElseThrow(channelId);
-        ChannelMember targetChannelMember = channelMemberFinder.findByMemberAndChannelElseThrow(targetMember, channel);
+        ChannelMember targetChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember));
         targetChannelMember.updateStatus(ChannelMemberStatus.KICKED);
     }
 

@@ -21,13 +21,13 @@ public class LatestPostSetter {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        BlogChannel channel = blogChannelFinder.findById(event.channelId());
+        BlogChannel channel = blogChannelFinder.findByIdElseThrow(event.channelId());
         channel.setLatestPostId(event.postId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostDeleted(PostDeletedEvent event) {
-        BlogChannel channel = blogChannelFinder.findById(event.channelId());
+        BlogChannel channel = blogChannelFinder.findByIdElseThrow(event.channelId());
         Optional<Post> optPost = postRepository.findTopByChannelOrderByIdDesc(channel);
         if(optPost.isPresent()) {
             Post post = optPost.get();

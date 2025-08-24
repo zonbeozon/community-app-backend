@@ -2,15 +2,17 @@ package com.zonbeozon.comment.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.service.ChannelMemberAssembler;
+import com.zonbeozon.channel.entity.ChannelMemberId;
+import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
 import com.zonbeozon.channel.service.ChannelMemberFinder;
-import com.zonbeozon.comment.dto.CommentListResponse;
+import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.dto.CommentResponse;
 import com.zonbeozon.comment.dto.SimplifiedCommentResponse;
 import com.zonbeozon.comment.entity.Comment;
+import com.zonbeozon.comment.repository.CommentFetchOptions;
 import com.zonbeozon.comment.repository.CommentRepository;
-import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,20 +30,25 @@ public class CommentAssembler {
     private final ChannelMemberAssembler channelMemberAssembler;
     private final ChannelMemberFinder channelMemberFinder;
 
-    public CommentListResponse createCommentListResponse(Long postId) {
-        Post post = postFinder.findByIdElseThrow(postId);
-        List<Comment> comments = commentRepository.getCommentsByPostIdOrderByCreatedAtDesc(postId);
+    public CommentsWithAuthorResponse getCommentResponseByPostId(Long postId) {
+        Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build());
+        List<Comment> comments = commentRepository.findCommentsByPostIdOrderByCreatedAtDesc(postId);
         List<SimplifiedCommentResponse> commentResponse = comments.stream()
                 .map(SimplifiedCommentResponse::from)
                 .toList();
-        List<Member> authors = comments.stream().map(Comment::getAuthor).distinct().toList();
-        List<ChannelMemberResponse> authorResponse = channelMemberAssembler.createChannelMemberListResponse(authors, post.getChannel());
-        return new CommentListResponse(authorResponse, commentResponse, comments.size());
+        List<ChannelMemberResponse> authorResponse = channelMemberAssembler.getChannelMemberResponse(
+                comments.stream()
+                        .map(Comment::getAuthor)
+                        .distinct()
+                        .map(author-> ChannelMemberId.from(post.getChannel(), author))
+                        .toList()
+        ).values().stream().toList();
+        return new CommentsWithAuthorResponse(authorResponse, commentResponse, comments.size());
     }
 
     public CommentResponse createCommentResponse(Long commentId) {
-        Comment comment = commentFinder.findByIdElseThrow(commentId);
-        ChannelMember author = channelMemberFinder.findByMemberAndChannelElseThrow(comment.getAuthor(), comment.getPost().getChannel());
+        Comment comment = commentFinder.findByIdElseThrow(commentId, new CommentFetchOptions.Builder().withAuthor(true).withPost(true).build());
+        ChannelMember author = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(comment.getPost().getChannel(), comment.getAuthor()));
         return CommentResponse.from(comment, author);
     }
 }

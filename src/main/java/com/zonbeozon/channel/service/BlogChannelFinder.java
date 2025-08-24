@@ -14,7 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class BlogChannelFinder {
     private final BlogChannelRepository blogChannelRepository;
 
-    public BlogChannel findById(Long id) {
+    public BlogChannel findByIdElseThrow(Long id) {
         return blogChannelRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND));
     }
+
+    public boolean existsById(Long id) {
+        return blogChannelRepository.existsById(id);
+    }
+
 }

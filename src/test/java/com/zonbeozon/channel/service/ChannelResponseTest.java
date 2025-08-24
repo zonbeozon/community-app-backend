@@ -1,11 +1,12 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.base.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.dto.JoinedBlogChannelListResponse;
+import com.zonbeozon.channel.dto.JoinedBlogChannelInfoListResponse;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.service.assembler.BlogChannelAssembler;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,11 +38,11 @@ public class ChannelResponseTest extends AbstractChannelIntegrationTest {
     }
 
     @Test
-    @DisplayName("자신이 속한 채널만 가져와야 한다.")
+    @DisplayName("주어진 맴버가 포함된 채널만 가져와야 한다.")
     void returnsOnlyChannelsJoinedByMember() {
-        JoinedBlogChannelListResponse response = channelAssembler.createJoinedCommunityBlogChannelResponse();
+        JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).channelId()).isEqualTo(blogChannel_1.getId());
+        assertThat(response.channels().get(0).channelInfo().channelId()).isEqualTo(blogChannel_1.getId());
     }
 
     @Test
@@ -50,10 +51,10 @@ public class ChannelResponseTest extends AbstractChannelIntegrationTest {
         Post post_1 = testPostService.createAndSave(blogChannel_1, requester);
         blogChannel_1.setLatestPostId(post_1.getId());
 
-        JoinedBlogChannelListResponse response = channelAssembler.createJoinedCommunityBlogChannelResponse();
+        JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());
 
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).channelId()).isEqualTo(blogChannel_1.getId());
+        assertThat(response.channels().get(0).channelInfo().channelId()).isEqualTo(blogChannel_1.getId());
         assertThat(response.channels().get(0).latestPost().postId()).isEqualTo(post_1.getId());
     }
 
@@ -67,15 +68,15 @@ public class ChannelResponseTest extends AbstractChannelIntegrationTest {
         testBlogChannelService.setChannelMemberStatus(channelMember_1, ChannelMemberStatus.KICKED);
         testBlogChannelService.setChannelMemberStatus(channelMember_3, ChannelMemberStatus.PENDING);
 
-        JoinedBlogChannelListResponse response = channelAssembler.createJoinedCommunityBlogChannelResponse();
+        JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).memberCount()).isEqualTo(1);
+        assertThat(response.channels().get(0).channelInfo().memberCount()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("요청자의 채널에서의 정보가 포함되어야 한다.")
     void includeRequesterMetadataInJoinedChannelResponse() {
-        JoinedBlogChannelListResponse response = channelAssembler.createJoinedCommunityBlogChannelResponse();
+        JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());
         assertThat(response.channels()).hasSize(1);
         assertThat(response.channels().get(0).requester().memberId()).isEqualTo(requester.getId());
         assertThat(response.channels().get(0).requester().role()).isEqualTo(ChannelRole.CHANNEL_MEMBER);

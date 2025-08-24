@@ -3,6 +3,7 @@ package com.zonbeozon.channel.service;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
@@ -40,7 +41,7 @@ public class ChannelMemberJoiner {
             throw new AccessDeniedException(ErrorCode.CHANNEL_JOIN_DENIED);
         }
 
-        if(channelMemberRepository.isKicked(requester, channel)) {
+        if(channelMemberRepository.isKicked(ChannelMemberId.from(channel, requester))) {
             throw new AccessDeniedException(ErrorCode.KICKED_MEMBER_CANNOT_JOIN);
         }
 
@@ -53,7 +54,7 @@ public class ChannelMemberJoiner {
     }
 
     private void join(Member requester, Channel channel, ChannelRole role, ChannelMemberStatus status) {
-        if(channelMemberRepository.existsByMemberAndChannel(requester, channel))
+        if(channelMemberRepository.existsById(ChannelMemberId.from(channel, requester)))
             throw new ConflictException(ErrorCode.ALREADY_JOINED_CHANNEL);
         ChannelMember chMember = ChannelMember.create(requester, channel, role, status);
         channelMemberRepository.save(chMember);

@@ -1,13 +1,12 @@
 package com.zonbeozon.post.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.post.TestPostCreateRequestBuilder;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
-import com.zonbeozon.post.service.PostAssembler;
+import com.zonbeozon.post.service.SimplePostAssembler;
 import com.zonbeozon.post.service.PostCreator;
 import com.zonbeozon.post.service.PostRemover;
 import com.zonbeozon.post.service.PostUpdater;
@@ -36,7 +35,7 @@ public class PostControllerTest extends AuthorizationCheckDisabledTest {
     @MockitoBean
     private PostUpdater postUpdater;
     @MockitoBean
-    private PostAssembler postAssembler;
+    private SimplePostAssembler simplePostAssembler;
     @MockitoBean
     private PostRemover postRemover;
 

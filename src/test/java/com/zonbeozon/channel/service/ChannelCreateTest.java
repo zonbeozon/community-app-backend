@@ -2,6 +2,7 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateCommand;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
@@ -57,7 +58,7 @@ public class ChannelCreateTest {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
         Long id = channelCreator.addChannel(command);
         Channel channel = channelFinder.findByIdElseThrow(id);
-        ChannelMember channelMember = channelMemberFinder.findByMemberAndChannelElseThrow(member, channel);
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member));
         assertThat(channelMember.getMember()).isEqualTo(member);
         assertThat(channelMember.isOwner()).isTrue();
     }

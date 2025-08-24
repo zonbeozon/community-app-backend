@@ -9,10 +9,10 @@ import com.zonbeozon.reaction.entity.PostReaction;
 import com.zonbeozon.reaction.enums.ReactionType;
 import com.zonbeozon.reaction.repository.PostReactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class PostReactionAssembler {
     private final PostFinder postFinder;
     private final AuthenticationService authenticationService;
 
-    public Map<Long, ReactionResponse> createReactionResponseByPostIdIn(List<Long> postIds) {
+    public Map<Long, ReactionResponse> getReactionResponseByPostIdIn(Collection<Long> postIds) {
         Member requester = authenticationService.getCurrentMember();
         List<Post> posts = postFinder.findByIdIn(postIds);
         List<PostReaction> allReactions = postReactionRepository.findByPostIn(posts);
@@ -65,8 +65,8 @@ public class PostReactionAssembler {
                 }));
     }
 
-    public ReactionResponse createReactionResponseByPostId(Long postId) {
-        return createReactionResponseByPostIdIn(List.of(postId)).get(postId);
+    public ReactionResponse getReactionResponseByPostId(Long postId) {
+        return getReactionResponseByPostIdIn(List.of(postId)).get(postId);
     }
 
 }

@@ -1,9 +1,10 @@
 package com.zonbeozon.channel.controller;
 
+import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.dto.*;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
-import com.zonbeozon.channel.service.BlogChannelAssembler;
+import com.zonbeozon.channel.service.assembler.BlogChannelAssembler;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.ChannelRemover;
 import com.zonbeozon.channel.service.ChannelUpdater;
@@ -26,6 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel")
@@ -37,6 +40,7 @@ public class ChannelController {
     private final ChannelRemover channelRemover;
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
+    private final AuthenticationService authenticationService;
 
     @Operation(
             summary = "채널 추가",
@@ -158,12 +162,13 @@ public class ChannelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = JoinedBlogChannelListResponse.class))
+                    schema = @Schema(implementation = JoinedBlogChannelInfoListResponse.class))
             ),
     })
     @GetMapping("/community-blog/joined")
-    public ResponseEntity<JoinedBlogChannelListResponse> getJoinedInfoChannels() {
-        return ResponseEntity.ok(blogChannelAssembler.createJoinedCommunityBlogChannelResponse());
+    public ResponseEntity<JoinedBlogChannelInfoListResponse> getJoinedInfoChannels() {
+        Long memberId = authenticationService.getCurrentMember().getId();
+        return ResponseEntity.ok(blogChannelAssembler.getJoinedCommunityBlogChannelInfo(memberId));
     }
 
 //    @Operation(

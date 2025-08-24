@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class PostFinder {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
-    public List<Post> findByIdIn(List<Long> postIds) {
+    public List<Post> findByIdIn(Collection<Long> postIds) {
         return postRepository.findAllById(postIds);
     }
 

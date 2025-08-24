@@ -1,7 +1,7 @@
 package com.zonbeozon.comment.controller;
 
 import com.zonbeozon.comment.dto.CommentAddRequest;
-import com.zonbeozon.comment.dto.CommentListResponse;
+import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.service.CommentAssembler;
 import com.zonbeozon.comment.service.CommentAuthorizationCheckService;
 import com.zonbeozon.comment.service.CommentCreator;
@@ -89,10 +89,10 @@ public class CommentController {
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @GetMapping("/post/{postId}/comment")
-    public ResponseEntity<CommentListResponse> getComments(
+    public ResponseEntity<CommentsWithAuthorResponse> getComments(
             @PathVariable Long postId
     ) {
         if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        return ResponseEntity.ok(commentAssembler.createCommentListResponse(postId));
+        return ResponseEntity.ok(commentAssembler.getCommentResponseByPostId(postId));
     }
 }

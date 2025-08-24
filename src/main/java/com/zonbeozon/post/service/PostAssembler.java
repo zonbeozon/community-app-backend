@@ -1,77 +1,19 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.service.ChannelMemberAssembler;
-import com.zonbeozon.channel.service.BlogChannelFinder;
-import com.zonbeozon.channel.service.ChannelMemberFinder;
-import com.zonbeozon.comment.service.CommentCounter;
-import com.zonbeozon.global.CursorPage;
-import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
 import com.zonbeozon.post.dto.PostResponse;
-import com.zonbeozon.post.dto.PostWithStats;
-import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.repository.PostFetchOptions;
-import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.reaction.dto.ReactionResponse;
-import com.zonbeozon.reaction.service.PostReactionAssembler;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class PostAssembler {
-    private final PostRepository postRepository;
-    private final BlogChannelFinder blogChannelFinder;
-    private final ChannelMemberAssembler channelMemberAssembler;
-    private final PostFinder postFinder;
-    private final ChannelMemberFinder channelMemberFinder;
-    private final CommentCounter commentCounter;
-    private final PostReactionAssembler postReactionAssembler;
+public interface PostAssembler {
+    PostResponse getPostResponse(Long postId);
+    /**
+     * @throws com.zonbeozon.global.exception.NotFoundException postId 중 한개라도 없다면 예외 발생
+     * @return postId, PostResponse 로 이루어진 Map
+     */
+    Map<Long, PostResponse> getPostResponses(Collection<Long> postIds);
 
-    public CursorBasedPostsResponse createCursorBasedPostResponse(
-            Long channelId,
-            Long cursorPostId,
-            int size
-    ) {
-        BlogChannel channel = blogChannelFinder.findById(channelId);
-        CursorPage<Post> posts = postRepository.findCursorBasedPostsByChannel(channel, cursorPostId, size);
-        List<ChannelMemberResponse> authorResponse = channelMemberAssembler.createChannelMemberListResponse(
-                getDistinctAuthorsFromPosts(posts.getContent()),
-                channel
-        );
-        List<Long> postIds = posts.getContent().stream().map(Post::getId).toList();
-        Map<Long, Long> commentCountResult = commentCounter.countCommentsByPostIdIn(postIds);
-        Map<Long, ReactionResponse> reactionResponseMap = postReactionAssembler.createReactionResponseByPostIdIn(postIds);
+    CursorBasedPostsResponse getCursorBasedPostResponse(Long channelId, Long cursorPostId, int size);
 
-        CursorPage<PostWithStats> postWithStats = posts.map(post -> {
-            Long commentCount = commentCountResult.get(post.getId());
-            ReactionResponse reactionResponse = reactionResponseMap.get(post.getId());
-            return new PostWithStats(post, commentCount, reactionResponse);
-        });
-
-        return CursorBasedPostsResponse.from(authorResponse, postWithStats);
-    }
-
-    public PostResponse createPostResponse(Long postId) {
-        Post post = postFinder.findByIdElseThrow(
-                postId,
-                new PostFetchOptions.Builder().withImages(true).withAuthor(true).build()
-        );
-        ChannelRole authorRole = channelMemberFinder.findByMemberAndChannelElseThrow(post.getAuthor(), post.getChannel()).getRole();
-        Long commentCount = commentCounter.countCommentsByPostId(postId);
-        ReactionResponse reactionResponse = postReactionAssembler.createReactionResponseByPostId(postId);
-        return PostResponse.from(post, commentCount, reactionResponse, authorRole);
-    }
-
-    private List<Member> getDistinctAuthorsFromPosts(List<Post> posts) {
-        return posts.stream().map(Post::getAuthor).distinct().toList();
-    }
 }

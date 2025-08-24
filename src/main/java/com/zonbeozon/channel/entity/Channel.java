@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,6 +48,9 @@ public abstract class Channel extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ChannelCreatorType creatorType;
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChannelMember> channelMembers = new HashSet<>();
 
     protected Channel(
             String title,

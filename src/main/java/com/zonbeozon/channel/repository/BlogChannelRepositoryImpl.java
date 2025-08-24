@@ -3,6 +3,7 @@ package com.zonbeozon.channel.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.dto.JoinedBlogChannelOverview;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.ChannelProfile;
 import com.zonbeozon.channel.entity.QChannelMember;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
@@ -14,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
+import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 import static com.zonbeozon.channel.entity.QChannelProfile.channelProfile;
 import static com.zonbeozon.image.entity.QImage.image;
 
@@ -30,30 +33,12 @@ public class BlogChannelRepositoryImpl implements BlogChannelRepositoryCustom {
     private final QMember authorMember = new QMember("authorMember");
 
     @Override
-    public List<JoinedBlogChannelOverview> getBlogChannelsByMember(Member member, ChannelCreatorType creatorType) {
-        return queryFactory.select(Projections.constructor(JoinedBlogChannelOverview.class,
-                        requester.role,
-                        blogChannel,
-                        image,
-                        latestPost,
-                        latestPostAuthor.role,
-                        authorMember
-                ))
-                .from(blogChannel)
-                .join(requester).on(
-                        requester.channel.id.eq(blogChannel.id)
-                                .and(requester.member.eq(member))
+    public List<BlogChannel> findAllByMemberId(Long memberId) {
+        return queryFactory.selectFrom(blogChannel)
+                .join(channelMember).on(
+                        channelMember.member.id.eq(memberId)
+                                .and(channelMember.channel.id.eq(blogChannel.id))
                 )
-                .leftJoin(blogChannel.profile, channelProfile)
-                .leftJoin(channelProfile.image, image)
-                .leftJoin(latestPost).on(latestPost.id.eq(blogChannel.latestPostId))
-                .leftJoin(latestPostAuthor).on(
-                        latestPostAuthor.channel.id.eq(blogChannel.id)
-                                .and(latestPostAuthor.member.id.eq(latestPost.author.id)))
-                .leftJoin(latestPostAuthor.member, authorMember)
-                .where(blogChannel.creatorType.eq(creatorType))
-                .groupBy(requester, blogChannel, latestPost, latestPostAuthor, authorMember, image)
-                .orderBy(latestPost.createdAt.desc().nullsLast())
                 .fetch();
     }
 }

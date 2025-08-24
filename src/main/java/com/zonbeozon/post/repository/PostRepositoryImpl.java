@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
     @Override
     public Optional<Post> findById(Long id, PostFetchOptions options) {
-         JPAQuery<Post> query = queryFactory.selectFrom(post);
+        JPAQuery<Post> query = queryFactory.selectFrom(post);
         if (options.isWithAuthor()) {
             query.join(post.author).fetchJoin();
         }
@@ -44,10 +45,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public CursorPage<Post> findCursorBasedPostsByChannel(BlogChannel channel, Long cursorPostId, int size) {
+    public CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size) {
 
         BooleanBuilder whereClause = new BooleanBuilder()
-                .and(post.channel.eq(channel));
+                .and(post.channel.id.eq(channelId));
 
         if(cursorPostId != null) {
             whereClause.and(post.id.lt(cursorPostId));
@@ -88,5 +89,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         totalElement = totalElement == null ? 0L : totalElement;
 
         return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, posts.size());
+    }
+
+    @Override
+    public List<Post> findByIdInWithImagesAndAuthorAndChannel(Collection<Long> postIds) {
+        return queryFactory.selectFrom(post)
+                .leftJoin(post.author).fetchJoin()
+                .leftJoin(post.images, postImage).fetchJoin()
+                .leftJoin(postImage.image).fetchJoin()
+                .leftJoin(post.channel).fetchJoin()
+                .where(post.id.in(postIds))
+                .fetch();
     }
 }

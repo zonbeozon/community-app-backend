@@ -14,7 +14,10 @@ public record CursorBasedPostsResponse(
         long totalElements,
         boolean isLast
 ) {
-    public static CursorBasedPostsResponse from(List<ChannelMemberResponse> authors, CursorPage<PostWithStats> posts) {
+    public static CursorBasedPostsResponse from(
+            List<ChannelMemberResponse> authors,
+            CursorPage<PostWithStats> posts
+    ) {
 
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
                 .map(postWithStats -> SimplifiedPostResponse.from(

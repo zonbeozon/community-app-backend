@@ -19,30 +19,26 @@ import org.hibernate.annotations.SQLRestriction;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Slf4j
 @Table(
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "channel_member_uk",
-                        columnNames = {"channel_id", "member_id"}
-                )
-        },
         indexes = {
+                //반대 순서 INDEX
                 @Index(name = "idx_channel_member_member_id_channel_id", columnList = "member_id, channel_id")
         }
 )
 @SQLRestriction("status = 'ACTIVE'")
 public class ChannelMember extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private ChannelMemberId id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @MapsId("memberId")
     private Member member;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
+    @MapsId("channelId")
     private Channel channel;
 
     @NotNull

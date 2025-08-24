@@ -20,7 +20,7 @@ public class ChannelFinder {
     }
 
     public Channel findChannelByIdWithChannelProfileElseThrow(Long channelId) {
-        return channelRepository.findChannelByIdWithChannelProfile(channelId)
+        return channelRepository.findByIdWithProfile(channelId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND));
     }
 }

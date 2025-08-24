@@ -3,10 +3,12 @@ package com.zonbeozon.channel.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SecurityTestUtils;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
 import com.zonbeozon.channel.service.*;
+import com.zonbeozon.channel.service.assembler.BlogChannelAssembler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
     private BlogChannelAssembler blogChannelAssembler;
     @MockitoBean
     private ChannelRemover channelRemover;
+    @MockitoBean
+    private AuthenticationService authenticationService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
