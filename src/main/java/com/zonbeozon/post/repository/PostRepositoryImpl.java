@@ -3,11 +3,9 @@ package com.zonbeozon.post.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.entity.Post;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -4,6 +4,7 @@ import com.zonbeozon.channel.dto.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.repository.ChannelRepository;
+import com.zonbeozon.channel.service.cache.ChannelCacheEvict;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class ChannelUpdater {
     private final ChannelFinder channelFinder;
     private final ChannelProfileService channelProfileService;
 
+    @ChannelCacheEvict
     public void updateChannel(
             Long channelId,
             ChannelUpdateRequest request

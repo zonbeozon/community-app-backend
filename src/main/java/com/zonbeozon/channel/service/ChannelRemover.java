@@ -5,8 +5,7 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.global.exception.NotFoundException;
+import com.zonbeozon.channel.service.cache.ChannelCacheEvict;
 import com.zonbeozon.post.service.PostRemover;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,6 +23,7 @@ public class ChannelRemover {
     private final ChannelFinder channelFinder;
     private final PostRemover postRemover;
 
+    @ChannelCacheEvict
     public void removeChannel(Long channelId) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         //채널 맴버 전부 삭제

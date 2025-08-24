@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Execution(ExecutionMode.CONCURRENT)
 @AutoConfigureTestDatabase
 @RecordApplicationEvents
+@ActiveProfiles({"test", "cache"})
 public abstract class AbstractIntegrationTest {
     @Autowired
     protected HibernateQueryInterceptor queryInterceptor;
