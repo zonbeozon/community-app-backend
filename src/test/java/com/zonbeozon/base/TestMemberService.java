@@ -2,9 +2,9 @@ package com.zonbeozon.base;
 
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.member.domain.MemberProfile;
 import com.zonbeozon.member.domain.ServerRole;
 import com.zonbeozon.member.respository.MemberRepository;
-import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -25,7 +25,7 @@ public class TestMemberService {
     private static final String DEFAULT_NAME = "test-user";
 
     public Member createAndSave(String name) {
-        Member member = new Member(name, name + "@gmail.com", null, ServerRole.USER);
+        Member member = new Member(name, name + "@gmail.com", ServerRole.USER);
         memberRepository.save(member);
         return member;
     }
@@ -34,7 +34,7 @@ public class TestMemberService {
         return createAndSave(DEFAULT_NAME);
     }
 
-    public Member setProfile(Member member, String profile) {
+    public Member setProfile(Member member, MemberProfile profile) {
         member.updateProfile(profile);
         return member;
     }

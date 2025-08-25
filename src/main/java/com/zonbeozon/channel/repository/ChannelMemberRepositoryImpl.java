@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 import static com.zonbeozon.member.domain.QMember.member;
+import static com.zonbeozon.member.domain.QMemberProfile.memberProfile;
 
 
 @RequiredArgsConstructor
@@ -55,6 +56,8 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
         List<ChannelMember> content = queryFactory
                 .selectFrom(channelMember)
                 .join(channelMember.member, member).fetchJoin()
+                .leftJoin(member.profile, memberProfile).fetchJoin()
+                .leftJoin(memberProfile.image).fetchJoin()
                 .where(
                         channelMember.channel.id.eq(channelId),
                         channelMember.status.eq(status)
@@ -82,6 +85,11 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
 
         if (options.isWithMember()) {
             query.join(channelMember.member).fetchJoin();
+
+            if (options.isWithMemberProfile()) {
+                query.leftJoin(channelMember.member.profile, memberProfile).fetchJoin();
+                query.leftJoin(memberProfile.image).fetchJoin();
+            }
         }
     }
 }

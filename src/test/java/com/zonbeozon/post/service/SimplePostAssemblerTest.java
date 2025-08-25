@@ -64,7 +64,7 @@ public class SimplePostAssemblerTest {
     void returnTwoPreviousPostsWhenCursorIsThirdPostId() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 2);
         Assertions.assertThat(response.authors()).hasSize(1);
-        Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
+        Assertions.assertThat(response.authors().get(0).member().memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(2);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_2.getId());
         Assertions.assertThat(response.posts().get(1).postId()).isEqualTo(post_1.getId());
@@ -75,7 +75,7 @@ public class SimplePostAssemblerTest {
     void returnOnlyOnePostWhenSizeIsOne() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_3.getId(), 1);
         Assertions.assertThat(response.authors()).hasSize(1);
-        Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
+        Assertions.assertThat(response.authors().get(0).member().memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(1);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_2.getId());
     }
@@ -85,7 +85,7 @@ public class SimplePostAssemblerTest {
     void includeImageUrlsInDisplayOrderWhenPostHasImages() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(blogChannel.getId(), post_2.getId(), 10);
         Assertions.assertThat(response.authors()).hasSize(1);
-        Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
+        Assertions.assertThat(response.authors().get(0).member().memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(1);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_1.getId());
         Assertions.assertThat(response.posts().get(0).images()).hasSize(2);

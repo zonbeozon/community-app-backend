@@ -51,11 +51,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     public Optional<Comment> findById(Long id, CommentFetchOptions options) {
         JPAQuery<Comment> query = queryFactory.selectFrom(comment);
         if (options.isWithAuthor()) {
-            query.join(post.author).fetchJoin();
+            query.join(comment.author).fetchJoin();
         }
 
         if (options.isWithPost()) {
-            query.join(post.channel).fetchJoin();
+            query.join(comment.post).fetchJoin();
         }
 
         return Optional.ofNullable(query.where(comment.id.eq(id)).fetchOne());

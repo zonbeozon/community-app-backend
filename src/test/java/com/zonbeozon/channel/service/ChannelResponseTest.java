@@ -78,7 +78,7 @@ public class ChannelResponseTest extends AbstractChannelIntegrationTest {
     void includeRequesterMetadataInJoinedChannelResponse() {
         JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).requester().memberId()).isEqualTo(requester.getId());
-        assertThat(response.channels().get(0).requester().role()).isEqualTo(ChannelRole.CHANNEL_MEMBER);
+        assertThat(response.channels().get(0).requester().member().memberId()).isEqualTo(requester.getId());
+        assertThat(response.channels().get(0).requester().channelRole()).isEqualTo(ChannelRole.CHANNEL_MEMBER);
     }
 }

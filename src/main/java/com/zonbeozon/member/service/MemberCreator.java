@@ -1,8 +1,9 @@
 package com.zonbeozon.member.service;
 
+import com.zonbeozon.global.exception.ConflictException;
+import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.ServerRole;
-import com.zonbeozon.member.exception.MemberException;
 import com.zonbeozon.member.respository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,19 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberCreator {
     private final MemberRepository memberRepository;
 
-    public Member createMember(String username, String email, String profile, ServerRole role) {
-        if(isExistEmail(email)) throw new MemberException(email + "는 이미 존재하는 이메일입니다.");
-        if(isExistUsername(username)) throw new MemberException(username + "는 이미 존재하는 username 입니다.");
-        Member member = new Member(username, email, profile, role);
+    public Member createMember(String username, String email, ServerRole role) {
+        if(isExistEmail(email)) throw new ConflictException(ErrorCode.DUPLICATE_EMAIL);
+        if(isExistUsername(username)) throw new ConflictException(ErrorCode.DUPLICATE_USERNAME);
+        Member member = new Member(username, email, role);
         memberRepository.save(member);
         return member;
     }
 
-
-    @Transactional
-    public Member createMemberWithRandomUsername(String email, String profile, ServerRole role) {
+    public Member createMemberWithRandomUsername(String email, ServerRole role) {
         String username = UUIDUsernameGenerator.generate();
-        return createMember(username, email, profile, role);
+        return createMember(username, email, role);
     }
 
     private boolean isExistUsername(String username) {

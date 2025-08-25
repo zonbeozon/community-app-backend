@@ -39,7 +39,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } catch (NotFoundException e) {
             return memberCreator.createMemberWithRandomUsername(
                     oAuth2UserInfo.email(),
-                    oAuth2UserInfo.profile(),
                     ServerRole.USER
             );
         }

@@ -1,25 +1,20 @@
 package com.zonbeozon.member;
 
-import com.zonbeozon.SecurityTestUtils;
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.ServerRole;
-import io.jsonwebtoken.Claims;
 import jakarta.persistence.EntityManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Collections;
-import java.util.List;
 
 public class TestMemberBuilder {
     private String username = "choi";
     private String email = "choi@gmail.com";
-    private String profile = "exampleProfile";
     private ServerRole role = ServerRole.USER;
 
     public TestMemberBuilder(String username, String email) {
@@ -36,7 +31,7 @@ public class TestMemberBuilder {
     }
 
     public Member build() {
-        return new Member(username, email, profile, role);
+        return new Member(username, email, role);
     }
 
     public Member persist(EntityManager entityManager) {

@@ -11,7 +11,8 @@ public class SecurityPathConfig {
     public static final RequestMatcher PERMITTED_MATCHER = new OrRequestMatcher(
             PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/ws"),
             PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.OPTIONS,"/**"),
-            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/oauth2/authorization/**")
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,"/oauth2/authorization/*"),
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/login/oauth2/code/*")
     );
 
     public static void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry request) {

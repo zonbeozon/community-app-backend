@@ -9,6 +9,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
+@ToString
 public class Member extends BaseTimeEntity {
     public static final String ALLOWED_USERNAME_PATTERN = "^[가-힣a-zA-Z0-9_]{2,32}$";
 
@@ -22,8 +23,9 @@ public class Member extends BaseTimeEntity {
     @NotNull
     @Column(unique = true)
     private String email;
-    @Column(columnDefinition = "TEXT")
-    private String profile;
+
+    @OneToOne(mappedBy = "member")
+    private MemberProfile profile;
     @NotNull
     @Enumerated(EnumType.STRING)
     private ServerRole role;
@@ -31,10 +33,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    public Member(String username, String email, String profile, ServerRole role) {
+    public Member(String username, String email, ServerRole role) {
         this.username = username;
         this.email = email;
-        this.profile = profile;
         this.role = role;
         this.status = MemberStatus.ACTIVE;
     }
@@ -47,7 +48,7 @@ public class Member extends BaseTimeEntity {
         this.username = username;
     }
 
-    public void updateProfile(String profile) {
+    public void updateProfile(MemberProfile profile) {
         this.profile = profile;
     }
 
@@ -57,12 +58,5 @@ public class Member extends BaseTimeEntity {
 
     public void deleteMember() {
         this.status = MemberStatus.DELETED;
-    }
-
-    @Override
-    public String toString() {
-        return "Member{" +
-                "id=" + id +
-                '}';
     }
 }

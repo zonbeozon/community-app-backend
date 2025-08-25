@@ -39,6 +39,8 @@ public enum ErrorCode {
 
     //member
     MEMBER_NOT_FOUND("맴버를 찾을 수 없습니다"),
+    DUPLICATE_USERNAME("중복된 유저명입니다"),
+    DUPLICATE_EMAIL("중복된 이메일입니다"),
 
     //post
     POST_NOT_FOUND("post를 찾을 수 없습니다"),

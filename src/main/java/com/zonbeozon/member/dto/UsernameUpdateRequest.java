@@ -1,4 +1,4 @@
-package com.zonbeozon.member.controller;
+package com.zonbeozon.member.dto;
 
 import com.zonbeozon.member.domain.Member;
 import jakarta.validation.constraints.Pattern;

@@ -15,7 +15,7 @@ public class MemberRemover {
     private final MemberRepository memberRepository;
 
     /**
-     * todo: 맴버를 필드로 들고 있는 엔터티에 대한 처리 필요, soft Delete 추가
+     * todo: 맴버를 필드로 들고 있는 엔터티에 대한 처리 필요
      */
     public void deleteMember() {
         Member member = authenticationService.getCurrentMember();

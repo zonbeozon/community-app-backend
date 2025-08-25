@@ -1,14 +1,17 @@
 package com.zonbeozon.member.controller;
 
+import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.member.dto.MemberProfileUpdateRequest;
+import com.zonbeozon.member.dto.UsernameUpdateRequest;
 import com.zonbeozon.member.respository.MemberSort;
 import com.zonbeozon.member.service.MemberAssembler;
-import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.member.service.MemberRemover;
 import com.zonbeozon.member.service.MemberUpdater;
-import com.zonbeozon.member.service.dto.MemberResponse;
-import com.zonbeozon.member.service.dto.PagedMemberResponse;
+import com.zonbeozon.member.dto.MemberResponse;
+import com.zonbeozon.member.dto.PagedMemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +36,8 @@ public class MemberController {
     private final MemberAssembler memberAssembler;
     private final MemberUpdater memberUpdater;
     private final MemberRemover memberRemover;
+    private final AuthenticationService authenticationService;
+    private final ImageOwnershipVerifier imageOwnershipVerifier;
 
     @Operation(
             summary = "맴버 명 업데이트",
@@ -46,7 +51,11 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "성공 - 응답 바디 없음"
+                    description = "성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = MemberResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -80,14 +89,46 @@ public class MemberController {
                     )
             )
     })
-    @PatchMapping
-    public ResponseEntity<Void> updateUsername(
+    @PatchMapping("/username")
+    public ResponseEntity<MemberResponse> updateUsername(
             @RequestBody
             @Valid
             UsernameUpdateRequest request
     ) {
-       memberUpdater.updateUsername(request.username());
-       return ResponseEntity.ok().build();
+        Member member = authenticationService.getCurrentMember();
+        MemberResponse response = memberUpdater.updateUsername(member.getId(), request.username());
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "맴버 프로필 업데이트",
+            description = """
+                    맴버 프로필을 변경한다.
+                    
+                    프로필을 없애고 싶다면 NULL로 보낸다.
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = MemberResponse.class)
+                    )
+            )}
+    )
+    @PatchMapping("/profile")
+    public ResponseEntity<MemberResponse> updateProfile(
+            @RequestBody
+            @Valid
+            MemberProfileUpdateRequest request
+    ) {
+        Member member = authenticationService.getCurrentMember();
+        imageOwnershipVerifier.verify(request.imageId());
+        MemberResponse response = memberUpdater.updateProfile(member.getId(), request.imageId());
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

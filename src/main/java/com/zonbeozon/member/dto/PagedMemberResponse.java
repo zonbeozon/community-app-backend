@@ -1,4 +1,4 @@
-package com.zonbeozon.member.service.dto;
+package com.zonbeozon.member.dto;
 
 import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -3,26 +3,22 @@ package com.zonbeozon.channel.dto;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.member.dto.MemberResponse;
 
 public record ChannelMemberResponse (
-        Long memberId,
-        String username,
-        String profile,
-        ChannelRole role
+        MemberResponse member,
+        ChannelRole channelRole
 ) {
     public static ChannelMemberResponse from(ChannelMember channelMember) {
         return new ChannelMemberResponse(
-                channelMember.getMember().getId(),
-                channelMember.getMember().getUsername(),
-                channelMember.getMember().getProfile(),
+                MemberResponse.from(channelMember.getMember()),
                 channelMember.getRole());
     }
 
     public static ChannelMemberResponse from(Member member, ChannelRole role) {
         return new ChannelMemberResponse(
-                member.getId(),
-                member.getUsername(),
-                member.getProfile(),
-                role);
+                MemberResponse.from(member),
+                role
+        );
     }
 }
