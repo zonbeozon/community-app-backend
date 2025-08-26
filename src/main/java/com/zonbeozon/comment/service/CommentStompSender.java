@@ -22,7 +22,7 @@ public class CommentStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentCreated(CommentCreatedEvent event) {
-        CommentResponse body = commentAssembler.createCommentResponse(event.commentId());
+        CommentResponse body = commentAssembler.getCommentResponse(event.commentId());
         messagingTemplate.convertAndSend(
                 getDestination(event.postId()),
                 new CommentEventResponse(CommentEventType.CREATED, event.commentId(), body)

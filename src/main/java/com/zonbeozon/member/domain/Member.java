@@ -20,15 +20,18 @@ public class Member extends BaseTimeEntity {
     @NotNull
     @Column(unique = true)
     private String username;
+
     @NotNull
     @Column(unique = true)
     private String email;
 
     @OneToOne(mappedBy = "member")
     private MemberProfile profile;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private ServerRole role;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private MemberStatus status;

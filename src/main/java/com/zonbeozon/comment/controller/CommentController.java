@@ -1,5 +1,6 @@
 package com.zonbeozon.comment.controller;
 
+import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.comment.dto.CommentAddRequest;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.service.CommentAssembler;
@@ -9,6 +10,7 @@ import com.zonbeozon.comment.service.CommentRemover;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +32,7 @@ public class CommentController {
     private final CommentAssembler commentAssembler;
     private final PostAuthorizationCheckService postAuthorizationCheckService;
     private final CommentAuthorizationCheckService commentAuthorizationCheckService;
+    private final AuthenticationService authenticationService;
 
 
     @Operation(
@@ -51,7 +54,8 @@ public class CommentController {
             @Valid @RequestBody CommentAddRequest request)
     {
         if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        Long commentId = commentCreator.addComment(postId, request.content());
+        Member member = authenticationService.getCurrentMember();
+        Long commentId = commentCreator.addComment(member.getId(), postId, request.content());
         return ResponseEntity.status(HttpStatus.CREATED).body(commentId);
     }
 

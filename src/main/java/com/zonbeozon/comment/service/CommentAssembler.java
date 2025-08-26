@@ -46,7 +46,7 @@ public class CommentAssembler {
         return new CommentsWithAuthorResponse(authorResponse, commentResponse, comments.size());
     }
 
-    public CommentResponse createCommentResponse(Long commentId) {
+    public CommentResponse getCommentResponse(Long commentId) {
         Comment comment = commentFinder.findByIdElseThrow(commentId, new CommentFetchOptions.Builder().withAuthor(true).withPost(true).build());
         ChannelMember author = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(comment.getPost().getChannel(), comment.getAuthor()));
         return CommentResponse.from(comment, author);
