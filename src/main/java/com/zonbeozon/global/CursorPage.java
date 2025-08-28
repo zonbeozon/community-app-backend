@@ -9,6 +9,7 @@ public interface CursorPage<T> {
     Long getTotalElements();
     int getSize();
     boolean isLast();
+    boolean isInverted();
     <U> CursorPage<U> map(Function<T, U> converter);
 
 }

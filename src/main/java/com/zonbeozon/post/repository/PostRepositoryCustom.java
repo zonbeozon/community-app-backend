@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface PostRepositoryCustom {
     Optional<Post> findById(Long id, PostFetchOptions options);
-    CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size);
+    CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size, boolean inverted);
     List<Post> findByIdInWithImagesAndAuthorAndChannel(Collection<Long> postIds);
 }

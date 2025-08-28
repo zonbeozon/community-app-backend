@@ -1,6 +1,7 @@
 package com.zonbeozon.post.repository;
 
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.global.CursorPage;
@@ -9,9 +10,7 @@ import com.zonbeozon.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.post.entity.QPost.post;
@@ -43,21 +42,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size) {
-
-        BooleanBuilder whereClause = new BooleanBuilder()
-                .and(post.channel.id.eq(channelId));
-
-        if(cursorPostId != null) {
-            whereClause.and(post.id.lt(cursorPostId));
+    public CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size, boolean inverted) {
+        OrderSpecifier<?> order = inverted ? post.id.asc() : post.id.desc();
+        BooleanExpression cursorCondition = null;
+        if (cursorPostId != null) {
+            cursorCondition = inverted ? post.id.gt(cursorPostId) : post.id.lt(cursorPostId);
         }
 
         List<Post> posts = queryFactory.selectFrom(post)
-                .where(whereClause)
+                .where(post.channel.id.eq(channelId), cursorCondition)
                 .join(post.author).fetchJoin()
                 .leftJoin(post.images, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
-                .orderBy(post.id.desc(), postImage.id.asc())
+                .orderBy(order, postImage.id.asc())
                 .limit(size + 1)
                 .fetch();
 
@@ -67,7 +64,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         boolean hasNext = posts.size() > size;
 
         if(posts.isEmpty()) {
-            contentToReturn = List.of();
+            contentToReturn = new ArrayList<>();
             nextCursorId = null;
         } else if (hasNext) {
             contentToReturn = posts.subList(0, size);
@@ -76,17 +73,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             contentToReturn = posts;
             nextCursorId = posts.getLast().getId();
         }
+        if (inverted) {
+            Collections.reverse(contentToReturn);
+        }
 
         Long totalElement = queryFactory
-                .select(post.count()) // count 함수 사용
+                .select(post.count())
                 .from(post)
-                .where(whereClause) // 채널 조건
+                .where(post.channel.id.eq(channelId))
                 .fetchOne();
 
-        //조회되는 값 없을때 Null 대신 반환
         totalElement = totalElement == null ? 0L : totalElement;
 
-        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, !hasNext, posts.size());
+        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, inverted ,!hasNext, posts.size());
     }
 
     @Override

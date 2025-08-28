@@ -8,13 +8,15 @@ public class CursorPageImpl<T> implements CursorPage<T> {
     private final List<T> content;
     private final Long cursorId;
     private final Long totalElements;
+    private final boolean isInverted;
     private final boolean isLast;
     private final int size;
 
-    public CursorPageImpl(List<T> content, Long cursorId, Long totalElements, boolean isLast, int size) {
+    public CursorPageImpl(List<T> content, Long cursorId, Long totalElements, boolean isInverted, boolean isLast, int size) {
         this.content = Collections.unmodifiableList(content);
         this.cursorId = cursorId;
         this.totalElements = totalElements;
+        this.isInverted = isInverted;
         this.isLast = isLast;
         this.size = size;
     }
@@ -43,6 +45,11 @@ public class CursorPageImpl<T> implements CursorPage<T> {
     }
 
     @Override
+    public boolean isInverted() {
+        return isInverted;
+    }
+
+    @Override
     public <U> CursorPage<U> map(Function<T, U> converter) {
         List<U> convertedContent = this.content.stream()
                 .map(converter)
@@ -52,6 +59,7 @@ public class CursorPageImpl<T> implements CursorPage<T> {
                 convertedContent,
                 this.cursorId,
                 this.totalElements,
+                this.isInverted,
                 this.isLast,
                 this.size
         );

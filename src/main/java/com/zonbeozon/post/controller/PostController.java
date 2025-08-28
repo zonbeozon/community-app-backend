@@ -239,24 +239,27 @@ public class PostController {
     })
     @Parameters({
             @Parameter(name = "cursorPostId", description = """
-                    해당 postId보다 작은 PostId를 size만큼 반환(cursor)
+                    해당 postId보다 작거나 큰 PostId를 size만큼 반환(cursor)
                     
                     cursorPostId를 가장 최신 post로 설정하고 싶다면 null로 설정
                     """),
-            @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10")
+            @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10"),
+            @Parameter(name = "inverted", description = "false라면 cursorId보다 작은 postId를 반환,  ", example = "true")
     })
     @GetMapping("channel/{channelId}/post")
     public ResponseEntity<CursorBasedPostsResponse> createCursorBasedPostResponse(
             @PathVariable Long channelId,
             @RequestParam(required = false) Long cursorPostId,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "false") boolean inverted
     ) {
         if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
 
         CursorBasedPostsResponse response = postAssembler.getCursorBasedPostResponse(
                 channelId,
                 cursorPostId,
-                size
+                size,
+                inverted
         );
 
         return ResponseEntity.ok(response);

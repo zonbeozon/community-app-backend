@@ -19,6 +19,11 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
+@Table(
+        indexes = {
+                @Index(name = "idx_post_channel_id", columnList = "channel_id")
+        }
+)
 public class Post extends ContentEntity {
     public static final int MAX_CONTENT_LENGTH = 2048;
     public static final int MIN_CONTENT_LENGTH = 1;

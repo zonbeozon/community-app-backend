@@ -41,10 +41,11 @@ public class SimplePostAssembler implements PostAssembler {
     public CursorBasedPostsResponse getCursorBasedPostResponse(
             Long channelId,
             Long cursorPostId,
-            int size
+            int size,
+            boolean inverted
     ) {
         if(!blogChannelFinder.existsById(channelId)) throw new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND);
-        CursorPage<Post> posts = postRepository.findCursorBasedPostsByChannelId(channelId, cursorPostId, size);
+        CursorPage<Post> posts = postRepository.findCursorBasedPostsByChannelId(channelId, cursorPostId, size, inverted);
         List<ChannelMemberResponse> authorResponse = channelMemberAssembler.getChannelMemberResponse(
                 getDistinctAuthorIdsFromPosts(posts.getContent()).stream()
                         .map(authorId -> new ChannelMemberId(channelId, authorId)).toList()

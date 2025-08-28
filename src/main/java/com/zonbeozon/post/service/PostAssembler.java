@@ -14,6 +14,6 @@ public interface PostAssembler {
      */
     Map<Long, PostResponse> getPostResponses(Collection<Long> postIds);
 
-    CursorBasedPostsResponse getCursorBasedPostResponse(Long channelId, Long cursorPostId, int size);
+    CursorBasedPostsResponse getCursorBasedPostResponse(Long channelId, Long cursorPostId, int size, boolean inverted);
 
 }
