@@ -16,6 +16,7 @@ public record PostResponse(
         List<ImageResponse> images,
         ChannelMemberResponse author,
         Long commentCount,
+        Long viewCount,
         ReactionResponse reaction,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -27,6 +28,7 @@ public record PostResponse(
                 post.getImages().stream().map(PostImage::getImage).map(ImageResponse::from).toList(),
                 authorResponse,
                 commentCount,
+                post.getViewCount(),
                 reactionResponse,
                 post.getCreatedAt(),
                 post.getModifiedAt()

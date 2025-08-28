@@ -4,6 +4,8 @@ import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.viewcount.CookieViewMarker;
+import com.zonbeozon.global.viewcount.ViewCounter;
 import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import com.zonbeozon.post.dto.*;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
@@ -18,15 +20,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequiredArgsConstructor
 @Tag(name = "포스트", description = "포스트 관련 엔드포인트")
 public class PostController {
     private final PostCreator postCreator;
@@ -36,6 +41,32 @@ public class PostController {
     private final PostAssembler postAssembler;
     private final PostAuthorizationCheckService postAuthorizationCheckService;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
+    private final CookieViewMarker postViewMarker;
+    private final ViewCounter postViewCounter;
+
+    public PostController(
+            PostCreator postCreator,
+            PostUpdater postUpdater,
+            PostRemover postRemover,
+            ChannelAuthorizationCheckService channelAuthorizationCheckService,
+            PostAssembler postAssembler,
+            PostAuthorizationCheckService postAuthorizationCheckService,
+            ImageOwnershipVerifier imageOwnershipVerifier,
+            @Qualifier("postViewMarker")
+            CookieViewMarker postViewMarker,
+            @Qualifier("postViewCounter")
+            ViewCounter postViewCounter
+    ) {
+        this.postCreator = postCreator;
+        this.postUpdater = postUpdater;
+        this.postRemover = postRemover;
+        this.channelAuthorizationCheckService = channelAuthorizationCheckService;
+        this.postAssembler = postAssembler;
+        this.postAuthorizationCheckService = postAuthorizationCheckService;
+        this.imageOwnershipVerifier = imageOwnershipVerifier;
+        this.postViewMarker = postViewMarker;
+        this.postViewCounter = postViewCounter;
+    }
 
     @Operation(
             summary = "Post 생성",
@@ -120,6 +151,7 @@ public class PostController {
         if(!channelAuthorizationCheckService.isAtLeastAdmin(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         if(!request.imageIds().isEmpty()) imageOwnershipVerifier.verify(request.imageIds());
         Long postId = postCreator.addPost(channelId, new PostCreateCommand(request.content(), request.imageIds()));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(postId);
     }
 
@@ -268,5 +300,28 @@ public class PostController {
     ) {
         if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         return ResponseEntity.ok(postAssembler.getPostResponse(postId));
+    }
+
+    @Operation(
+            summary = "POST 조회수 증가",
+            description = """
+                    POST 조회수를 증가시킨다.
+                    
+                    이미 본 Post id는 쿠키에 기록을 한다
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @PostMapping("/post/view-count")
+    public ResponseEntity<Void> postViewCount(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody
+            @Valid
+            PostViewCountRequest body
+            ) {
+        List<Long> notViewedPostIds = body.postIds().stream().filter(id -> !postViewMarker.hasViewed(request, id)).toList();
+        postViewCounter.increase(notViewedPostIds);
+        postViewMarker.setAsViewed(request, response, notViewedPostIds);
+        return ResponseEntity.ok().build();
     }
 }

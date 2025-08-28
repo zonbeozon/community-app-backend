@@ -3,6 +3,7 @@ package com.zonbeozon.post.entity;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.global.entity.ContentEntity;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.reaction.entity.PostReaction;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class Post extends BaseTimeEntity {
+public class Post extends ContentEntity {
     public static final int MAX_CONTENT_LENGTH = 2048;
     public static final int MIN_CONTENT_LENGTH = 1;
     public static final int MAX_IMAGE_COUNT = 5;
@@ -36,11 +37,6 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "channel_id")
     private BlogChannel channel;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Member author;
-
     @OneToMany(mappedBy = "post")
     private List<PostImage> images = new ArrayList<>();
 
@@ -50,12 +46,14 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<PostReaction> reactions = new ArrayList<>();
 
-    public static Post create(String content, BlogChannel channel, Member requester) {
-        Post post = new Post();
-        post.content = content;
-        post.author = requester;
-        post.channel = channel;
-        return post;
+    protected Post(String content, BlogChannel channel, Member author) {
+        super(author);
+        this.content = content;
+        this.channel = channel;
+    }
+
+    public static Post create(String content, BlogChannel channel, Member author) {
+        return new Post(content, channel, author);
     }
 
     public void updateContent(String content) {

@@ -9,3 +9,5 @@ app:
       name: channel-info-response
       expire-after-write-minutes: 2 #채널 참가 탈퇴는 직접 evict되지 않기 때문에 너무 길어지면 채널 유저수 반영이 느릴 수 있다(추후 변경 가능).
       maximum-size: 1000
+
+

@@ -3,6 +3,8 @@ package com.zonbeozon.post.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
+import com.zonbeozon.global.viewcount.CookieViewMarker;
+import com.zonbeozon.global.viewcount.ViewCounter;
 import com.zonbeozon.post.TestPostCreateRequestBuilder;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
@@ -10,6 +12,7 @@ import com.zonbeozon.post.service.SimplePostAssembler;
 import com.zonbeozon.post.service.PostCreator;
 import com.zonbeozon.post.service.PostRemover;
 import com.zonbeozon.post.service.PostUpdater;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,10 +41,16 @@ public class PostControllerTest extends AuthorizationCheckDisabledTest {
     private SimplePostAssembler simplePostAssembler;
     @MockitoBean
     private PostRemover postRemover;
+    @MockitoBean("postViewMarker")
+    private CookieViewMarker postViewMarker;
+    @MockitoBean("postViewCounter")
+    private ViewCounter postViewCounter;
 
     @BeforeEach
     void setup() {
         Mockito.when(postCreator.addPost(Mockito.anyLong(), Mockito.any(PostCreateCommand.class))).thenReturn(1L);
+        Mockito.when(postViewMarker.hasViewed(Mockito.any(HttpServletRequest.class),Mockito.anyLong())).thenReturn(false);
+
     }
 
     @DisplayName("content가 정해진 길이를 만족하지 않는다면 400에러 발생")

@@ -13,6 +13,7 @@ public record SimplifiedPostResponse(
         List<ImageResponse> images,
         Long authorId,
         Long commentCount,
+        Long viewCount,
         ReactionResponse reaction,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -25,6 +26,7 @@ public record SimplifiedPostResponse(
                 images,
                 post.getAuthor().getId(),
                 commentCount,
+                post.getViewCount(),
                 reaction,
                 post.getCreatedAt(),
                 post.getModifiedAt()
