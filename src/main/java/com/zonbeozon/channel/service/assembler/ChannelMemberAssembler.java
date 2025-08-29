@@ -52,7 +52,7 @@ public class ChannelMemberAssembler {
         return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.ACTIVE, pageable).map(ChannelMemberResponse::from);
     }
 
-    public Page<ChannelMemberResponse> createPagedKickedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
+    public Page<ChannelMemberResponse> createPagedBannedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
         return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.BANNED, pageable).map(ChannelMemberResponse::from);
 

@@ -1,13 +1,11 @@
 package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.JoinResultStatus;
-import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
+import com.zonbeozon.channel.service.*;
 import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
-import com.zonbeozon.channel.service.ChannelMemberJoiner;
-import com.zonbeozon.channel.service.ChannelMemberRemover;
-import com.zonbeozon.channel.service.ChannelMemberRoleModifier;
 import com.zonbeozon.global.SortExcludedPageRequest;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
@@ -33,6 +31,7 @@ public class ChannelMemberController {
     private final ChannelMemberRoleModifier channelMemberRoleModifier;
     private final ChannelMemberAssembler channelMemberAssembler;
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
+    private final ChannelMemberBanService channelMemberBanService;
 
     @Operation(
             summary = "채널 참가",
@@ -56,22 +55,22 @@ public class ChannelMemberController {
     }
 
     @Operation(
-            summary = "채널 유저 강퇴",
-            description = "강퇴시킬려는 유저가 당하는 유저보다 ChannelRole이 높아야 한다.",
+            summary = "채널 유저 벤",
+            description = "벤시킬려는 유저가 당하는 유저보다 ChannelRole이 높아야 한다.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema())),
     })
-    @DeleteMapping("/{targetMemberId}/kick")
-    public ResponseEntity<Void> kickChannelMember(
+    @PostMapping("/{memberId}/ban")
+    public ResponseEntity<Void> banChannelMember(
             @PathVariable Long channelId,
-            @PathVariable Long targetMemberId
+            @PathVariable Long memberId
     ) {
-        if(!channelAuthorizationCheckService.hasHigherRoleThanTargetMember(channelId, targetMemberId))
+        if(!channelAuthorizationCheckService.hasHigherRoleThanTargetMember(channelId, memberId))
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        channelMemberRemover.kickMember(channelId, targetMemberId);
+        channelMemberBanService.ban(new ChannelMemberId(channelId, memberId));
         return ResponseEntity.ok().build();
     }
 
@@ -137,7 +136,30 @@ public class ChannelMemberController {
     }
 
     @Operation(
-            summary = "강퇴된 맴버 조회",
+            summary = "벤 상태인 맴버 조회",
+            description = """
+                    Owner만 호출가능하다.
+                    벤 상태인 맴버를 조회한다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+    })
+    @GetMapping("/ban")
+    public ResponseEntity<Page<ChannelMemberResponse>> getBannedChannelMembers(
+            @PathVariable Long channelId,
+            SortExcludedPageRequest pageRequest
+    ) {
+        if(channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+
+        return ResponseEntity.ok(
+                channelMemberAssembler.createPagedBannedChannelMemberResponse(channelId, pageRequest)
+        );
+    }
+
+    @Operation(
+            summary = "벤 상태인 맴버 벤 해제",
             description = """
                     Owner만 호출가능하다.
                     강제퇴장된 맴버를 조회한다.
@@ -147,17 +169,13 @@ public class ChannelMemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공"),
     })
-    @GetMapping("/kicked")
-    public ResponseEntity<Page<ChannelMemberResponse>> getKickedChannelMembers(
+    @DeleteMapping("/{memberId}/ban")
+    public ResponseEntity<Page<ChannelMemberResponse>> unbanChannelMember(
             @PathVariable Long channelId,
-            SortExcludedPageRequest pageRequest
+            @PathVariable Long memberId
     ) {
         if(channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-
-        return ResponseEntity.ok(
-                channelMemberAssembler.createPagedKickedChannelMemberResponse(channelId, pageRequest)
-        );
+        channelMemberBanService.unban(new ChannelMemberId(channelId, memberId));
+        return ResponseEntity.noContent().build();
     }
-
-
 }
