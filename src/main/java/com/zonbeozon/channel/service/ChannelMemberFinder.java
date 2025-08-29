@@ -22,7 +22,7 @@ public class ChannelMemberFinder {
         return channelMemberRepository.existsById(id);
     }
 
-    public ChannelMember findByIdIgnoringStatus(ChannelMemberId id) {
+    public ChannelMember findByIdElseThrowIgnoringStatus(ChannelMemberId id) {
         return channelMemberRepository.findByIdIgnoringStatus(id)
                 .orElseThrow((() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND)));
     }

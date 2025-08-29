@@ -21,7 +21,7 @@ class PostStompSender {
         PostResponse body = simplePostAssembler.getPostResponse(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.CREATED, event.postId(), body)
+                new PostEventResponse(PostEventType.CREATED, body)
         );
     }
 
@@ -29,7 +29,7 @@ class PostStompSender {
     public void handlePostDeleted(PostDeletedEvent event) {
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.DELETED, event.postId(), null)
+                new PostEventResponse(PostEventType.DELETED, null)
         );
     }
 
@@ -38,7 +38,7 @@ class PostStompSender {
         PostResponse body = simplePostAssembler.getPostResponse(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.UPDATED, event.postId(), body)
+                new PostEventResponse(PostEventType.UPDATED, body)
         );
     }
 

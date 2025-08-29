@@ -1,7 +1,6 @@
 package com.zonbeozon.post.dto;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.image.entity.ImageResponse;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.entity.PostImage;

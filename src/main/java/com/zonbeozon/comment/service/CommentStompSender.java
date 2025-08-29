@@ -1,43 +1,52 @@
 package com.zonbeozon.comment.service;
 
-import com.zonbeozon.comment.dto.CommentCreatedEvent;
-import com.zonbeozon.comment.dto.CommentDeletedEvent;
-import com.zonbeozon.comment.dto.CommentEventResponse;
-import com.zonbeozon.comment.dto.CommentResponse;
+import com.zonbeozon.comment.dto.*;
 import com.zonbeozon.comment.entity.CommentEventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
-@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class CommentStompSender {
     private final SimpMessagingTemplate messagingTemplate;
     private final CommentAssembler commentAssembler;
+    private final CommentCounter commentCounter;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentCreated(CommentCreatedEvent event) {
         CommentResponse body = commentAssembler.getCommentResponse(event.commentId());
         messagingTemplate.convertAndSend(
-                getDestination(event.postId()),
-                new CommentEventResponse(CommentEventType.CREATED, event.commentId(), body)
+                getCommentDestination(event.postId()),
+                new CommentEventResponse(CommentEventType.CREATED, body)
         );
+        sendCommentCountUpdate(event.channelId(), event.postId());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentDeleted(CommentDeletedEvent event) {
         messagingTemplate.convertAndSend(
-                getDestination(event.postId()),
-                new CommentEventResponse(CommentEventType.DELETED, event.commentId(), null)
+                getCommentDestination(event.postId()),
+                new CommentEventResponse(CommentEventType.DELETED, null)
+        );
+        sendCommentCountUpdate(event.channelId(), event.postId());
+    }
+
+    private void sendCommentCountUpdate(Long channelId, Long postId) {
+        long newCommentCount = commentCounter.countCommentsByPostId(postId);
+        messagingTemplate.convertAndSend(
+                getCommentCountDestination(channelId),
+                new CommentCountEventResponse(postId, newCommentCount)
         );
     }
 
-    private String getDestination(Long postId) {
+    private String getCommentDestination(Long postId) {
         return "/topic/post/" + postId + "/comment";
+    }
+
+    private String getCommentCountDestination(Long channelId) {
+        return "/topic/channel/" + channelId + "/comment-count";
     }
 }

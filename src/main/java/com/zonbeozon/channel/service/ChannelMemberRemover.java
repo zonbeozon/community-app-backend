@@ -4,7 +4,6 @@ import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.entity.ChannelMemberId;
-import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
@@ -23,6 +22,7 @@ public class ChannelMemberRemover {
     private final ChannelMemberRepository channelMemberRepository;
     private final AuthenticationService authenticationService;
     private final MemberFinder memberFinder;
+    private final ChannelMemberBanService channelMemberBanService;
 
     public void leaveChannel(Long channelId) {
         Member member = authenticationService.getCurrentMember();
@@ -39,7 +39,7 @@ public class ChannelMemberRemover {
         Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         ChannelMember targetChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember));
-        targetChannelMember.updateStatus(ChannelMemberStatus.KICKED);
+        channelMemberBanService.ban(targetChannelMember.getId());
     }
 
 }

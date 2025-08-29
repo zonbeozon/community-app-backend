@@ -2,11 +2,9 @@ package com.zonbeozon.channel.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
-import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +29,7 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
     public boolean isKicked(ChannelMemberId id) {
         return queryFactory.selectOne()
                 .from(channelMember)
-                .where(channelMember.id.eq(id).and(channelMember.status.eq(ChannelMemberStatus.KICKED)))
+                .where(channelMember.id.eq(id).and(channelMember.status.eq(ChannelMemberStatus.BANNED)))
                 .fetchFirst() != null;
     }
 

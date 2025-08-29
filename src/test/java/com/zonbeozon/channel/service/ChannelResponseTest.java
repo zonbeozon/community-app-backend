@@ -65,7 +65,7 @@ public class ChannelResponseTest extends AbstractChannelIntegrationTest {
         Member member_3 = testMemberService.createAndSave("kim");
         ChannelMember channelMember_1 = testBlogChannelService.joinAsMember(blogChannel_1, member_1);
         ChannelMember channelMember_3 = testBlogChannelService.joinAsMember(blogChannel_1, member_3);
-        testBlogChannelService.setChannelMemberStatus(channelMember_1, ChannelMemberStatus.KICKED);
+        testBlogChannelService.setChannelMemberStatus(channelMember_1, ChannelMemberStatus.BANNED);
         testBlogChannelService.setChannelMemberStatus(channelMember_3, ChannelMemberStatus.PENDING);
 
         JoinedBlogChannelInfoListResponse response = channelAssembler.getJoinedCommunityBlogChannelInfo(requester.getId());

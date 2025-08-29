@@ -1,6 +1,7 @@
 package com.zonbeozon.comment.entity;
 
 import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.global.entity.ContentEntity;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
 import jakarta.persistence.*;
@@ -10,12 +11,16 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
+@Table(
+        indexes = {
+                @Index(name = "idx_comment_post_id", columnList = "post_id")
+        }
+)
 public class Comment extends BaseTimeEntity {
     public static final int MAX_CONTENT_LENGTH = 496;
     public static final int MIN_CONTENT_LENGTH = 1;

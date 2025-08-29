@@ -1,7 +1,6 @@
 package com.zonbeozon.channel.service.assembler;
 
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelMemberStatus;
@@ -10,7 +9,6 @@ import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.global.SortExcludedPageRequest;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
-import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,7 +54,7 @@ public class ChannelMemberAssembler {
 
     public Page<ChannelMemberResponse> createPagedKickedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
-        return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.KICKED, pageable).map(ChannelMemberResponse::from);
+        return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.BANNED, pageable).map(ChannelMemberResponse::from);
 
     }
 }

@@ -112,7 +112,7 @@ public class PostMessageTest {
     void postCreationBroadcastsPostCreationMessage() throws ExecutionException, InterruptedException, TimeoutException {
         Long postId = postCreator.addPost(channel.getId(), new PostCreateCommand("content", List.of()));
         String payload = cfPayload.get(2, TimeUnit.SECONDS);
-        Number actual = JsonPath.read(payload, "$.body.postId");
+        Number actual = JsonPath.read(payload, "$.postId");
         Assertions.assertThat(actual).isEqualTo((postId.intValue()));
     }
 
