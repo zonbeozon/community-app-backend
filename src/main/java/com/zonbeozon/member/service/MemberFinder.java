@@ -26,4 +26,8 @@ public class MemberFinder {
         return memberRepository.findByIdWithProfile(id).orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
+    public boolean existsById(Long id) {
+        return memberRepository.existsById(id);
+    }
+
 }

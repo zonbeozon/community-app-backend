@@ -1,5 +1,6 @@
 package com.zonbeozon.channel.controller;
 
+import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.dto.ChannelMemberResponse;
 import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelRole;
@@ -9,6 +10,7 @@ import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
 import com.zonbeozon.global.SortExcludedPageRequest;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +34,7 @@ public class ChannelMemberController {
     private final ChannelMemberAssembler channelMemberAssembler;
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
     private final ChannelMemberBanService channelMemberBanService;
+    private final AuthenticationService authenticationService;
 
     @Operation(
             summary = "채널 참가",
@@ -87,15 +90,18 @@ public class ChannelMemberController {
     public ResponseEntity<Void> leaveChannel(
             @PathVariable Long channelId
     ) {
-        channelMemberRemover.leaveChannel(channelId);
+        Member member = authenticationService.getCurrentMember();
+        channelMemberRemover.leaveChannel(new ChannelMemberId(channelId, member.getId()));
         return ResponseEntity.noContent().build();
     }
 
     @Operation(
             summary = "채널 맴버 Role 변경",
-            description =
-                    "Owner만 호출가능하다\n" +
-                    "만일 변경시키고자하는 Role이 Owner라면 자신의 Owner Role이 이전되고 자신은 Admin으로 강등된다.",
+            description = """
+                    Owner만 호출가능하다
+                    
+                    만일 변경시키고자하는 Role이 Owner라면 자신의 Owner Role이 이전되고 자신은 Admin으로 강등된다.
+                    """,
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
@@ -131,30 +137,26 @@ public class ChannelMemberController {
     ) {
         if(!channelAuthorizationCheckService.isAtLeastMember(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         return ResponseEntity.ok(
-                channelMemberAssembler.createPagedActiveChannelMemberResponse(channelId, pageRequest)
+                channelMemberAssembler.getPagedActiveChannelMemberResponse(channelId, pageRequest)
         );
     }
 
     @Operation(
-            summary = "벤 상태인 맴버 조회",
+            summary = "참가 승인 대기 상태인 맴버 조회",
             description = """
-                    Owner만 호출가능하다.
-                    벤 상태인 맴버를 조회한다.
+                    Admin이상 부터 호출가능하다.
                     """,
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공"),
-    })
-    @GetMapping("/ban")
-    public ResponseEntity<Page<ChannelMemberResponse>> getBannedChannelMembers(
+    @GetMapping("/pending")
+    public ResponseEntity<Page<ChannelMemberResponse>> getPendingChannelMembers(
             @PathVariable Long channelId,
             SortExcludedPageRequest pageRequest
     ) {
-        if(channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        if(!channelAuthorizationCheckService.isAtLeastAdmin(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
 
         return ResponseEntity.ok(
-                channelMemberAssembler.createPagedBannedChannelMemberResponse(channelId, pageRequest)
+                channelMemberAssembler.getPagedPendingChannelMemberResponse(channelId, pageRequest)
         );
     }
 
@@ -162,20 +164,79 @@ public class ChannelMemberController {
             summary = "벤 상태인 맴버 벤 해제",
             description = """
                     Owner만 호출가능하다.
-                    강제퇴장된 맴버를 조회한다.
+                    
+                    벤을 해제한다.
                     """,
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "204", description = "성공"),
     })
     @DeleteMapping("/{memberId}/ban")
     public ResponseEntity<Page<ChannelMemberResponse>> unbanChannelMember(
             @PathVariable Long channelId,
             @PathVariable Long memberId
     ) {
-        if(channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         channelMemberBanService.unban(new ChannelMemberId(channelId, memberId));
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "벤 상태인 맴버 조회",
+            description = """
+                    Owner만 호출가능하다.
+                    
+                    벤 상태인 맴버를 조회한다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @GetMapping("/ban")
+    public ResponseEntity<Page<ChannelMemberResponse>> getBannedChannelMembers(
+            @PathVariable Long channelId,
+            SortExcludedPageRequest pageRequest
+    ) {
+        if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+
+        return ResponseEntity.ok(
+                channelMemberAssembler.getPagedBannedChannelMemberResponse(channelId, pageRequest)
+        );
+    }
+
+    @Operation(
+            summary = "참가 승인 대기중인 맴버 승인",
+            description = """
+                    Admin 이상 부터 호출가능하다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @PostMapping("/{memberId}/approve")
+    public ResponseEntity<Void> approveJoinRequest(
+            @PathVariable Long channelId,
+            @PathVariable Long memberId
+    ) {
+        if(!channelAuthorizationCheckService.isAtLeastAdmin(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        channelMemberJoiner.approveJoinRequest(new ChannelMemberId(channelId, memberId));
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "참가 승인 대기중인 맴버 거절",
+            description = """
+                    Admin 이상 부터 호출가능하다.
+                    """,
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "성공"),
+    })
+    @PostMapping("/{memberId}/deny")
+    public ResponseEntity<Void> denyJoinRequest(
+            @PathVariable Long channelId,
+            @PathVariable Long memberId
+    ) {
+        if(!channelAuthorizationCheckService.isAtLeastMember(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        channelMemberJoiner.denyJoinRequest(new ChannelMemberId(channelId, memberId));
         return ResponseEntity.noContent().build();
     }
 }

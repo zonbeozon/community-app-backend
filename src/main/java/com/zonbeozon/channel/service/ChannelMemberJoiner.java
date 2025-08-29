@@ -1,6 +1,8 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
+import com.zonbeozon.channel.dto.JoinRequestApprovedEvent;
+import com.zonbeozon.channel.dto.JoinRequestDeniedEvent;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.entity.ChannelMemberId;
@@ -14,6 +16,7 @@ import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,9 @@ public class ChannelMemberJoiner {
     private final ChannelMemberRepository channelMemberRepository;
     private final AuthenticationService authenticationService;
     private final ChannelFinder channelFinder;
+    private final ChannelMemberFinder channelMemberFinder;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ChannelMemberRemover channelMemberRemover;
 
     /**
      * 채널 생성시 초기 한번만 호출된다.
@@ -58,5 +64,23 @@ public class ChannelMemberJoiner {
             throw new ConflictException(ErrorCode.ALREADY_JOINED_CHANNEL);
         ChannelMember chMember = ChannelMember.create(requester, channel, role, status);
         channelMemberRepository.save(chMember);
+    }
+
+    public void approveJoinRequest(ChannelMemberId channelMemberId) {
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(channelMemberId);
+        if(!channelMember.isPendingStatus()) {
+            throw new ConflictException(ErrorCode.MEMBER_NOT_PENDING);
+        }
+        channelMember.updateStatus(ChannelMemberStatus.ACTIVE);
+        eventPublisher.publishEvent(new JoinRequestApprovedEvent(channelMemberId));
+    }
+
+    public void denyJoinRequest(ChannelMemberId channelMemberId) {
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(channelMemberId);
+        if(!channelMember.isPendingStatus()) {
+            throw new ConflictException(ErrorCode.MEMBER_NOT_PENDING);
+        }
+        channelMemberRemover.leaveChannelIgnoreStatus(channelMemberId);
+        eventPublisher.publishEvent(new JoinRequestDeniedEvent(channelMemberId));
     }
 }

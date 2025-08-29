@@ -47,14 +47,18 @@ public class ChannelMemberAssembler {
         return ChannelMemberResponse.from(channelMember);
     }
 
-    public Page<ChannelMemberResponse> createPagedActiveChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
+    public Page<ChannelMemberResponse> getPagedActiveChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
         return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.ACTIVE, pageable).map(ChannelMemberResponse::from);
     }
 
-    public Page<ChannelMemberResponse> createPagedBannedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
+    public Page<ChannelMemberResponse> getPagedBannedChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
         return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.BANNED, pageable).map(ChannelMemberResponse::from);
+    }
 
+    public Page<ChannelMemberResponse> getPagedPendingChannelMemberResponse(Long channelId, SortExcludedPageRequest pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.by("createdAt").descending());
+        return channelMemberRepository.findByChannelIdWithMemberOrderByCreatedAtDesc(channelId, ChannelMemberStatus.PENDING, pageable).map(ChannelMemberResponse::from);
     }
 }

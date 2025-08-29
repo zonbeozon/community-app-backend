@@ -35,12 +35,14 @@ public enum ErrorCode {
     ALREADY_JOINED_CHANNEL("이미 참가한 채널입니다."),
     INVITE_GENERATE_DENIED("채널의 가입 정책에 따라 초대코드를 생성할 수 없습니다."),
     OPERATION_FOR_BLOG_CHANNEL_ONLY("블로그 채널 전용 작업입니다."),
-
+    MEMBER_NOT_PENDING("승인 대기중인 맴버가 아닙니다"),
 
     //member
     MEMBER_NOT_FOUND("맴버를 찾을 수 없습니다"),
     DUPLICATE_USERNAME("중복된 유저명입니다"),
     DUPLICATE_EMAIL("중복된 이메일입니다"),
+
+
 
     //post
     POST_NOT_FOUND("post를 찾을 수 없습니다"),

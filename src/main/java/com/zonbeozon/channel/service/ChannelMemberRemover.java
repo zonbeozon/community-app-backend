@@ -16,19 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class ChannelMemberRemover {
-    private final ChannelFinder channelFinder;
     private final ChannelMemberFinder channelMemberFinder;
     private final ChannelMemberRepository channelMemberRepository;
-    private final AuthenticationService authenticationService;
 
-    public void leaveChannel(Long channelId) {
-        Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
-        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member));
-
+    public void leaveChannel(ChannelMemberId channelMemberId) {
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(channelMemberId);
         if(!channelMember.canLeaveChannel()) {
             throw new ConflictException(ErrorCode.CHANNEL_LEAVE_NOT_ALLOWED);
         }
+        channelMemberRepository.delete(channelMember);
+    }
+
+    public void leaveChannelIgnoreStatus(ChannelMemberId channelMemberId) {
+        ChannelMember channelMember = channelMemberFinder.findByIdElseThrowIgnoringStatus(channelMemberId);
         channelMemberRepository.delete(channelMember);
     }
 }

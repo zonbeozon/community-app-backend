@@ -73,4 +73,8 @@ public class ChannelMember extends BaseTimeEntity {
     public boolean canLeaveChannel() {
         return role != ChannelRole.CHANNEL_OWNER;
     }
+
+    public boolean isPendingStatus() {
+        return status == ChannelMemberStatus.PENDING;
+    }
 }
