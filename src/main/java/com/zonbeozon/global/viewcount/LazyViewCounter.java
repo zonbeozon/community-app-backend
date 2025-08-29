@@ -1,13 +1,13 @@
 package com.zonbeozon.global.viewcount;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 인메모리로 저장해뒀다가 flush-interval-ms 마다 db에 반영한다.
@@ -15,8 +15,9 @@ import java.util.concurrent.TimeUnit;
  * 사용시 조회수 조회 딜레이가 최대 flush-interval-ms 발생한다.
  */
 @Slf4j
-public class LazyViewCounter extends SimpleViewCounter implements ViewCounter {
+public class LazyViewCounter extends SimpleViewCounter implements ViewCounter, SmartLifecycle {
     private final ConcurrentHashMap<Long, Long> viewCountsCache = new ConcurrentHashMap<>();
+    private volatile boolean isRunning = false;
 
     public LazyViewCounter(ContentEntityFinder contentEntityFinder) {
         super(contentEntityFinder);
@@ -52,5 +53,29 @@ public class LazyViewCounter extends SimpleViewCounter implements ViewCounter {
 
         // 부모 클래스의 DB 업데이트 로직 호출
         super.increase(countsToFlush);
+    }
+
+    @Override
+    public void start() {
+        this.isRunning = true;
+    }
+
+    @Override
+    public void stop() {
+        flushViewCountsToDatabase();
+        this.isRunning = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        log.info("종료전 viewCounts db 반영");
+        flushViewCountsToDatabase();
+        this.isRunning = false;
+        callback.run();
     }
 }
