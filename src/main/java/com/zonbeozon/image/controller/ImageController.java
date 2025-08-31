@@ -1,7 +1,10 @@
 package com.zonbeozon.image.controller;
 
+import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.image.service.ImageS3Uploader;
 import com.zonbeozon.image.validation.ValidImageFile;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,13 @@ import java.io.IOException;
 public class ImageController {
     private final ImageS3Uploader imageS3Uploader;
 
+    @Operation(
+            summary = "이미지 업로드",
+            description = """
+                    이미지를 업로드하고 해당 이미지에 대한 id를 받는다.
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> uploadImage(
             @ValidImageFile MultipartFile image

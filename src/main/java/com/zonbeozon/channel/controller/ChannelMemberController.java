@@ -107,14 +107,14 @@ public class ChannelMemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema())),
     })
-    @PatchMapping("/{targetMemberId}/role")
+    @PatchMapping("/{memberId}/role")
     public ResponseEntity<Void> modifyRole(
             @PathVariable Long channelId,
-            @PathVariable Long targetMemberId,
+            @PathVariable Long memberId,
             @RequestParam ChannelRole wantTo
     ) {
         if(!channelAuthorizationCheckService.isOwner(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        channelMemberRoleModifier.modifyChannelMemberRole(channelId, targetMemberId, wantTo);
+        channelMemberRoleModifier.modifyChannelMemberRole(channelId, memberId, wantTo);
         return ResponseEntity.ok().build();
     }
 
