@@ -35,10 +35,18 @@ public class ChannelMemberAssembler {
         List<ChannelMember> channelMembers = channelMemberRepository.findByIdIn(
                 channelMemberIds,
                 new ChannelMemberFetchOptions.Builder().withMember(true).build());
-        if(channelMembers.size() != channelMemberIds.size()) throw new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND);
         Map<ChannelMemberId, ChannelMemberResponse> channelMemberResponseMap = new HashMap<>();
         channelMembers.forEach(channelMember -> channelMemberResponseMap.put(channelMember.getId(), ChannelMemberResponse.from(channelMember)));
         return channelMemberResponseMap;
+    }
+
+    public Map<ChannelMemberId, ChannelMemberResponse> getChannelMemberResponse(
+            Collection<ChannelMemberId> channelMemberIds,
+            boolean validateAllExist
+    ) {
+        Map<ChannelMemberId, ChannelMemberResponse> response = getChannelMemberResponse(channelMemberIds);
+        if(validateAllExist && response.size() != channelMemberIds.size()) throw new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND);
+        return response;
     }
 
     public ChannelMemberResponse getChannelMemberResponse(ChannelMemberId channelMemberId) {

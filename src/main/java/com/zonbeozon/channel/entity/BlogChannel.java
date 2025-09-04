@@ -23,15 +23,8 @@ public class BlogChannel extends Channel {
         super(title, description, setting, creatorType);
     }
 
-    //비정규화 필드
-    Long latestPostId;
-
     @Override
     public ChannelType getChannelType() {
         return ChannelType.BLOG;
-    }
-
-    public void setLatestPostId(Long latestPostId) {
-        this.latestPostId = latestPostId;
     }
 }

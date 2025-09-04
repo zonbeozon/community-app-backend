@@ -4,13 +4,9 @@ import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +16,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "channel_type")
+@Table(indexes = @Index(name = "idx_channel_latest_event", columnList = "latestEventOccurred DESC"))
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 32;
@@ -49,6 +46,9 @@ public abstract class Channel extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ChannelCreatorType creatorType;
 
+    @Setter
+    private LocalDateTime latestEventOccurred;
+
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
 
@@ -77,5 +77,4 @@ public abstract class Channel extends BaseTimeEntity {
     public void updateDescription(String description) {
         this.description = description;
     }
-
 }

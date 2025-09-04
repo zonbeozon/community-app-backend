@@ -2,12 +2,14 @@ package com.zonbeozon.channel.dto;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelProfile;
+import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.image.entity.ImageResponse;
 
 public record ChannelInfoResponse (
         Long channelId,
         ChannelType channelType,
+        ChannelCreatorType creatorType,
         String title,
         String description,
         ImageResponse profile,
@@ -23,6 +25,7 @@ public record ChannelInfoResponse (
         return new ChannelInfoResponse(
                 channel.getId(),
                 channel.getChannelType(),
+                channel.getCreatorType(),
                 channel.getTitle(),
                 channel.getDescription(),
                 imageResponse,

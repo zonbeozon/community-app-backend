@@ -2,12 +2,10 @@ package com.zonbeozon.channel.controller;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.dto.*;
+import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
-import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
-import com.zonbeozon.channel.service.assembler.BlogChannelAssembler;
-import com.zonbeozon.channel.service.ChannelCreator;
-import com.zonbeozon.channel.service.ChannelRemover;
-import com.zonbeozon.channel.service.ChannelUpdater;
+import com.zonbeozon.channel.service.*;
+import com.zonbeozon.channel.service.assembler.ChannelAssembler;
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
@@ -27,8 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel")
@@ -36,11 +32,12 @@ import java.util.List;
 public class ChannelController {
     private final ChannelCreator channelCreator;
     private final ChannelUpdater channelUpdater;
-    private final BlogChannelAssembler blogChannelAssembler;
+    private final ChannelAssembler channelAssembler;
     private final ChannelRemover channelRemover;
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final AuthenticationService authenticationService;
+    private final ChannelMemberFinder channelMemberFinder;
 
     @Operation(
             summary = "채널 추가",
@@ -150,25 +147,50 @@ public class ChannelController {
 
 
     @Operation(
-            summary = "사용자가 속한 COMMUNITY - BLOG 타입의 모든 채널 정보 가져오기",
+            summary = "사용자가 속한 모든 채널 정보 가져오기",
             description = """
                     사용자가 속한 모든 채널 정보 가져온다.
                     
-                    가장 최근 post가 작성된 시간 기준 DESC순이며 
-                    post가 없는 채널은 순서가 보장되지 않는다. 
+                    Blog 타입일 경우에는 가장 최근 post 생성일 기준 DESC순, Chat타입일 경우에는 가장 최근 chat 생성일 기준 DESC순이다.
+                    
+                    post, Chat이 없는 채널은 마지막에 배치되며 그들간의 순서가 보장되지 않는다.
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = JoinedBlogChannelInfoListResponse.class))
+                    schema = @Schema(implementation = ChannelInfosWithRequesterResponse.class))
             ),
     })
-    @GetMapping("/community-blog/joined")
-    public ResponseEntity<JoinedBlogChannelInfoListResponse> getJoinedInfoChannels() {
+    @GetMapping("/joined")
+    public ResponseEntity<ChannelInfosWithRequesterResponse> getJoinedChannels(
+    ) {
         Long memberId = authenticationService.getCurrentMember().getId();
-        return ResponseEntity.ok(blogChannelAssembler.getJoinedCommunityBlogChannelInfo(memberId));
+        return ResponseEntity.ok(channelAssembler.getJoinedChannelInfosWithRequester(memberId));
+    }
+
+    @Operation(
+            summary = "사용자가 속한 단일 채널 정보 가져오기",
+            description = """
+                    사용자가 속한 단일 채널 정보 가져온다.
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChannelInfoWithRequesterResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "주어진 id에 해당하는 채널에 참가하지 않은 상태일때")
+    })
+    @GetMapping("/joined/{channelId}")
+    public ResponseEntity<ChannelInfoWithRequesterResponse> getJoinedChannel(
+            @RequestParam Long channelId
+    ) {
+        Long memberId = authenticationService.getCurrentMember().getId();
+        if(channelMemberFinder.existsById(new ChannelMemberId(channelId, memberId))) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        return ResponseEntity.ok(channelAssembler.getJoinedChannelInfoWithRequester(memberId, channelId));
     }
 
 //    @Operation(

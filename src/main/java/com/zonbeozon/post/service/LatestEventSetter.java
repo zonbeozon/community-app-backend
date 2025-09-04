@@ -15,14 +15,16 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class LatestPostSetter {
+public class LatestEventSetter {
     private final BlogChannelFinder blogChannelFinder;
     private final PostRepository postRepository;
+    private final PostFinder postFinder;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
         BlogChannel channel = blogChannelFinder.findByIdElseThrow(event.channelId());
-        channel.setLatestPostId(event.postId());
+        Post post = postFinder.findByIdElseThrow(event.postId());
+        channel.setLatestEventOccurred(post.getCreatedAt());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
@@ -31,9 +33,9 @@ public class LatestPostSetter {
         Optional<Post> optPost = postRepository.findTopByChannelOrderByIdDesc(channel);
         if(optPost.isPresent()) {
             Post post = optPost.get();
-            channel.setLatestPostId(post.getId());
+            channel.setLatestEventOccurred(post.getCreatedAt());
             return;
         }
-        channel.setLatestPostId(null);
+        channel.setLatestEventOccurred(null);
     }
 }

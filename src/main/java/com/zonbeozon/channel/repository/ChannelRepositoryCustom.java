@@ -10,4 +10,5 @@ public interface ChannelRepositoryCustom {
     Optional<Channel> findByIdWithProfile(Long channelId);
     Optional<ChannelWithMemberCount> findByIdWithProfileAndMemberCount(Long channelId);
     List<ChannelWithMemberCount> findByIdInWithProfileAndMemberCount(List<Long> channelIds);
+    List<Channel> findAllByMemberIdOrderByLatestEventOccurred(Long memberId);
 }

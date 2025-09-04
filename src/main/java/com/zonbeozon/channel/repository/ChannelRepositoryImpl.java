@@ -1,23 +1,19 @@
 package com.zonbeozon.channel.repository;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.dto.ChannelWithMemberCount;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.enums.ChannelContentVisibility;
-import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
 import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 import static com.zonbeozon.channel.entity.QChannelProfile.channelProfile;
@@ -89,6 +85,15 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
     @Override
     public List<ChannelWithMemberCount> findByIdInWithProfileAndMemberCount(List<Long> channelIds) {
         return buildChannelWithMemberCountQuery(channel.id.in(channelIds)).fetch();
+    }
+
+    @Override
+    public List<Channel> findAllByMemberIdOrderByLatestEventOccurred(Long memberId) {
+        return queryFactory.selectFrom(channel)
+                .join(channelMember).on(channelMember.member.id.eq(memberId))
+                .where(channelMember.channel.eq(channel))
+                .orderBy(channel.latestEventOccurred.desc().nullsLast())
+                .fetch();
     }
 
     private JPAQuery<ChannelWithMemberCount> buildChannelWithMemberCountQuery(Predicate whereClause) {
