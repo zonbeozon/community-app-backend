@@ -2,6 +2,7 @@ package com.zonbeozon.image.api.web;
 
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.image.api.ImageUploadApi;
+import com.zonbeozon.image.dto.ImageDto;
 import com.zonbeozon.image.validation.ValidImageFile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -32,10 +33,10 @@ public class ImageController {
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> uploadImage(
+    public ResponseEntity<ImageDto> uploadImage(
             @ValidImageFile MultipartFile image
     ) throws IOException {
-        Long imageId = imageUploadApi.uploadImage(image.getInputStream(), image.getSize(), image.getContentType());
-        return ResponseEntity.status(HttpStatus.CREATED).body(imageId);
+        ImageDto imageDto = imageUploadApi.uploadImage(image.getInputStream(), image.getSize(), image.getContentType());
+        return ResponseEntity.status(HttpStatus.CREATED).body(imageDto);
     }
 }
