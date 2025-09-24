@@ -8,6 +8,7 @@ import com.zonbeozon.channel.repository.expression.ChannelConstructorExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +66,15 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
         queryFactory
                 .update(channel)
                 .set(channel.memberCount, channel.memberCount.add(delta))
+                .where(channel.id.eq(channelId))
+                .execute();
+    }
+
+    @Override
+    public void updateLatestEventTime(Long channelId, LocalDateTime eventTime) {
+        queryFactory
+                .update(channel)
+                .set(channel.latestEventOccurred, eventTime)
                 .where(channel.id.eq(channelId))
                 .execute();
     }

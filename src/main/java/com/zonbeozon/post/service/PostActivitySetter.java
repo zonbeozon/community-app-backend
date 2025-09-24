@@ -1,7 +1,6 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.service.finder.BlogChannelFinder;
+import com.zonbeozon.channel.service.ChannelLatestEventSetter;
 import com.zonbeozon.post.dto.PostCreatedEvent;
 import com.zonbeozon.post.dto.PostDeletedEvent;
 import com.zonbeozon.post.entity.Post;
@@ -15,27 +14,24 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class LatestEventSetter {
-    private final BlogChannelFinder blogChannelFinder;
+public class PostActivitySetter {
     private final PostRepository postRepository;
-    private final PostFinder postFinder;
+    private final ChannelLatestEventSetter channelLatestEventSetter;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        BlogChannel channel = blogChannelFinder.findByIdElseThrow(event.channelId());
-        Post post = postFinder.findByIdElseThrow(event.postId());
-        channel.setLatestEventOccurred(post.getCreatedAt());
+        channelLatestEventSetter.updateAsNow(event.channelId());
+
     }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostDeleted(PostDeletedEvent event) {
-        BlogChannel channel = blogChannelFinder.findByIdElseThrow(event.channelId());
-        Optional<Post> optPost = postRepository.findTopByChannelOrderByIdDesc(channel);
+        Optional<Post> optPost = postRepository.findTopByChannelIdOrderByIdDesc(event.channelId());
         if(optPost.isPresent()) {
             Post post = optPost.get();
-            channel.setLatestEventOccurred(post.getCreatedAt());
+            channelLatestEventSetter.update(event.channelId(), post.getCreatedAt());
             return;
         }
-        channel.setLatestEventOccurred(null);
+        channelLatestEventSetter.updateAsNull(event.channelId());
     }
 }

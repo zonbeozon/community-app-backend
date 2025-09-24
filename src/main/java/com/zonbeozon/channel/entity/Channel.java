@@ -5,6 +5,7 @@ import com.zonbeozon.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -47,11 +48,9 @@ public abstract class Channel extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ChannelCreatorType creatorType;
 
-    //비정규화 필드
-    @Setter
-    private LocalDateTime latestEventOccurred;
-    @Setter
-    private Long memberCount;
+    private LocalDateTime latestEventOccurred = null;
+
+    private Long memberCount = 0L;
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
