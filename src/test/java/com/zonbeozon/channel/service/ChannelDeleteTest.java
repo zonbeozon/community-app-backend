@@ -2,15 +2,15 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.dto.ChannelDeletedEvent;
-import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.entity.*;
 
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelProfile;
+import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.repository.BannedChannelMemberRepository;
+import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelProfileRepository;
 import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.image.TestImageBuilder;
+import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
@@ -32,6 +32,8 @@ public class ChannelDeleteTest extends AbstractChannelIntegrationTest {
     private ChannelRemover channelRemover;
     @Autowired
     private ChannelRepository channelRepository;
+    @Autowired
+    private ChannelMemberRepository channelMemberRepository;
     @Autowired
     private EntityManager entityManager;
 
@@ -70,6 +72,10 @@ public class ChannelDeleteTest extends AbstractChannelIntegrationTest {
         private PostRepository postRepository;
         @Autowired
         private ChannelProfileRepository channelProfileRepository;
+        @Autowired
+        private ChannelMemberBanService channelMemberBanService;
+        @Autowired
+        private BannedChannelMemberRepository bannedChannelMemberRepository;
 
         @Test
         @DisplayName("만일 BlogChannel이라면 채널 내 포스트가 삭제되어야 한다.")
@@ -86,11 +92,19 @@ public class ChannelDeleteTest extends AbstractChannelIntegrationTest {
         @DisplayName("채널 프로필이 존재한다면 삭제 되어야 한다.")
         void DeleteChannelProfileIfExists() {
             testBlogChannelService.changeRole(channelMember, ChannelRole.CHANNEL_OWNER);
-            Image image = new TestImageBuilder(member,"dummy").persist(entityManager);
+            Image image = new TestMockImageBuilder(member,"dummy").persist(entityManager);
             testBlogChannelService.setChannelProfile(channel, image);
             ChannelProfile profile = channel.getProfile();
             channelRemover.removeChannel(channel.getId());
             Assertions.assertThat(channelProfileRepository.findById(profile.getId())).isEmpty();
+        }
+
+        @Test
+        @DisplayName("삭제될때 벤된 유저도 삭제되어야 한다.")
+        void removeChannelAlsoDeletesBannedUsers() {
+            channelMemberBanService.ban(channel.getId(), member.getId(), null);
+            channelRemover.removeChannel(channel.getId());
+            Assertions.assertThat(bannedChannelMemberRepository.findByChannelIdAndMemberId(channel.getId(), member.getId())).isEmpty();
         }
     }
 }

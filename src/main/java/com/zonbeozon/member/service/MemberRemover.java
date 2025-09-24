@@ -17,8 +17,7 @@ public class MemberRemover {
     /**
      * todo: 맴버를 필드로 들고 있는 엔터티에 대한 처리 필요
      */
-    public void deleteMember() {
-        Member member = authenticationService.getCurrentMember();
-        memberRepository.delete(member);
+    public void deleteMember(Long memberId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

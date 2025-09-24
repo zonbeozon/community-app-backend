@@ -29,6 +29,11 @@ public class PostFinder implements ContentEntityFinder {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
+    public Post findByIdWithImagesElseThrow(Long postId) {
+        return postRepository.findByIdWithImages(postId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
+    }
+
     public List<Post> findByIdIn(Collection<Long> postIds) {
         List<Post> posts = postRepository.findAllById(postIds);
         if(posts.size() != postIds.size()) throw new NotFoundException(ErrorCode.POST_NOT_FOUND);

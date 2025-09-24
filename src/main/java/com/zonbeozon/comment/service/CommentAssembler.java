@@ -1,16 +1,13 @@
 package com.zonbeozon.comment.service;
 
-import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelMemberId;
+import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
-import com.zonbeozon.channel.service.ChannelMemberFinder;
+import com.zonbeozon.comment.dto.CommentWithAuthorResponse;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
-import com.zonbeozon.comment.dto.CommentResponse;
-import com.zonbeozon.comment.dto.SimplifiedCommentResponse;
-import com.zonbeozon.comment.entity.Comment;
-import com.zonbeozon.comment.repository.CommentFetchOptions;
+import com.zonbeozon.comment.dto.CommentDto;
 import com.zonbeozon.comment.repository.CommentRepository;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.service.PostFinder;
@@ -26,29 +23,25 @@ import java.util.List;
 public class CommentAssembler {
     private final CommentRepository commentRepository;
     private final PostFinder postFinder;
-    private final CommentFinder commentFinder;
     private final ChannelMemberAssembler channelMemberAssembler;
-    private final ChannelMemberFinder channelMemberFinder;
 
     public CommentsWithAuthorResponse getCommentResponseByPostId(Long postId) {
         Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build());
-        List<Comment> comments = commentRepository.findCommentsByPostIdOrderByCreatedAtDesc(postId);
-        List<SimplifiedCommentResponse> commentResponse = comments.stream()
-                .map(SimplifiedCommentResponse::from)
+        List<CommentDto> comments = commentRepository.findCommentDtoByPostIdWOrderByCreatedAtDesc(postId);
+        List<Long> authorIds = comments.stream()
+                .map(CommentDto::authorId)
+                .distinct()
                 .toList();
-        List<ChannelMemberResponse> authorResponse = channelMemberAssembler.getChannelMemberResponse(
-                comments.stream()
-                        .map(Comment::getAuthor)
-                        .distinct()
-                        .map(author-> ChannelMemberId.from(post.getChannel(), author))
-                        .toList()
-        ).values().stream().toList();
-        return new CommentsWithAuthorResponse(authorResponse, commentResponse, comments.size());
+        List<ChannelMemberDto> authorResponse = channelMemberAssembler.getChannelMembers(post.getChannel().getId(), authorIds);
+
+        return new CommentsWithAuthorResponse(
+                authorResponse,
+                comments,
+                comments.size());
     }
 
-    public CommentResponse getCommentResponse(Long commentId) {
-        Comment comment = commentFinder.findByIdElseThrow(commentId, new CommentFetchOptions.Builder().withAuthor(true).withPost(true).build());
-        ChannelMember author = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(comment.getPost().getChannel(), comment.getAuthor()));
-        return CommentResponse.from(comment, author);
+    public CommentWithAuthorResponse getCommentResponse(Long commentId) {
+        return commentRepository.findCommentWithAuthorByCommentId(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 }

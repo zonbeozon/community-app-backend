@@ -4,8 +4,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.global.CursorPage;
-import com.zonbeozon.global.CursorPageImpl;
+import com.zonbeozon.global.LongTypeCursorPage;
+import com.zonbeozon.global.LongTypeCursorPageImpl;
 import com.zonbeozon.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ import java.util.*;
 
 import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.post.entity.QPost.post;
-import static com.zonbeozon.post.entity.QPostImage.*;
+import static com.zonbeozon.post.entity.QPostImage.postImage;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,7 +42,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public CursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size, boolean inverted) {
+    public LongTypeCursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursorPostId, int size, boolean inverted) {
         OrderSpecifier<?> order = inverted ? post.id.asc() : post.id.desc();
         BooleanExpression cursorCondition = null;
         if (cursorPostId != null) {
@@ -85,17 +85,17 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         totalElement = totalElement == null ? 0L : totalElement;
 
-        return new CursorPageImpl<>(contentToReturn, nextCursorId, totalElement, inverted ,!hasNext, posts.size());
+        return new LongTypeCursorPageImpl<>(contentToReturn, nextCursorId, totalElement, inverted ,!hasNext, posts.size());
     }
 
     @Override
-    public List<Post> findByIdInWithImagesAndAuthorAndChannel(Collection<Long> postIds) {
-        return queryFactory.selectFrom(post)
-                .leftJoin(post.author).fetchJoin()
+    public Optional<Post> findByIdWithImages(Long postId) {
+        Post result = queryFactory.selectFrom(post)
                 .leftJoin(post.images, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
-                .leftJoin(post.channel).fetchJoin()
-                .where(post.id.in(postIds))
-                .fetch();
+                .where(post.id.eq(postId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }

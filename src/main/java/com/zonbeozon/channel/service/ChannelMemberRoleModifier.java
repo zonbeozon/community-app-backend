@@ -1,12 +1,9 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,18 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class ChannelMemberRoleModifier {
-    private final ChannelFinder channelFinder;
-    private final MemberFinder memberFinder;
     private final ChannelMemberFinder channelMemberFinder;
-    private final AuthenticationService authenticationService;
     private final List<ModifyChannelRoleHandler> modifyChannelRoleHandlers;
+    private final ChannelFinder channelFinder;
 
-    public void modifyChannelMemberRole(Long channelId, Long targetMemberId, ChannelRole newRole) {
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
-        Member requestMember = authenticationService.getCurrentMember();
-        ChannelMember requestChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, requestMember));
-        Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
-        ChannelMember targetChannelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember));
+    public void modifyChannelMemberRole(Long channelId, Long requesterId, Long targetMemberId, ChannelRole newRole) {
+        channelFinder.findByIdElseThrow(channelId);
+        ChannelMember requestChannelMember = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, requesterId);
+        ChannelMember targetChannelMember = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, targetMemberId);
         modifyChannelRoleHandlers.stream()
                 .filter(handler -> handler.isSupport(newRole))
                 .findAny()

@@ -12,12 +12,12 @@ public class ReactionResponse {
     private Long likeCount;
     private Long dislikeCount;
     private boolean likedByCurrentMember;
-    private boolean dislikeByCurrentMember;
+    private boolean dislikedByCurrentMember;
 
-    public ReactionResponse(Map<ReactionType, Long> reactionCounts, boolean likedByCurrentMember, boolean dislikeByCurrentMember) {
+    public ReactionResponse(Map<ReactionType, Long> reactionCounts, boolean likedByCurrentMember, boolean dislikedByCurrentMember) {
         this.likeCount = reactionCounts.get(ReactionType.LIKE);
         this.dislikeCount = reactionCounts.get(ReactionType.DISLIKE);
         this.likedByCurrentMember = likedByCurrentMember;
-        this.dislikeByCurrentMember = dislikeByCurrentMember;
+        this.dislikedByCurrentMember = dislikedByCurrentMember;
     }
 }

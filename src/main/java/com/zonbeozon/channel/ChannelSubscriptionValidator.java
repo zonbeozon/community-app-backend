@@ -1,14 +1,9 @@
 package com.zonbeozon.channel;
 
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMemberId;
-import com.zonbeozon.channel.service.ChannelFinder;
-import com.zonbeozon.channel.service.ChannelMemberFinder;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
-import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -26,7 +21,6 @@ public class ChannelSubscriptionValidator implements StompSubscriptionValidateHa
     private static final String CHANNEL_SUBSCRIPTION_PATTERN = "/topic/channel/{channelId}";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChannelFinder channelFinder;
-    private final MemberFinder memberFinder;
     private final ChannelMemberFinder channelMemberFinder;
 
     @Override
@@ -42,24 +36,10 @@ public class ChannelSubscriptionValidator implements StompSubscriptionValidateHa
         }
         Long memberId = Long.parseLong(principal.getName());
         Long channelId = extractChannelIdFromDestination(accessor.getDestination());
-
-        Channel foundChannel;
-        Member member;
-        try {
-            foundChannel = channelFinder.findByIdElseThrow(channelId);
-        } catch (NotFoundException e) {
+        if(!channelFinder.existsById(channelId))
             throw new SubscriptionException(SubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
-        }
-        try {
-            member = memberFinder.findByIdElseThrow(memberId);
-        } catch (NotFoundException e) {
-            throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
-        }
-        try {
-            channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(foundChannel, member));
-        } catch (NotFoundException e) {
+        if(!channelMemberFinder.existsByChannelIdAndMemberId(channelId, memberId))
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
-        }
     }
 
     private Long extractChannelIdFromDestination(String destination) {

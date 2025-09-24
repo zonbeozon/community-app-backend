@@ -17,11 +17,6 @@ public class ChatChannel extends Channel {
             ChannelSetting setting,
             ChannelCreatorType creatorType
     ) {
-        super(title, description, setting, creatorType);
-    }
-
-    @Override
-    public ChannelType getChannelType() {
-        return ChannelType.CHAT;
+        super(title, description, setting, creatorType, ChannelType.CHAT);
     }
 }

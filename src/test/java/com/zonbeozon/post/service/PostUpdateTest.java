@@ -1,0 +1,67 @@
+package com.zonbeozon.post.service;
+
+import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.channel.entity.BlogChannel;
+import com.zonbeozon.image.ImageRepository;
+import com.zonbeozon.image.TestMockImageBuilder;
+import com.zonbeozon.image.entity.Image;
+import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.post.dto.PostUpdateRequest;
+import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.entity.PostImage;
+import com.zonbeozon.post.repository.PostImageRepository;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+public class PostUpdateTest extends AbstractChannelIntegrationTest {
+    @Autowired
+    private PostUpdater postUpdater;
+    @Autowired
+    private ImageRepository imageRepository;
+    @Autowired
+    private PostImageRepository postImageRepository;
+
+    private Member member;
+    private BlogChannel blogChannel;
+    private Post post;
+    private List<Image> images;
+
+    @BeforeEach
+    void setUp() {
+        member = testMemberService.createAndSave();
+        blogChannel = testBlogChannelService.createAndSave();
+        testBlogChannelService.joinAsAdmin(blogChannel, member);
+        images = List.of(
+            new TestMockImageBuilder(member, "1").build(),
+            new TestMockImageBuilder(member, "2").build(),
+            new TestMockImageBuilder(member, "3").build()
+        );
+        imageRepository.saveAll(images);
+        post = testPostService.createAndSave("", images, blogChannel, member);
+    }
+
+    @Test
+    @DisplayName("이미지 업데이트 테스트")
+    void testUpdateImage() {
+        Image newImage = new TestMockImageBuilder(member, "4").build();
+        imageRepository.save(newImage);
+        List<Image> imagesToUpdate = List.of(
+                images.get(0),
+                images.get(1),
+                newImage
+        );
+        postUpdater.updateContent(post.getId(), new PostUpdateRequest("", imagesToUpdate.stream().map(Image::getId).toList()));
+
+        List<PostImage> postImages = postImageRepository.findAll();
+        Assertions.assertThat(postImages).hasSize(3);
+        List<Image> images = imageRepository.findAll();
+        Assertions.assertThat(images).hasSize(3)
+                .map(Image::getId)
+                .containsExactlyInAnyOrderElementsOf(imagesToUpdate.stream().map(Image::getId).toList());
+    }
+}

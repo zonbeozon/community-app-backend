@@ -6,7 +6,6 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.TestPostCreateRequestBuilder;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
 import com.zonbeozon.post.dto.PostCreatedEvent;
@@ -35,16 +34,19 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
     @BeforeEach
     void setup() {
         author = testMemberService.createAndSave();
-        testMemberService.setSecurityContext(author);
         blogChannel = testBlogChannelService.createAndSave();
-        request = new TestPostCreateRequestBuilder().build();
+        request = new PostCreateRequest("", List.of());
     }
 
     @Test
     @DisplayName("요청이 올바르다면 정상적으로 저장되어야 한다.")
     void savesPostWhenRequestIsValid() {
         testBlogChannelService.joinAsOwner(blogChannel, author);
-        Long id = postCreator.addPost(blogChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()));
+        Long id = postCreator.addPost(
+                author.getId(),
+                blogChannel.getId(),
+                new PostCreateCommand(request.content(), request.imageIds())
+        );
         Post post = postRepository.findById(id).get();
 
         assertThat(post.getContent()).isEqualTo(request.content());
@@ -57,7 +59,7 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
         Channel chatChannel = testChatChannelService.createAndSave("chat-channel-1");
         testChatChannelService.joinAsOwner(chatChannel, author);
         assertThatThrownBy(
-                () -> postCreator.addPost(chatChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()))
+                () -> postCreator.addPost(author.getId(), chatChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()))
         ).isInstanceOf(BadRequestException.class)
                 .satisfies(e -> {
                     BadRequestException badRequestException = (BadRequestException) e;
@@ -69,8 +71,11 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
     @DisplayName("이벤트를 발생시킨다.")
     void publishesEventWithCorrectValues() {
         testBlogChannelService.joinAsOwner(blogChannel, author);
-        Long id = postCreator.addPost(blogChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()));
-
+        Long id = postCreator.addPost(
+                author.getId(),
+                blogChannel.getId(),
+                new PostCreateCommand(request.content(), request.imageIds())
+        );
         List<PostCreatedEvent> events = applicationEvents.stream(PostCreatedEvent.class).toList();
         assertThat(events).hasSize(1);
         assertThat(events.get(0).postId()).isEqualTo(id);

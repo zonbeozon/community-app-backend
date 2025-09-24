@@ -7,6 +7,7 @@ import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelProfileRepository;
+import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
@@ -22,25 +23,31 @@ public class TestChannelService {
     @Autowired
     private ChannelMemberRepository channelMemberRepository;
     @Autowired
-    private ImageRepository imageRepository;
-    @Autowired
     private ChannelProfileRepository channelProfileRepository;
+    @Autowired
+    private ChannelRepository channelRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     public ChannelMember joinAsMember(Channel channel, Member member) {
-        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_MEMBER, ChannelMemberStatus.ACTIVE);
+        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_MEMBER);
         return channelMemberRepository.save(channelMember);
     }
 
     public ChannelMember joinAsAdmin(Channel channel, Member member) {
-        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_ADMIN, ChannelMemberStatus.ACTIVE);
+        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_ADMIN);
         return channelMemberRepository.save(channelMember);
+    }
+
+    public ChannelMember findByChannelAndMemberElseThrow(Channel channel, Member member) {
+        return channelMemberRepository.findByChannelIdAndMemberId(channel.getId(), member.getId()).orElseThrow();
     }
 
     /**
      * 호출시 주의: 채널 당 owner는 한명만 가능하다.
      */
     public ChannelMember joinAsOwner(Channel channel, Member member) {
-        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_OWNER, ChannelMemberStatus.ACTIVE);
+        ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_OWNER);
         return channelMemberRepository.save(channelMember);
     }
 
@@ -51,11 +58,13 @@ public class TestChannelService {
     public ChannelProfile setChannelProfile(Channel channel, Image image) {
         ChannelProfile channelProfile = new ChannelProfile(channel ,image);
         ChannelProfile profile = channelProfileRepository.save(channelProfile);
-        channel.updateChannelProfile(channelProfile);
+        channel.setProfile(channelProfile);
         return profile;
     }
 
-    public void setChannelMemberStatus(ChannelMember channelMember, ChannelMemberStatus channelMemberStatus) {
-        channelMember.updateStatus(channelMemberStatus);
+    public void clearAll() {
+        channelMemberRepository.deleteAll();
+        channelProfileRepository.deleteAll();
+        channelRepository.deleteAll();
     }
 }

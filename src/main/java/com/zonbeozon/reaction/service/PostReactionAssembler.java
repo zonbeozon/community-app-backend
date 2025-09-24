@@ -1,7 +1,7 @@
 package com.zonbeozon.reaction.service;
 
-import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.service.PostFinder;
 import com.zonbeozon.reaction.dto.ReactionResponse;
@@ -24,20 +24,19 @@ import java.util.stream.Collectors;
 public class PostReactionAssembler {
     private final PostReactionRepository postReactionRepository;
     private final PostFinder postFinder;
-    private final AuthenticationService authenticationService;
+    private final MemberFinder memberFinder;
 
-    public Map<Long, ReactionResponse> getReactionResponseByPostIdIn(Collection<Long> postIds) {
-        Member requester = authenticationService.getCurrentMember();
+    public Map<Long, ReactionResponse> getReactionResponseByPostIdIn(Long requesterId, Collection<Long> postIds) {
+        Member requester = memberFinder.findByIdElseThrow(requesterId);
         List<Post> posts = postFinder.findByIdIn(postIds);
         List<PostReaction> allReactions = postReactionRepository.findByPostIn(posts);
 
-        List<PostReaction> reactionsByRequester = postReactionRepository.findByPostInAndAuthor(posts, requester);
+        Map<Long, PostReaction> reactionByRequesterByPostId = postReactionRepository.findByPostInAndAuthor(posts, requester).stream()
+                    .collect(Collectors.toMap(reaction -> reaction.getPost().getId(), reaction -> reaction));
+
 
         Map<Long, List<PostReaction>> reactionsByPostId = allReactions.stream()
                 .collect(Collectors.groupingBy(reaction -> reaction.getPost().getId()));
-
-        Map<Long, PostReaction> reactionByRequesterByPostId = reactionsByRequester.stream()
-                .collect(Collectors.toMap(reaction -> reaction.getPost().getId(), reaction -> reaction));
 
         return posts.stream()
                 .collect(Collectors.toMap(Post::getId, post -> {
@@ -51,10 +50,11 @@ public class PostReactionAssembler {
                     for (ReactionType type : ReactionType.values()) {
                         reactionCounts.putIfAbsent(type, 0L);
                     }
-                    PostReaction requesterReaction = reactionByRequesterByPostId.get(post.getId());
 
                     boolean likedByCurrentUser = false;
                     boolean dislikedByCurrentUser = false;
+
+                    PostReaction requesterReaction = reactionByRequesterByPostId.get(post.getId());
 
                     if (requesterReaction != null) {
                         likedByCurrentUser = requesterReaction.getReactionType() == ReactionType.LIKE;
@@ -65,8 +65,8 @@ public class PostReactionAssembler {
                 }));
     }
 
-    public ReactionResponse getReactionResponseByPostId(Long postId) {
-        return getReactionResponseByPostIdIn(List.of(postId)).get(postId);
+    public ReactionResponse getReactionResponseByPostId(Long memberId, Long postId) {
+        return getReactionResponseByPostIdIn(memberId, List.of(postId)).get(postId);
     }
 
 }

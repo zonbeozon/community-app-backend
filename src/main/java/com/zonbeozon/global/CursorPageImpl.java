@@ -4,17 +4,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class CursorPageImpl<T> implements CursorPage<T> {
+public class CursorPageImpl<T, C> implements CursorPage<T, C> {
     private final List<T> content;
-    private final Long cursorId;
+    private final C cursor;
     private final Long totalElements;
     private final boolean isInverted;
     private final boolean isLast;
     private final int size;
 
-    public CursorPageImpl(List<T> content, Long cursorId, Long totalElements, boolean isInverted, boolean isLast, int size) {
+    public CursorPageImpl(List<T> content, C cursor, Long totalElements, boolean isInverted, boolean isLast, int size) {
         this.content = Collections.unmodifiableList(content);
-        this.cursorId = cursorId;
+        this.cursor = cursor;
         this.totalElements = totalElements;
         this.isInverted = isInverted;
         this.isLast = isLast;
@@ -27,8 +27,8 @@ public class CursorPageImpl<T> implements CursorPage<T> {
     }
 
     @Override
-    public Long getCursorId() {
-        return cursorId;
+    public C getCursor() {
+        return cursor;
     }
 
     @Override
@@ -50,14 +50,14 @@ public class CursorPageImpl<T> implements CursorPage<T> {
     }
 
     @Override
-    public <U> CursorPage<U> map(Function<T, U> converter) {
+    public <U> CursorPage<U, C> map(Function<T, U> converter) {
         List<U> convertedContent = this.content.stream()
                 .map(converter)
                 .toList();
 
         return new CursorPageImpl<>(
                 convertedContent,
-                this.cursorId,
+                this.cursor,
                 this.totalElements,
                 this.isInverted,
                 this.isLast,

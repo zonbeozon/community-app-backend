@@ -4,6 +4,7 @@ import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.MemberProfile;
 import com.zonbeozon.member.domain.ServerRole;
+import com.zonbeozon.member.respository.MemberProfileRepository;
 import com.zonbeozon.member.respository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,8 @@ public class TestMemberService {
     private MemberRepository memberRepository;
 
     private static final String DEFAULT_NAME = "test-user";
+    @Autowired
+    private MemberProfileRepository memberProfileRepository;
 
     public Member createAndSave(String name) {
         Member member = new Member(name, name + "@gmail.com", ServerRole.USER);
@@ -62,5 +65,10 @@ public class TestMemberService {
                 Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getKey()))
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void clearAll() {
+        memberProfileRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }

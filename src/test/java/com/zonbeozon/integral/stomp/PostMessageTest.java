@@ -1,152 +1,93 @@
 package com.zonbeozon.integral.stomp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import com.zonbeozon.auth.TestAuthenticationBuilder;
-import com.zonbeozon.auth.service.TokenService;
-import com.zonbeozon.channel.TestChannelBuilder;
-import com.zonbeozon.channel.TestChannelMemberBuilder;
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.enums.ChannelRole;
-import com.zonbeozon.channel.repository.ChannelMemberRepository;
-import com.zonbeozon.channel.repository.ChannelRepository;
-import com.zonbeozon.member.TestMemberBuilder;
+import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.respository.MemberRepository;
-import com.zonbeozon.post.dto.PostCreateCommand;
-import com.zonbeozon.post.dto.PostEventResponse;
+import com.zonbeozon.post.dto.*;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.service.PostCreator;
-import jakarta.persistence.EntityManager;
+import com.zonbeozon.post.service.PostStompSender;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.socket.WebSocketHttpHeaders;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.context.transaction.TestTransaction;
 
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+public class PostMessageTest extends AbstractChannelIntegrationTest {
+    @Autowired
+    private PostStompSender postStompSender;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PostMessageTest {
-    @LocalServerPort
-    private int port;
-    private WebSocketStompClient stompClient;
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-    private TransactionTemplate transactionTemplate;
-    private String connectionUrl;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private ChannelRepository channelRepository;
-    @Autowired
-    private ChannelMemberRepository channelMemberRepository;
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private EntityManager entityManager;
-    @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private PostCreator postCreator;
-    @Autowired
-    private ObjectMapper objectMapper;
-    private Channel channel;
-    private ChannelMember channelMember;
+    private BlogChannel channel;
     private Member member;
-    private String accessToken;
-    private StompSession stompSession;
-    private CompletableFuture<String> cfPayload = new CompletableFuture<>();
+    private Post post;
+
+    @MockitoSpyBean
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @BeforeEach
-    void setUp() throws ExecutionException, InterruptedException, TimeoutException {
-        transactionTemplate = new TransactionTemplate(transactionManager);
-        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(objectMapper);
-        stompClient.setMessageConverter(converter);
-        connectionUrl = "ws://localhost:" + port + "/ws";
-        joinChannel();
-        doConnect();
-        stompSession.subscribe("/topic/channel/" + channel.getId() + "/post", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return Object.class;
-            }
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                byte[] payloadBytes = (byte[]) payload;
-                String jsonString = new String(payloadBytes, StandardCharsets.UTF_8);
-                cfPayload.complete(jsonString);
-            }
-        });
+    void setUp() {
+        channel = testBlogChannelService.createAndSave();
+        member = testMemberService.createAndSave();
+        testBlogChannelService.joinAsMember(channel, member);
+        post = testPostService.createAndSave(channel, member);
+        //postStompSender가 requires_new를 사용하기 떄문에 정보조회를 위해서는 커밋 되어야함
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
     }
 
     @AfterEach
     void tearDown() {
-        clearAll();
+        testPostService.clearAll();
+        testBlogChannelService.clearAll();
+        testMemberService.clearAll();
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
     }
 
     @DisplayName("post생성시 post생성 메시지가 브로드케스트되어야 한다.")
     @Test
-    void postCreationBroadcastsPostCreationMessage() throws ExecutionException, InterruptedException, TimeoutException {
-        Long postId = postCreator.addPost(channel.getId(), new PostCreateCommand("content", List.of()));
-        String payload = cfPayload.get(2, TimeUnit.SECONDS);
-        Number actual = JsonPath.read(payload, "$.postId");
-        Assertions.assertThat(actual).isEqualTo((postId.intValue()));
+    void postCreationBroadcastsPostCreationMessage()  {
+        postStompSender.handlePostCreated(new PostCreatedEvent(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
+
+        Mockito.verify(simpMessagingTemplate)
+                .convertAndSend(
+                        Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
+                        responseCaptor.capture()
+                );
+        PostEventResponse capturedResponse = responseCaptor.getValue();
+        Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.CREATED);
     }
 
-    private void clearAll() {
-        transactionTemplate.execute(status -> {
-            channelMemberRepository.deleteAllInBatch();
-            postRepository.deleteAllInBatch();
-            memberRepository.deleteAllInBatch();
-            channelRepository.deleteAllInBatch();
-            return null;
-        });
+    @DisplayName("post삭제시 post삭제 메시지가 브로드케스트되어야 한다.")
+    @Test
+    void shouldBroadcastDeleteEventWhenPostIsDeleted()  {
+        postStompSender.handlePostDeleted(new PostDeletedEvent(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
+        Mockito.verify(simpMessagingTemplate)
+                .convertAndSend(
+                        Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
+                        responseCaptor.capture()
+                );
+        PostEventResponse capturedResponse = responseCaptor.getValue();
+        Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.DELETED);
     }
 
-    private void doConnect() throws ExecutionException, InterruptedException, TimeoutException {
-        StompHeaders headers = new StompHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
+    @DisplayName("post업데이트시 post업데이트 메시지가 브로드케스트되어야 한다.")
+    @Test
+    void shouldBroadcastUpdateEventWhenPostIsUpdated()  {
+        postStompSender.handlePostUpdated(new PostUpdatedEvent(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
 
-        CompletableFuture<StompSession> cfSession = stompClient.connectAsync(
-                connectionUrl,
-                new WebSocketHttpHeaders(),
-                headers,
-                new AbstractTestSessionHandler()
-        );
-        stompSession = cfSession.get(2, TimeUnit.SECONDS);
+        Mockito.verify(simpMessagingTemplate)
+                .convertAndSend(
+                        Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
+                        responseCaptor.capture()
+                );
+        PostEventResponse capturedResponse = responseCaptor.getValue();
+        Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.UPDATED);
     }
-
-    private void joinChannel() {
-        transactionTemplate.execute(status -> {
-            member = new TestMemberBuilder("choi", "choi@gmail.com").persistAndSetSecurityContext(entityManager);
-            accessToken = tokenService.generateAccessToken(new TestAuthenticationBuilder(member).build());
-            channel = new TestChannelBuilder().persist(entityManager);
-            channelMember = new TestChannelMemberBuilder(member, channel).withRole(ChannelRole.CHANNEL_OWNER).persist(entityManager);
-            return null;
-        });
-    }
-
 }

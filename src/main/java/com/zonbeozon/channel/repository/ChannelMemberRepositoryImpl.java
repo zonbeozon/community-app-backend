@@ -1,13 +1,21 @@
 package com.zonbeozon.channel.repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelMemberId;
-import com.zonbeozon.channel.enums.ChannelMemberStatus;
+import com.zonbeozon.channel.repository.expression.ChannelConstructorExpression;
+import com.zonbeozon.image.entity.QImage;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -15,79 +23,160 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
+import static com.zonbeozon.channel.entity.QChannelProfile.*;
 import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.member.domain.QMemberProfile.memberProfile;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
+
+    private static final QImage memberProfileImage = new QImage("memberProfileImage");
+    private static final QImage channelProfileImage = new QImage("channelProfileImage");
+
 
     @Override
-    public boolean isKicked(ChannelMemberId id) {
-        return queryFactory.selectOne()
-                .from(channelMember)
-                .where(channelMember.id.eq(id).and(channelMember.status.eq(ChannelMemberStatus.BANNED)))
-                .fetchFirst() != null;
-    }
+    public List<ChannelInfoWithRequesterDto> findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(Long memberId) {
+        JPAQuery<ChannelInfoWithRequesterDto> query = queryFactory.select(
+                ChannelConstructorExpression.channelInfoWithRequester(
+                        channel,
+                        channelProfile,
+                        channelProfileImage,
+                        member,
+                        channelMember,
+                        memberProfile,
+                        memberProfileImage
+                )).from(channelMember);
 
-    @Override
-    public List<ChannelMember> findByIdIn(Collection<ChannelMemberId> ids, ChannelMemberFetchOptions options) {
-        JPAQuery<ChannelMember> query = queryFactory.selectFrom(channelMember);
-        applyChannelMemberFetchOptions(query, options);
-        query.where(channelMember.id.in(ids));
+        query.join(channelMember.channel, channel)
+                .leftJoin(channel.profile, channelProfile)
+                .leftJoin(channelProfile.image, channelProfileImage)
+                .join(channelMember.member, member)
+                .leftJoin(member.profile, memberProfile)
+                .leftJoin(memberProfile.image, memberProfileImage);
+
+        query.where(channelMember.member.id.eq(memberId));
+        query.orderBy(channel.latestEventOccurred.desc());
         return query.fetch();
     }
 
     @Override
-    public Optional<ChannelMember> findById(ChannelMemberId id, ChannelMemberFetchOptions options) {
-        JPAQuery<ChannelMember> query = queryFactory.selectFrom(channelMember);
-        applyChannelMemberFetchOptions(query, options);
-        query.where(channelMember.id.eq(id));
+    public Optional<ChannelInfoWithRequesterDto> findChannelInfoWithRequesterByChannelIdAndMemberId(Long channelId, Long memberId) {
+        JPAQuery<ChannelInfoWithRequesterDto> query = queryFactory.select(
+                ChannelConstructorExpression.channelInfoWithRequester(
+                        channel,
+                        channelProfile,
+                        channelProfileImage,
+                        member,
+                        channelMember,
+                        memberProfile,
+                        memberProfileImage
+                )).from(channelMember);
+
+        query.join(channelMember.channel, channel)
+                .leftJoin(channel.profile, channelProfile)
+                .leftJoin(channelProfile.image, channelProfileImage)
+                .join(channelMember.member, member)
+                .leftJoin(member.profile, memberProfile)
+                .leftJoin(memberProfile.image, memberProfileImage);
+
+        query.where(channelMember.member.id.eq(memberId).and(channel.id.eq(channelId)));
+
         return Optional.ofNullable(query.fetchOne());
     }
 
     @Override
-    public Page<ChannelMember> findByChannelIdWithMemberOrderByCreatedAtDesc(Long channelId, ChannelMemberStatus status, Pageable pageable) {
-        List<ChannelMember> content = queryFactory
-                .selectFrom(channelMember)
-                .join(channelMember.member, member).fetchJoin()
-                .leftJoin(member.profile, memberProfile).fetchJoin()
-                .leftJoin(memberProfile.image).fetchJoin()
-                .where(
-                        channelMember.channel.id.eq(channelId),
-                        channelMember.status.eq(status)
-                )
-                .orderBy(channelMember.createdAt.desc())
+    public Page<ChannelMemberDto> findChannelMemberDtoByChannelId(Long channelId, Pageable pageable) {
+        JPAQuery<ChannelMemberDto> query = queryFactory
+                .select(ChannelConstructorExpression.channelMemberDto(
+                        member, channelMember, memberProfile, memberProfileImage
+                ))
+                .from(channelMember);
+
+        query.join(channelMember.member, member)
+                .leftJoin(member.profile, memberProfile)
+                .leftJoin(memberProfile.image, memberProfileImage);
+
+
+        query.where(channelMember.channel.id.eq(channelId));
+
+        query.orderBy(getOrderSpecifiers(pageable.getSort()))
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .limit(pageable.getPageSize());
 
         JPAQuery<Long> countQuery = queryFactory
                 .select(channelMember.count())
                 .from(channelMember)
-                .where(
-                        channelMember.channel.id.eq(channelId),
-                        channelMember.status.eq(ChannelMemberStatus.ACTIVE)
-                );
+                .where(channelMember.channel.id.eq(channelId));
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(query.fetch(), pageable, countQuery::fetchOne);
     }
 
-    private void applyChannelMemberFetchOptions(JPAQuery<ChannelMember> query, ChannelMemberFetchOptions options) {
-        if (options.isWithChannel()) {
-            query.join(channelMember.channel).fetchJoin();
+    @Override
+    public List<ChannelMemberDto> findChannelMemberDtoByChannelIdAndMemberIdIn(Long channelId, Collection<Long> memberIds) {
+        JPAQuery<ChannelMemberDto> query = queryFactory
+                .select(ChannelConstructorExpression.channelMemberDto(
+                        member, channelMember, memberProfile, memberProfileImage
+                ))
+                .from(channelMember);
+
+        query.join(channelMember.member, member)
+                .leftJoin(member.profile, memberProfile)
+                .leftJoin(memberProfile.image, memberProfileImage);
+
+        query.where(channelMember.channel.id.eq(channelId).and(member.id.in(memberIds)));
+
+        return query.fetch();
+    }
+
+    @Override
+    public void deleteAllByChannelId(Long channelId) {
+        queryFactory.delete(channelMember)
+                .where(channelMember.channel.id.eq(channelId))
+                .execute();
+
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    @Override
+    public Optional<ChannelMemberDto> findChannelMemberDtoByChannelIdAndMemberId(Long channelId, Long memberId) {
+        JPAQuery<ChannelMemberDto> query = queryFactory
+                .select(ChannelConstructorExpression.channelMemberDto(
+                        member, channelMember, memberProfile, memberProfileImage
+                ))
+                .from(channelMember);
+
+
+        query.join(channelMember.member, member)
+                .leftJoin(member.profile, memberProfile)
+                .leftJoin(memberProfile.image, memberProfileImage);
+
+        query.where(channelMember.channel.id.eq(channelId).and(member.id.eq(memberId)));
+
+        return Optional.ofNullable(query.fetchOne());
+    }
+
+
+    private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
+        if (sort.isEmpty()) {
+            return new OrderSpecifier[]{channelMember.createdAt.desc()};
         }
 
-        if (options.isWithMember()) {
-            query.join(channelMember.member).fetchJoin();
+        return sort.stream()
+                .map(order -> {
+                    Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+                    String property = order.getProperty();
 
-            if (options.isWithMemberProfile()) {
-                query.leftJoin(channelMember.member.profile, memberProfile).fetchJoin();
-                query.leftJoin(memberProfile.image).fetchJoin();
-            }
-        }
+                    PathBuilder<?> pathBuilder = new PathBuilder<>(ChannelMember.class, "channelMember");
+                    return new OrderSpecifier<>(direction, pathBuilder.getString(property));
+                })
+                .toArray(OrderSpecifier[]::new);
     }
 }

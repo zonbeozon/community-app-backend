@@ -1,12 +1,6 @@
 package com.zonbeozon.global;
 
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.service.ChannelFinder;
-import com.zonbeozon.channel.service.ChannelMemberFinder;
-import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;

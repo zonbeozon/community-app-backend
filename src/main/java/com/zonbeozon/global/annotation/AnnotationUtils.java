@@ -1,7 +1,5 @@
 package com.zonbeozon.global.annotation;
 
-
-import jakarta.validation.constraints.NotNull;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 
@@ -14,7 +12,7 @@ import java.util.Optional;
 public abstract class AnnotationUtils {
 
     /**
-     * 메서드 시그니처만 사용가능
+     * 메서드 실행 jointPoint에서만 사용가능
      * 메서드에 선언된 어노테이션, 메서드가 호출된 클래스의 어노테이션, 메서드가 호출된 클래스의 부모 클래스 어노테이션 까지 감지.
      * 모든 어노테이션의 한 단계 중첩 어노테이션까지 감지.
      */

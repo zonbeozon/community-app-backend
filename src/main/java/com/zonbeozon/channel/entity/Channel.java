@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "channel_type")
+@DiscriminatorColumn(name = "channel_category")
 @Table(indexes = @Index(name = "idx_channel_latest_event", columnList = "latestEventOccurred DESC"))
 public abstract class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
@@ -36,6 +36,7 @@ public abstract class Channel extends BaseTimeEntity {
     private String description;
 
     @OneToOne(mappedBy = "channel")
+    @Setter
     private ChannelProfile profile;
 
     @NotNull
@@ -46,32 +47,34 @@ public abstract class Channel extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ChannelCreatorType creatorType;
 
+    //비정규화 필드
     @Setter
     private LocalDateTime latestEventOccurred;
+    @Setter
+    private Long memberCount;
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
+
+    @NotNull
+    private ChannelType channelType;
 
     protected Channel(
             String title,
             String description,
             ChannelSetting setting,
-            ChannelCreatorType creatorType
+            ChannelCreatorType creatorType,
+            ChannelType channelType
     ) {
         this.title = title;
         this.description = description;
         this.setting = setting;
         this.creatorType = creatorType;
+        this.channelType = channelType;
     }
-
-    public abstract ChannelType getChannelType();
 
     public void updateTitle(String title) {
         this.title = title;
-    }
-
-    public void updateChannelProfile(ChannelProfile profile) {
-        this.profile = profile;
     }
 
     public void updateDescription(String description) {

@@ -8,7 +8,7 @@ services:
       - "9090:9090"
       - "9191:9191"
     environment:
-      S3MOCK_INITIAL_BUCKETS: "mock-bucket"
+      S3MOCK_INITIAL_BUCKETS: mock-image-bucket
     networks:
       - app-network
 
@@ -20,7 +20,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: local,cache
+      SPRING_PROFILES_ACTIVE: local,cache,mocks3
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/zonbeozon
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234

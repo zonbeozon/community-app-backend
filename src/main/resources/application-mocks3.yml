@@ -1,0 +1,16 @@
+mock:
+  aws:
+    s3:
+      image:
+        bucket: mock-image-bucket
+        region: ap-northeast-2
+        host:
+          docker: ${DOCKER_S3MOCK_URL}
+          external: ${EXTERNAL_S3MOCK_URL}
+        credentials:
+          access-key: test
+          secret-key: test
+
+
+
+

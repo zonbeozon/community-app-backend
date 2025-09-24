@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.service.BlogChannelFinder;
+import com.zonbeozon.channel.service.finder.BlogChannelFinder;
 import com.zonbeozon.post.dto.PostCreatedEvent;
 import com.zonbeozon.post.dto.PostDeletedEvent;
 import com.zonbeozon.post.entity.Post;

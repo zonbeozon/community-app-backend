@@ -1,16 +1,17 @@
 package com.zonbeozon.channel.service;
 
+import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateCommand;
-import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.image.TestImageBuilder;
+import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
-import com.zonbeozon.member.TestMemberBuilder;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -18,14 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@Transactional
-public class ChannelCreateTest {
+public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     @Autowired
     private ChannelCreator channelCreator;
     @Autowired
@@ -39,15 +36,14 @@ public class ChannelCreateTest {
 
     @BeforeEach
     void setup() {
-        member = new TestMemberBuilder("yunghi", "yunghi@gmail.com").persistAndSetSecurityContext(entityManager);
-
+        member = testMemberService.createAndSave();
     }
 
     @Test
     @DisplayName("command로 부터 정상적으로 채널이 저장되어야 한다.")
     void createsChannelSuccessfullyFromCommand() {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
-        Long id = channelCreator.addChannel(command);
+        Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
         assertChannelMetadataEquals(channel, command);
     }
@@ -56,9 +52,9 @@ public class ChannelCreateTest {
     @DisplayName("채널이 생성될때 요청자는 Owner로 등록된다.")
     void registerRequesterAsOwnerWhenChannelIsCreated() {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
-        Long id = channelCreator.addChannel(command);
+        Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
-        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member));
+        ChannelMember channelMember = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channel.getId(), member.getId());
         assertThat(channelMember.getMember()).isEqualTo(member);
         assertThat(channelMember.isOwner()).isTrue();
     }
@@ -68,10 +64,10 @@ public class ChannelCreateTest {
     void throwsExceptionWhenCreatingChannelWithDuplicateTitle() {
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
         //first time create
-        channelCreator.addChannel(command);
+        channelCreator.addChannel(member.getId(), command);
 
         //second time create with same title
-        assertThatThrownBy(()-> channelCreator.addChannel(command))
+        assertThatThrownBy(()-> channelCreator.addChannel(member.getId(), command))
                 .isInstanceOf(ConflictException.class)
                 .satisfies(e -> {
                     ConflictException exception = (ConflictException) e;
@@ -82,9 +78,9 @@ public class ChannelCreateTest {
     @Test
     @DisplayName("이미지 id가 포함되어 있다면 채널 프로필로 등록한다.")
     void RegisterProfileWhenChannelIsCreatedWithImageId() {
-        Image image = new TestImageBuilder(member, "1234").persist(entityManager);
+        Image image = new TestMockImageBuilder(member, "1234").persist(entityManager);
         ChannelCreateCommand command = new TestChannelCreateRequestBuilder().setImageId(image.getId()).build().toCommand(ChannelCreatorType.COMMUNITY);
-        Long id = channelCreator.addChannel(command);
+        Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
 
         Assertions.assertThat(channel.getProfile()).isNotNull();

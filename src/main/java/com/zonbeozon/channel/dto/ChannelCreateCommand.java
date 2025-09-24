@@ -5,7 +5,7 @@ import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.channel.enums.ChannelType;
 
-public record ChannelCreateCommand(
+public record ChannelCreateCommand (
         ChannelType type,
         String title,
         String description,

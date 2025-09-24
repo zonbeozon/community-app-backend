@@ -1,22 +1,22 @@
 package com.zonbeozon.post.dto;
 
-import com.zonbeozon.channel.dto.ChannelMemberResponse;
-import com.zonbeozon.global.CursorPage;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.channel.dto.ChannelMemberDto;
+import com.zonbeozon.global.LongTypeCursorPage;
 
 import java.util.List;
 
 public record CursorBasedPostsResponse(
-        List<ChannelMemberResponse> authors,
+        List<ChannelMemberDto> authors,
         List<SimplifiedPostResponse> posts,
         int size,
-        Long cursorId,
+        Long cursor,
         long totalElements,
-        boolean isLast
+        boolean isLast,
+        boolean isInverted
 ) {
     public static CursorBasedPostsResponse from(
-            List<ChannelMemberResponse> authors,
-            CursorPage<PostWithStats> posts
+            List<ChannelMemberDto> authors,
+            LongTypeCursorPage<PostWithStats> posts
     ) {
 
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
@@ -30,9 +30,10 @@ public record CursorBasedPostsResponse(
                 authors,
                 simplifiedPosts,
                 posts.getSize(),
-                posts.getCursorId(),
+                posts.getCursor(),
                 posts.getTotalElements(),
-                posts.isLast()
+                posts.isLast(),
+                posts.isInverted()
         );
     }
 }

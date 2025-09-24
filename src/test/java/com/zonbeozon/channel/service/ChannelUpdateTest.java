@@ -7,7 +7,7 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelProfile;
 import com.zonbeozon.channel.repository.ChannelProfileRepository;
 import com.zonbeozon.global.exception.ConflictException;
-import com.zonbeozon.image.TestImageBuilder;
+import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import jakarta.persistence.EntityManager;
@@ -51,7 +51,7 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("채널 프로필 이미지 id가 기존에 없었다면 프로필 이미지를 추가한다.")
     void addProfileImageWhenChannelHasNoExistingProfileImage() {
-        Image image = new TestImageBuilder(member, "dummy").persist(entityManager);
+        Image image = new TestMockImageBuilder(member, "dummy").persist(entityManager);
         testBlogChannelService.setChannelProfile(channel, image);
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(image.getId()).build();
@@ -64,10 +64,10 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("채널 프로필 이미지 id가 기존에 있었지만 변경되었다면 프로필 이미지를 변경한다.")
     void updateProfileImageWhenChannelHasExistingProfileImage() {
-        Image existImage = new TestImageBuilder(member, "exist").persist(entityManager);
+        Image existImage = new TestMockImageBuilder(member, "exist").persist(entityManager);
         testBlogChannelService.setChannelProfile(channel, existImage);
 
-        Image newImage = new TestImageBuilder(member, "new").persist(entityManager);
+        Image newImage = new TestMockImageBuilder(member, "new").persist(entityManager);
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(newImage.getId()).build();
         channelUpdater.updateChannel(channel.getId(), request);
@@ -79,7 +79,7 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("채널 이미지 id가 null로 되어있다면 기존 프로필 이미지를 삭제하고 프로필 이미지를 null로 변경한다.")
     void d() {
-        Image existImage = new TestImageBuilder(member, "exist").persist(entityManager);
+        Image existImage = new TestMockImageBuilder(member, "exist").persist(entityManager);
         ChannelProfile profile = testBlogChannelService.setChannelProfile(channel, existImage);
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(null).build();

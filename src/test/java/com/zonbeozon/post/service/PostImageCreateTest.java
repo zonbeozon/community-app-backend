@@ -1,16 +1,11 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.channel.TestChannelBuilder;
-import com.zonbeozon.channel.TestChannelMemberBuilder;
+import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.channel.enums.ChannelType;
-import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.image.TestImageBuilder;
-import com.zonbeozon.member.TestMemberBuilder;
+import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.TestPostBuilder;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.entity.PostImage;
 import com.zonbeozon.post.repository.PostImageRepository;
@@ -20,14 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@SpringBootTest
-@Transactional
-public class PostImageCreateTest {
+public class PostImageCreateTest extends AbstractChannelIntegrationTest {
     @Autowired
     private PostImageService postImageService;
     @Autowired
@@ -41,23 +32,22 @@ public class PostImageCreateTest {
 
     @BeforeEach
     void setup() {
-        blogChannel = (BlogChannel) new TestChannelBuilder().withType(ChannelType.BLOG).persist(entityManager);
-        member = new TestMemberBuilder("choi", "choi@gmail.com").persistAndSetSecurityContext(entityManager);
-        new TestChannelMemberBuilder(member, blogChannel).persist(entityManager);
-        post = new TestPostBuilder(blogChannel, member).persist(entityManager);
-
+        blogChannel = testBlogChannelService.createAndSave();
+        member = testMemberService.createAndSave();
+        testBlogChannelService.joinAsAdmin(blogChannel, member);
+        post = testPostService.createAndSave(blogChannel, member);
     }
 
     @DisplayName("이미지가 5개가 넘으면 예외가 발생한다.")
     @Test
     void exceedingMaxImageLimitShouldThrowException() {
         List<Long> imageIds = List.of(
-                new TestImageBuilder(member, "1").persist(entityManager).getId(),
-                new TestImageBuilder(member, "2").persist(entityManager).getId(),
-                new TestImageBuilder(member, "3").persist(entityManager).getId(),
-                new TestImageBuilder(member, "4").persist(entityManager).getId(),
-                new TestImageBuilder(member, "5").persist(entityManager).getId(),
-                new TestImageBuilder(member, "6").persist(entityManager).getId()
+                new TestMockImageBuilder(member, "1").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "2").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "3").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "4").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "5").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "6").persist(entityManager).getId()
         );
 
         Assertions.assertThatThrownBy(() -> postImageService.updatePostImages(post.getId(), imageIds))
@@ -72,13 +62,13 @@ public class PostImageCreateTest {
     @Test
     void addPostImagesAndSetSequentialDisplayOrder() {
         List<Long> imageIds = List.of(
-                new TestImageBuilder(member, "1").persist(entityManager).getId(),
-                new TestImageBuilder(member, "2").persist(entityManager).getId()
+                new TestMockImageBuilder(member, "1").persist(entityManager).getId(),
+                new TestMockImageBuilder(member, "2").persist(entityManager).getId()
         );
 
         postImageService.updatePostImages(post.getId(), imageIds);
 
-        List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+        List<PostImage> postImages = postImageRepository.findAllByPostIdWithImage(post.getId());
         Assertions.assertThat(postImages).hasSize(2);
         postImages.forEach(postImage -> {
             Assertions.assertThat(postImage.getPost()).isEqualTo(post);

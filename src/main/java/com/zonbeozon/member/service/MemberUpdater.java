@@ -7,7 +7,7 @@ import com.zonbeozon.image.service.ImageDeleter;
 import com.zonbeozon.image.service.ImageFinder;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.MemberProfile;
-import com.zonbeozon.member.dto.MemberResponse;
+import com.zonbeozon.member.dto.MemberDto;
 import com.zonbeozon.member.respository.MemberProfileRepository;
 import com.zonbeozon.member.respository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,30 +25,24 @@ public class MemberUpdater {
     private final ImageFinder imageFinder;
     private final ImageDeleter imageDeleter;
 
-    public MemberResponse updateUsername(Long memberId, String newUsername) {
+    public void updateUsername(Long memberId, String newUsername) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
         if(isExistUsername(newUsername))
             throw new ConflictException(ErrorCode.DUPLICATE_USERNAME);
         member.updateUsername(newUsername);
-        return MemberResponse.from(member);
     }
 
     private boolean isExistUsername(String username) {
         return memberRepository.existsByUsername(username);
     }
 
-    public MemberResponse updateProfile(Long memberId,@Nullable Long imageId) {
+    public void updateProfile(Long memberId, @Nullable Long imageId) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
         if(member.getProfile() != null) deleteExistProfile(member);
-
-        if(imageId == null) {
-            return MemberResponse.from(member);
-        }
-
+        if(imageId == null) return;
         Image image = imageFinder.findByIdElseThrow(imageId);
         MemberProfile memberProfile = profileRepository.save(new MemberProfile(member, image));
         member.updateProfile(memberProfile);
-        return MemberResponse.from(member);
     }
 
     private void deleteExistProfile(Member member) {

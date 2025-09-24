@@ -2,9 +2,11 @@ package com.zonbeozon.channel.service;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMemberId;
 import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.enums.ChannelRole;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
+import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
@@ -24,17 +26,24 @@ public class ChannelAuthorizationCheckService {
 
     @CheckReturnValue
     public boolean isAtLeastMember(Long channelId) {
+        channelFinder.findByIdElseThrow(channelId);
         Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
-        return channelMemberFinder.existsById(ChannelMemberId.from(channel, member));
+        return channelMemberFinder.findByChannelIdAndMemberId(channelId, member.getId()).isPresent();
+    }
+
+    @CheckReturnValue
+    public boolean isAtLeastMember(Long channelId, Long memberId) {
+        channelFinder.findByIdElseThrow(channelId);
+        Member member = memberFinder.findByIdElseThrow(memberId);
+        return channelMemberFinder.findByChannelIdAndMemberId(channelId, member.getId()).isPresent();
     }
 
     @CheckReturnValue
     public boolean isAtLeastAdmin(Long channelId) {
+        channelFinder.findByIdElseThrow(channelId);
         Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
         try {
-            return channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member)).getRole().isAtLeastAdmin();
+            return channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, member.getId()).getRole().isAtLeastAdmin();
         } catch (NotFoundException e) {
             return false;
         }
@@ -42,10 +51,10 @@ public class ChannelAuthorizationCheckService {
 
     @CheckReturnValue
     public boolean isOwner(Long channelId) {
+        channelFinder.findByIdElseThrow(channelId);
         Member member = authenticationService.getCurrentMember();
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
         try {
-            return channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member)).getRole().isOwner();
+            return channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, member.getId()).getRole().isOwner();
         } catch (NotFoundException e) {
             return false;
         }
@@ -53,28 +62,25 @@ public class ChannelAuthorizationCheckService {
 
     @CheckReturnValue
     public boolean hasHigherRoleThanTargetMember(Long channelId, Long targetMemberId) {
+        channelFinder.findByIdElseThrow(channelId);
         Member actor = authenticationService.getCurrentMember();
-        Member targetMember = memberFinder.findByIdElseThrow(targetMemberId);
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
-
+        if(!memberFinder.existsById(targetMemberId)) throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         ChannelRole actorRole;
         try {
-            actorRole = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, actor)).getRole();
+            actorRole = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, actor.getId()).getRole();
         } catch (NotFoundException e) {
             return false;
         }
-        ChannelRole targetMemberRole = channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, targetMember)).getRole();
-
+        ChannelRole targetMemberRole = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channelId, targetMemberId).getRole();
         return actorRole.isHigherThan(targetMemberRole);
     }
 
 
     @CheckReturnValue
     public boolean canAccessChannelContent(Long channelId) {
-        Member member = authenticationService.getCurrentMember();
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel.getSetting().getContentVisibility() == ChannelContentVisibility.PUBLIC) return true;
-        return channelMemberFinder.existsById(ChannelMemberId.from(channel, member));
+        return isAtLeastMember(channel.getId());
     }
 
 }

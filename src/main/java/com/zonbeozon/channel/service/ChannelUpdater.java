@@ -5,6 +5,7 @@ import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.service.cache.ChannelCacheEvict;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,10 @@ public class ChannelUpdater {
         if(isSettingChanged) {
             setting.updateSettings(request.settings().contentVisibility(), request.settings().joinPolicy());
         }
+    }
+
+    public void updateChannelMemberCount() {
+
     }
 
     private boolean isDuplicateTitle(String title) {

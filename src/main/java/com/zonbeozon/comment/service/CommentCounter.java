@@ -19,7 +19,6 @@ public class CommentCounter {
     private final CommentRepository commentRepository;
 
     /**
-     *
      * @return postId, post당 comment 개수로 이루어진 Map
      */
     public Map<Long, Long> countCommentsByPostIdIn(Collection<Long> postIds) {

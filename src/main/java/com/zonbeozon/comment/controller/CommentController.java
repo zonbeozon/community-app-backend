@@ -48,7 +48,7 @@ public class CommentController {
                     description = "commentId 반환"
             )
     )
-    @PostMapping("/post/{postId}/comment")
+    @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<Long> createComment(
             @PathVariable Long postId,
             @Valid @RequestBody CommentAddRequest request)
@@ -73,7 +73,7 @@ public class CommentController {
                     description = "성공"
             )
     )
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId
     ) {
@@ -92,7 +92,7 @@ public class CommentController {
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
-    @GetMapping("/post/{postId}/comment")
+    @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentsWithAuthorResponse> getComments(
             @PathVariable Long postId
     ) {

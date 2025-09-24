@@ -1,7 +1,6 @@
 package com.zonbeozon.channel.service.assembler;
 
-import com.zonbeozon.channel.dto.ChannelInfoResponse;
-import com.zonbeozon.channel.dto.ChannelWithMemberCount;
+import com.zonbeozon.channel.dto.ChannelInfoDto;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -19,16 +18,15 @@ public class SimpleChannelInfoAssembler implements ChannelInfoAssembler {
     private final ChannelRepository channelRepository;
 
     @Override
-    public ChannelInfoResponse getChannelInfo(Long channelId) {
-        ChannelWithMemberCount channelWithMemberCount = channelRepository.findByIdWithProfileAndMemberCount(channelId)
+    public ChannelInfoDto getChannelInfo(Long channelId) {
+        return channelRepository.findByIdWithProfileAndChannelMemberCount(channelId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND));
-        return ChannelInfoResponse.from(channelWithMemberCount);
     }
 
     @Override
-    public List<ChannelInfoResponse> getChannelInfos(List<Long> channelIds) {
-        List<ChannelWithMemberCount> channelWithMemberCountList = channelRepository.findByIdInWithProfileAndMemberCount(channelIds);
-        if(channelWithMemberCountList.size() != channelIds.size()) throw new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND);
-        return channelWithMemberCountList.stream().map(ChannelInfoResponse::from).toList();
+    public List<ChannelInfoDto> getChannelInfos(List<Long> channelIds) {
+        List<ChannelInfoDto> channelInfos = channelRepository.findByIdInWithProfileAndChannelMemberCount(channelIds);
+        if(channelInfos.size() != channelIds.size()) throw new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND);
+        return channelInfos;
     }
 }

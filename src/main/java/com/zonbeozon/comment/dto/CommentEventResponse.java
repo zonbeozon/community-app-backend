@@ -8,6 +8,6 @@ public record CommentEventResponse (
     CommentEventType type,
     @Nullable
     @JsonUnwrapped
-    CommentResponse body
+    CommentWithAuthorResponse body
 ) {
 }

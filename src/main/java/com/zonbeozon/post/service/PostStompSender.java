@@ -12,13 +12,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
-class PostStompSender {
+public class PostStompSender {
     private final SimpMessagingTemplate messagingTemplate;
     private final SimplePostAssembler simplePostAssembler;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
+        PostResponse body = simplePostAssembler.getPostResponse(null, event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.CREATED, body)
@@ -35,7 +35,7 @@ class PostStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostUpdated(PostUpdatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
+        PostResponse body = simplePostAssembler.getPostResponse(null, event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.UPDATED, body)

@@ -3,9 +3,12 @@ package com.zonbeozon.channel.service;
 import com.zonbeozon.channel.dto.ChannelDeletedEvent;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.Channel;
+import com.zonbeozon.channel.repository.BannedChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelRepository;
+import com.zonbeozon.channel.repository.PendingChannelMemberRepository;
 import com.zonbeozon.channel.service.cache.ChannelCacheEvict;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.post.service.PostRemover;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,6 +22,8 @@ public class ChannelRemover {
     private final ApplicationEventPublisher eventPublisher;
     private final ChannelRepository channelRepository;
     private final ChannelMemberRepository channelMemberRepository;
+    private final BannedChannelMemberRepository bannedChannelMemberRepository;
+    private final PendingChannelMemberRepository pendingChannelMemberRepository;
     private final ChannelProfileService channelProfileService;
     private final ChannelFinder channelFinder;
     private final PostRemover postRemover;
@@ -27,6 +32,8 @@ public class ChannelRemover {
     public void removeChannel(Long channelId) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         //채널 맴버 전부 삭제
+        bannedChannelMemberRepository.deleteAllByChannelId(channelId);
+        pendingChannelMemberRepository.deleteAllByChannelId(channelId);
         channelMemberRepository.deleteAllByChannelId(channelId);
         //채널 프로필 삭제
         channelProfileService.deleteProfile(channelId);

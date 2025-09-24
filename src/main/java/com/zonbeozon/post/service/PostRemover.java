@@ -29,16 +29,17 @@ public class PostRemover {
         Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withImages(true).build());
 
         //postImage 삭제
-        postImageService.deletePostImages(postId);
+        postImageService.deletePostImagesByPostId(postId);
 
-        //postComment, postReaction은 cascade option을 통해 삭제한다.
+        //comment, postReaction은 cascade option을 통해 삭제한다.
         postRepository.deleteById(post.getId());
+
         eventPublisher.publishEvent(new PostDeletedEvent(post.getChannel().getId(), postId));
     }
 
     public void deleteAllPostsByChannelId(Long channelId) {
         List<Long> postIds = postFinder.findByChannelId(channelId).stream().map(Post::getId).toList();
-        postImageService.deletePostImages(postIds);
+        postImageService.deletePostImagesByPostIdIn(postIds);
         postReactionRepository.deleteByPostIdIn(postIds);
         commentRepository.deleteByPostIdIn(postIds);
         postRepository.deleteAllById(postIds);

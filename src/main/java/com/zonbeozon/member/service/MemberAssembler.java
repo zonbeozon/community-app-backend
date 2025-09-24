@@ -2,12 +2,10 @@ package com.zonbeozon.member.service;
 
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.respository.MemberRepository;
-import com.zonbeozon.member.respository.MemberSort;
-import com.zonbeozon.member.dto.MemberResponse;
-import com.zonbeozon.member.dto.PagedMemberResponse;
+import com.zonbeozon.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,21 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberAssembler {
     private final MemberFinder memberFinder;
-    private final MemberRepository memberRepository;
 
-    public MemberResponse createMemberResponse(Long memberId) {
-        Member member = memberFinder.findByIdElseThrow(memberId);
-        return MemberResponse.from(member);
+    public MemberDto getMemberResponse(Long memberId) {
+        Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
+        return MemberDto.from(member);
     }
 
-    public PagedMemberResponse searchPagedMemberResponse(
-            String partialUsername,
-            MemberSort sort,
-            Sort.Direction direction,
-            int page,
-            int size
+    /**
+     * todo: 검색 도입
+     */
+    public Page<MemberDto> getMemberResponseByUsername(
+            String username,
+            Pageable pageable
     ) {
-        Page<Member> members = memberRepository.searchMemberByPartialUsername(partialUsername, sort, direction, page, size);
-        return PagedMemberResponse.from(members);
+        throw new UnsupportedOperationException("해당 기능은 미구현입니다");
     }
 }

@@ -7,16 +7,15 @@ import com.zonbeozon.image.service.ImageDeleter;
 import com.zonbeozon.image.service.ImageFinder;
 import com.zonbeozon.post.entity.Post;
 import com.zonbeozon.post.entity.PostImage;
-import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.repository.PostImageRepository;
-import com.zonbeozon.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -28,10 +27,24 @@ public class PostImageService {
     private final ImageDeleter imageDeleter;
 
     public void updatePostImages(Long postId, List<Long> imageIds) {
-        Post post = postFinder.findByIdElseThrow(postId);
+        Post post = postFinder.findByIdWithImagesElseThrow(postId);
         checkPostImageLimit(imageIds);
-        deletePostImages(postId);
-        List<Image> images = imageFinder.findAllByIds(imageIds);
+        //더 이상 사용하지 않는 이미지 삭제
+        Set<PostImage> existImages = post.getImages();
+        Set<PostImage> postImageToDelete = existImages.stream()
+                .filter(postImage -> !imageIds.contains(postImage.getImage().getId()))
+                .collect(Collectors.toSet());
+        deletePostImages(post, postImageToDelete);
+        //새로운 이미지 추가
+        Set<Long> existImageIds = existImages.stream()
+                .map(postImage -> postImage.getImage().getId())
+                .collect(Collectors.toSet());
+        List<Long> imageIdsToAdd = imageIds.stream()
+                .filter(id -> !existImageIds.contains(id))
+                .toList();
+
+        if (imageIdsToAdd.isEmpty()) return;
+        List<Image> images = imageFinder.findAllByIds(imageIdsToAdd);
         for(Image image : images) {
             PostImage postImage = new PostImage(post, image);
             postImageRepository.save(postImage);
@@ -39,8 +52,14 @@ public class PostImageService {
         }
     }
 
-    public void deletePostImages(Long postId) {
-        List<Long> ImageIds = postImageRepository.findAllByPostId(postId).stream()
+    private void deletePostImages(Post post, Set<PostImage> postImages) {
+        post.getImages().removeAll(postImages);
+        postImageRepository.deleteAllInBatch(postImages);
+        imageDeleter.deleteImages(postImages.stream().map(PostImage::getImage).map(Image::getId).toList());
+    }
+
+    public void deletePostImagesByPostId(Long postId) {
+        List<Long> ImageIds = postImageRepository.findAllByPostIdWithImage(postId).stream()
                 .map(PostImage::getImage)
                 .map(Image::getId)
                 .toList();
@@ -48,8 +67,8 @@ public class PostImageService {
         imageDeleter.deleteImages(ImageIds);
     }
 
-    public void deletePostImages(List<Long> postIds) {
-        List<Long> ImageIds = postImageRepository.findAllByPostIdIn(postIds).stream()
+    public void deletePostImagesByPostIdIn(List<Long> postIds) {
+        List<Long> ImageIds = postImageRepository.findAllByPostIdInWithImage(postIds).stream()
                 .map(PostImage::getImage)
                 .map(Image::getId)
                 .toList();

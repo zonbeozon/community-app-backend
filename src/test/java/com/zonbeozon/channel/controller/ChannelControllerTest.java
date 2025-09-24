@@ -6,9 +6,13 @@ import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
+import com.zonbeozon.channel.api.ChannelCreateApi;
+import com.zonbeozon.channel.api.ChannelQueryApi;
+import com.zonbeozon.channel.api.ChannelRemoveApi;
+import com.zonbeozon.channel.api.ChannelUpdateApi;
+import com.zonbeozon.channel.api.web.ChannelController;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
 import com.zonbeozon.channel.service.*;
-import com.zonbeozon.channel.service.assembler.ChannelAssembler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,17 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
     @Autowired
     private MockMvc mockMvc;
+    @MockitoBean
+    private ChannelCreateApi channelCreateApi;
+    @MockitoBean
+    private ChannelUpdateApi channelUpdateApi;
+    @MockitoBean
+    private ChannelQueryApi channelQueryApi;
+    @MockitoBean
+    private ChannelRemoveApi channelRemoveApi;
 
-    @MockitoBean
-    private ChannelCreator channelCreator;
-    @MockitoBean
-    private ChannelUpdater channelUpdater;
-    @MockitoBean
-    private ChannelAssembler channelAssembler;
-    @MockitoBean
-    private ChannelRemover channelRemover;
-    @MockitoBean
-    private AuthenticationService authenticationService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -51,7 +53,7 @@ public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
             String invalidTitle = "a";
             ChannelCreateRequest request = new TestChannelCreateRequestBuilder().setTitle(invalidTitle).build();
             mockMvc.perform(
-                            post("/channel")
+                            post("/channels/community")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(request))
                     )
@@ -62,7 +64,7 @@ public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
         @Test
         @DisplayName("로그인된 사용자자 아니라면 접근 불가")
         void notAuthenticatedShouldReturnUnauthorized() throws Exception {
-            SecurityTestUtils.assertNotAuthenticated(mockMvc, HttpMethod.POST, "/channel");
+            SecurityTestUtils.assertNotAuthenticated(mockMvc, HttpMethod.POST, "/channels");
         }
     }
 }

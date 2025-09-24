@@ -12,12 +12,9 @@ import static com.zonbeozon.channel.entity.Channel.*;
 
 @ValidChannelTitle
 public record ChannelCreateRequest(
-        @Schema(example = "BLOG")
         @NotNull(message = "채널 유형을 선택해야 합니다.")
         ChannelType channelType,
-        @Schema(minLength = MIN_TITLE_LENGTH, maxLength = MAX_TITLE_LENGTH, example = "My Channel")
         String title,
-        @Schema(maxLength = MAX_DESCRIPTION_LENGTH, example = "이 채널은...")
         @Size(max = MAX_DESCRIPTION_LENGTH, message = "{channel.description.length}")
         String description,
         @Schema(example = "1")

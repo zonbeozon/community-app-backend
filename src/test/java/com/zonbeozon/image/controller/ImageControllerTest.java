@@ -2,7 +2,9 @@ package com.zonbeozon.image.controller;
 
 
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
-import com.zonbeozon.image.service.ImageS3Uploader;
+import com.zonbeozon.image.api.ImageUploadApi;
+import com.zonbeozon.image.api.web.ImageController;
+import com.zonbeozon.image.service.ImageUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ public class ImageControllerTest {
     private static final byte[] testImageByte = "dummy_image_content_for_png".getBytes();;
 
     @MockitoBean
-    private ImageS3Uploader imageS3Uploader;
+    private ImageUploadApi imageUploadApi;
 
     MockMultipartFile multipartFile = new MockMultipartFile(
             "image",
@@ -39,8 +41,8 @@ public class ImageControllerTest {
     );
 
     @BeforeEach
-    void setup() throws FileNotFoundException {
-        Mockito.when(imageS3Uploader.uploadImage(Mockito.any(InputStream.class), Mockito.anyLong(), Mockito.anyString())).thenReturn(1L);
+    void setup() {
+        Mockito.when(imageUploadApi.uploadImage(Mockito.any(InputStream.class), Mockito.anyLong(), Mockito.anyString())).thenReturn(1L);
     }
 
     @DisplayName("Mutlipart-form 내부의 image 형식이 잘못되면 400 리턴")
@@ -55,7 +57,7 @@ public class ImageControllerTest {
         );
 
         mockMvc.perform(
-                        multipart("/image")
+                        multipart("/images")
                                 .file(invalidFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
@@ -67,7 +69,7 @@ public class ImageControllerTest {
     @WithMockUser
     void returnBadRequestWhenRequestContentTypeIsNotMultipart() throws Exception {
         mockMvc.perform(
-                        multipart("/image")
+                        multipart("/images")
                                 .file(multipartFile)
                                 .contentType(MediaType.IMAGE_PNG_VALUE)
                 )
@@ -80,7 +82,7 @@ public class ImageControllerTest {
     @Test
     void returnUnauthorizedWhenNotAuthenticated() throws Exception {
         mockMvc.perform(
-                        multipart("/image")
+                        multipart("/images")
                                 .file(multipartFile)
                                 .contentType(MediaType.IMAGE_PNG_VALUE)
                 )
@@ -93,7 +95,7 @@ public class ImageControllerTest {
     @WithMockUser
     void returnCreatedWithImageIdOnValidRequest() throws Exception {
         mockMvc.perform(
-                        multipart("/image")
+                        multipart("/images")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 )

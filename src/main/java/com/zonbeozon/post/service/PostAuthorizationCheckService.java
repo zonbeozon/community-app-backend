@@ -43,4 +43,10 @@ public class PostAuthorizationCheckService {
         Long channelId = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build()).getChannel().getId();
         return channelAuthorizationCheckService.isAtLeastMember(channelId);
     }
+
+    @CheckReturnValue
+    public boolean isAtLeastMember(Long postId, Long memberId) {
+        Long channelId = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build()).getChannel().getId();
+        return channelAuthorizationCheckService.isAtLeastMember(channelId, memberId);
+    }
 }

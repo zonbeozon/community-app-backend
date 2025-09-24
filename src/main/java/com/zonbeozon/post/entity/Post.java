@@ -12,7 +12,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -26,7 +28,7 @@ import java.util.List;
 )
 public class Post extends ContentEntity {
     public static final int MAX_CONTENT_LENGTH = 2048;
-    public static final int MIN_CONTENT_LENGTH = 1;
+    public static final int MIN_CONTENT_LENGTH = 0;
     public static final int MAX_IMAGE_COUNT = 5;
 
     @Id
@@ -43,7 +45,7 @@ public class Post extends ContentEntity {
     private BlogChannel channel;
 
     @OneToMany(mappedBy = "post")
-    private List<PostImage> images = new ArrayList<>();
+    private Set<PostImage> images = new HashSet<>();
 
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();

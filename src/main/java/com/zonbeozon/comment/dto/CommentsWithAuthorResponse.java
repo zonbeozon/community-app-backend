@@ -1,12 +1,12 @@
 package com.zonbeozon.comment.dto;
 
-import com.zonbeozon.channel.dto.ChannelMemberResponse;
+import com.zonbeozon.channel.dto.ChannelMemberDto;
 
 import java.util.List;
 
 public record CommentsWithAuthorResponse(
-        List<ChannelMemberResponse> authors,
-        List<SimplifiedCommentResponse> comments,
+        List<ChannelMemberDto> authors,
+        List<CommentDto> comments,
         int totalElements
 ) {
 }

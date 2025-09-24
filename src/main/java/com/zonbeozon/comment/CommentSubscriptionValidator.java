@@ -1,14 +1,14 @@
 package com.zonbeozon.comment;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.entity.ChannelMemberId;
-import com.zonbeozon.channel.service.ChannelMemberFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -26,9 +26,7 @@ import java.util.Map;
 public class CommentSubscriptionValidator implements StompSubscriptionValidateHandler {
     private static final String COMMENT_SUBSCRIPTION_PATTERN = "/topic/post/{postId}/comment";
     private final PathMatcher pathMatcher = new AntPathMatcher();
-    private final MemberFinder memberFinder;
-    private final ChannelMemberFinder channelMemberFinder;
-    private final PostFinder postFinder;
+    private final PostAuthorizationCheckService postAuthorizationCheckService;
 
     @Override
     public boolean isSupport(String destination) {
@@ -44,23 +42,7 @@ public class CommentSubscriptionValidator implements StompSubscriptionValidateHa
         Long memberId = Long.parseLong(principal.getName());
         Long postId = extractPostIdFromDestination(accessor.getDestination());
 
-        Post post;
-        Channel channel;
-        Member member;
-        try {
-            post = postFinder.findByIdElseThrow(postId);
-        } catch (NotFoundException e) {
-            throw new SubscriptionException(SubscriptionException.ErrorCode.POST_NOT_FOUND);
-        }
-        channel = post.getChannel();
-        try {
-            member = memberFinder.findByIdElseThrow(memberId);
-        } catch (NotFoundException e) {
-            throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
-        }
-        try {
-            channelMemberFinder.findByIdElseThrow(ChannelMemberId.from(channel, member));
-        } catch (NotFoundException e) {
+        if(!postAuthorizationCheckService.isAtLeastMember(postId, memberId)) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
         }
     }

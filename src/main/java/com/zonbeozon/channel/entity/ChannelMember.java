@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -19,50 +18,40 @@ import org.hibernate.annotations.SQLRestriction;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Slf4j
 @Table(
-        indexes = {
-                //반대 순서 INDEX
-                @Index(name = "idx_channel_member_member_id_channel_id", columnList = "member_id, channel_id")
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_channel_member",
+                        columnNames = {"channel_id", "member_id"}
+                )
         }
 )
-@SQLRestriction("status = 'ACTIVE'")
 public class ChannelMember extends BaseTimeEntity {
-    @EmbeddedId
-    private ChannelMemberId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    @MapsId("memberId")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "channel_id")
-    @MapsId("channelId")
+    @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private ChannelRole role;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private ChannelMemberStatus status;
-
     public void updateRole(ChannelRole role) {
         this.role = role;
     }
 
-    public void updateStatus(ChannelMemberStatus status) {
-        this.status = status;
-    }
 
-    public static ChannelMember create(Member member, Channel channel, ChannelRole role, ChannelMemberStatus status) {
+    public static ChannelMember create(Member member, Channel channel, ChannelRole role) {
         ChannelMember channelMember = new ChannelMember();
         channelMember.member = member;
         channelMember.channel = channel;
         channelMember.role = role;
-        channelMember.status = status;
         return channelMember;
     }
 
@@ -72,9 +61,5 @@ public class ChannelMember extends BaseTimeEntity {
 
     public boolean canLeaveChannel() {
         return role != ChannelRole.CHANNEL_OWNER;
-    }
-
-    public boolean isPendingStatus() {
-        return status == ChannelMemberStatus.PENDING;
     }
 }

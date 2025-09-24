@@ -1,8 +1,7 @@
 package com.zonbeozon.channel.dto;
 
-import com.zonbeozon.channel.entity.ChannelMemberId;
-
 public record JoinRequestApprovedEvent(
-        ChannelMemberId channelMemberId
+        Long channelId,
+        Long memberId
 ) {
 }

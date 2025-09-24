@@ -20,11 +20,7 @@ public class BlogChannel extends Channel {
             ChannelSetting setting,
             ChannelCreatorType creatorType
     ) {
-        super(title, description, setting, creatorType);
+        super(title, description, setting, creatorType, ChannelType.BLOG);
     }
 
-    @Override
-    public ChannelType getChannelType() {
-        return ChannelType.BLOG;
-    }
 }

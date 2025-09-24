@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,11 +16,12 @@ public class ChannelProfile {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "channel_id", nullable = false)
+    @JoinColumn(name = "channel_id", nullable = false, unique = true)
     private Channel channel;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", nullable = false)
+    @Setter
     private Image image;
 
     public ChannelProfile(Channel channel, Image image) {
@@ -27,7 +29,4 @@ public class ChannelProfile {
         this.image = image;
     }
 
-    public void updateImage(Image image) {
-        this.image = image;
-    }
 }

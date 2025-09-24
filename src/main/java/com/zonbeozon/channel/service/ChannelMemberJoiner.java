@@ -1,20 +1,24 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.dto.JoinRequestApprovedEvent;
 import com.zonbeozon.channel.dto.JoinRequestDeniedEvent;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
-import com.zonbeozon.channel.entity.ChannelMemberId;
+import com.zonbeozon.channel.entity.PendingChannelMember;
 import com.zonbeozon.channel.enums.ChannelJoinPolicy;
-import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.enums.JoinResultStatus;
+import com.zonbeozon.channel.repository.BannedChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
+import com.zonbeozon.channel.repository.PendingChannelMemberRepository;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -25,62 +29,70 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ChannelMemberJoiner {
     private final ChannelMemberRepository channelMemberRepository;
-    private final AuthenticationService authenticationService;
     private final ChannelFinder channelFinder;
     private final ChannelMemberFinder channelMemberFinder;
     private final ApplicationEventPublisher eventPublisher;
-    private final ChannelMemberRemover channelMemberRemover;
+    private final MemberFinder memberFinder;
+    private final BannedChannelMemberRepository bannedChannelMemberRepository;
+    private final PendingChannelMemberRepository pendingChannelMemberRepository;
 
-    /**
-     * 채널 생성시 초기 한번만 호출된다.
-     */
-    public void joinAsOwner(Member requester, Channel channel) {
+    public void joinAsOwner(Long channelId, Long requesterId) {
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
+        Member requester = memberFinder.findByIdElseThrow(requesterId);
         if(channelMemberRepository.existsByChannelAndRole(channel, ChannelRole.CHANNEL_OWNER))
             throw new IllegalStateException("중복 owner가 발생했습니다.");
-        join(requester, channel, ChannelRole.CHANNEL_OWNER, ChannelMemberStatus.ACTIVE);
+        join(channel, requester, ChannelRole.CHANNEL_OWNER);
     }
 
-    public JoinResultStatus joinAsMember(Long channelId) {
-        Member requester = authenticationService.getCurrentMember();
+    public JoinResultStatus joinAsMember(Long channelId, Long requesterId) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
+        Member requester = memberFinder.findByIdElseThrow(requesterId);
         if(channel.getSetting().getJoinPolicy() == ChannelJoinPolicy.DENY) {
             throw new AccessDeniedException(ErrorCode.CHANNEL_JOIN_DENIED);
         }
 
-        if(channelMemberRepository.isKicked(ChannelMemberId.from(channel, requester))) {
-            throw new AccessDeniedException(ErrorCode.KICKED_MEMBER_CANNOT_JOIN);
-        }
+        //ban된 맴버는 참여 불가.
+        if(bannedChannelMemberRepository.existsByChannelIdAndMemberId(channelId, requesterId))
+            throw new AccessDeniedException(ErrorCode.BANNED_MEMBER_CANNOT_JOIN);
 
+        //채널 가입 정책이 승인이라면
         if(channel.getSetting().getJoinPolicy() == ChannelJoinPolicy.APPROVAL) {
-            join(requester, channel, ChannelRole.CHANNEL_MEMBER, ChannelMemberStatus.PENDING);
+            joinAsPending(requester, channel);
             return JoinResultStatus.APPROVAL_REQUESTED;
         }
-        join(requester, channel, ChannelRole.CHANNEL_MEMBER, ChannelMemberStatus.ACTIVE);
+        //공개 가입 채널이라면
+        join(channel, requester, ChannelRole.CHANNEL_MEMBER);
         return JoinResultStatus.JOINED_IMMEDIATELY;
     }
 
-    private void join(Member requester, Channel channel, ChannelRole role, ChannelMemberStatus status) {
-        if(channelMemberRepository.existsById(ChannelMemberId.from(channel, requester)))
+    public void approveJoinRequest(Long channelId, Long requesterId) {
+        channelFinder.findByIdElseThrow(channelId);
+        PendingChannelMember pendingChannelMember = pendingChannelMemberRepository.findByChannelIdAndMemberIdWithChannelAndMember(channelId, requesterId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_IS_NOT_PENDING_STATUS));
+        join(pendingChannelMember.getChannel(), pendingChannelMember.getMember(), ChannelRole.CHANNEL_MEMBER);
+        pendingChannelMemberRepository.delete(pendingChannelMember);
+        eventPublisher.publishEvent(new JoinRequestApprovedEvent(channelId, requesterId));
+    }
+
+    public void denyJoinRequest(Long channelId, Long requesterId) {
+        channelFinder.findByIdElseThrow(channelId);
+        PendingChannelMember pendingChannelMember = pendingChannelMemberRepository.findByChannelIdAndMemberId(channelId, requesterId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_IS_NOT_PENDING_STATUS));
+        pendingChannelMemberRepository.delete(pendingChannelMember);
+        eventPublisher.publishEvent(new JoinRequestDeniedEvent(channelId, requesterId));
+    }
+
+    private void join(Channel channel, Member requester, ChannelRole role) {
+        if(channelMemberFinder.existsByChannelIdAndMemberId(channel.getId(), requester.getId()))
             throw new ConflictException(ErrorCode.ALREADY_JOINED_CHANNEL);
-        ChannelMember chMember = ChannelMember.create(requester, channel, role, status);
-        channelMemberRepository.save(chMember);
+        ChannelMember channelMember = ChannelMember.create(requester, channel, role);
+        channelMemberRepository.save(channelMember);
     }
 
-    public void approveJoinRequest(ChannelMemberId channelMemberId) {
-        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(channelMemberId);
-        if(!channelMember.isPendingStatus()) {
-            throw new ConflictException(ErrorCode.MEMBER_NOT_PENDING);
+    private void joinAsPending(Member requester, Channel channel) {
+        if(pendingChannelMemberRepository.existsByChannelIdAndMemberId(channel.getId(), requester.getId())) {
+            throw new ConflictException(ErrorCode.ALREADY_JOINED_CHANNEL);
         }
-        channelMember.updateStatus(ChannelMemberStatus.ACTIVE);
-        eventPublisher.publishEvent(new JoinRequestApprovedEvent(channelMemberId));
-    }
-
-    public void denyJoinRequest(ChannelMemberId channelMemberId) {
-        ChannelMember channelMember = channelMemberFinder.findByIdElseThrow(channelMemberId);
-        if(!channelMember.isPendingStatus()) {
-            throw new ConflictException(ErrorCode.MEMBER_NOT_PENDING);
-        }
-        channelMemberRemover.leaveChannelIgnoreStatus(channelMemberId);
-        eventPublisher.publishEvent(new JoinRequestDeniedEvent(channelMemberId));
+        pendingChannelMemberRepository.save(new PendingChannelMember(requester, channel));
     }
 }
