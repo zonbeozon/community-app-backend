@@ -1,5 +1,6 @@
 package com.zonbeozon.channel.service;
 
+import com.zonbeozon.channel.dto.ChannelMemberChangedEvent;
 import com.zonbeozon.channel.dto.JoinRequestApprovedEvent;
 import com.zonbeozon.channel.dto.JoinRequestDeniedEvent;
 import com.zonbeozon.channel.entity.Channel;
@@ -62,6 +63,7 @@ public class ChannelMemberJoiner {
         }
         //공개 가입 채널이라면
         join(channel, requester, ChannelRole.CHANNEL_MEMBER);
+
         return JoinResultStatus.JOINED_IMMEDIATELY;
     }
 
@@ -86,6 +88,7 @@ public class ChannelMemberJoiner {
         if(channelMemberFinder.existsByChannelIdAndMemberId(channel.getId(), requester.getId()))
             throw new ConflictException(ErrorCode.ALREADY_JOINED_CHANNEL);
         ChannelMember channelMember = ChannelMember.create(requester, channel, role);
+        eventPublisher.publishEvent(new ChannelMemberChangedEvent(channel.getId(), 1));
         channelMemberRepository.save(channelMember);
     }
 

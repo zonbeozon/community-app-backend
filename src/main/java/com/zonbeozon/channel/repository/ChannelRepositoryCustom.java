@@ -10,4 +10,5 @@ public interface ChannelRepositoryCustom {
     Optional<Channel> findByIdWithProfile(Long channelId);
     Optional<ChannelInfoDto> findByIdWithProfileAndChannelMemberCount(Long channelId);
     List<ChannelInfoDto> findByIdInWithProfileAndChannelMemberCount(List<Long> channelIds);
+    void updateMemberCount(Long channelId, int delta);
 }

@@ -1,5 +1,6 @@
 package com.zonbeozon.channel.service;
 
+import com.zonbeozon.channel.dto.ChannelMemberChangedEvent;
 import com.zonbeozon.channel.dto.ChannelUpdateRequest;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelSetting;
@@ -9,6 +10,8 @@ import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +50,10 @@ public class ChannelUpdater {
         }
     }
 
-    public void updateChannelMemberCount() {
-
+    @Async
+    @EventListener
+    public void updateChannelMemberCount(ChannelMemberChangedEvent event) {
+        channelRepository.updateMemberCount(event.channelId(), event.delta());
     }
 
     private boolean isDuplicateTitle(String title) {

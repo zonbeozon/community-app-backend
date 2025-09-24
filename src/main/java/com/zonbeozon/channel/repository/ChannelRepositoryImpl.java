@@ -59,4 +59,13 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
 
         return query.fetch();
     }
+
+    @Override
+    public void updateMemberCount(Long channelId, int delta) {
+        queryFactory
+                .update(channel)
+                .set(channel.memberCount, channel.memberCount.add(delta))
+                .where(channel.id.eq(channelId))
+                .execute();
+    }
 }
