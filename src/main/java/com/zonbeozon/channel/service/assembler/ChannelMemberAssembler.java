@@ -24,8 +24,14 @@ import java.util.Set;
 @Service
 @Transactional(readOnly = true)
 public class ChannelMemberAssembler {
-    private static final Set<String> ALLOWED_SORT_PROPERTIES = Set.of(
+    private static final Set<String> ALLOWED_ACTIVE_CH_SORT_PROPERTIES = Set.of(
             "createdAt"
+    );
+    private static final Set<String> ALLOWED_PENDING_CH_SORT_PROPERTIES = Set.of(
+            "requestedAt"
+    );
+    private static final Set<String> ALLOWED_BANNED_CH_SORT_PROPERTIES = Set.of(
+            "bannedAt"
     );
     private final ChannelMemberRepository channelMemberRepository;
     private final BannedChannelMemberRepository bannedChannelMemberRepository;
@@ -33,19 +39,19 @@ public class ChannelMemberAssembler {
     private final ChannelFinder channelFinder;
 
     public Page<ChannelMemberDto> getPagedActiveChannelMember(Long channelId, Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable.getSort(), ALLOWED_ACTIVE_CH_SORT_PROPERTIES);
         channelFinder.findByIdElseThrow(channelId);
         return channelMemberRepository.findChannelMemberDtoByChannelId(channelId, pageable);
     }
 
     public Page<BannedChannelMemberDto> getPagedBannedChannelMember(Long channelId, Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable.getSort(), ALLOWED_BANNED_CH_SORT_PROPERTIES);
         channelFinder.findByIdElseThrow(channelId);
         return bannedChannelMemberRepository.findByChannelId(channelId, pageable);
     }
 
     public Page<PendingChannelMemberDto> getPagedPendingChannelMember(Long channelId, Pageable pageable) {
-        validateSort(pageable.getSort());
+        validateSort(pageable.getSort(), ALLOWED_PENDING_CH_SORT_PROPERTIES);
         channelFinder.findByIdElseThrow(channelId);
         return pendingChannelMemberRepository.findByChannelId(channelId, pageable);
     }
@@ -67,11 +73,11 @@ public class ChannelMemberAssembler {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND));
     }
 
-    private void validateSort(Sort sort) {
+    private void validateSort(Sort sort, Set<String> sortProperties) {
         for (Sort.Order order : sort) {
-            if (!ALLOWED_SORT_PROPERTIES.contains(order.getProperty())) {
+            if (!sortProperties.contains(order.getProperty())) {
                 throw new UnsupportedOperationException(
-                        "해당 Sort기준은 제공하지 않습니다: " + order.getProperty() + "'.허용된 Sort기준은 다음과 같습니다: " + ALLOWED_SORT_PROPERTIES
+                        "해당 Sort기준은 제공하지 않습니다: " + order.getProperty() + "'.허용된 Sort기준은 다음과 같습니다: " + sortProperties
                 );
             }
         }

@@ -143,7 +143,7 @@ public class ChannelMemberController {
     @GetMapping("/pending")
     public ResponseEntity<Page<PendingChannelMemberDto>> getPendingChannelMembers(
             @PathVariable Long channelId,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 20, sort = "requestedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         return ResponseEntity.ok(channelMemberQueryApi.getPendingChannelMembers(channelId, pageable));
@@ -182,7 +182,7 @@ public class ChannelMemberController {
     @GetMapping("/ban")
     public ResponseEntity<Page<BannedChannelMemberDto>> getBannedChannelMembers(
             @PathVariable Long channelId,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 20, sort = "bannedAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         return ResponseEntity.ok(channelMemberQueryApi.getBannedChannelMembers(channelId, pageable));
