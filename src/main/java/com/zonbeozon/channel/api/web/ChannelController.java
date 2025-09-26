@@ -166,7 +166,7 @@ public class ChannelController {
     })
     @GetMapping("/joined/{channelId}")
     public ResponseEntity<ChannelInfoWithRequesterDto> getJoinedChannel(
-            @RequestParam Long channelId
+            @PathVariable Long channelId
     ) {
         return ResponseEntity.ok(channelQueryApi.getJoinedChannel(channelId));
     }
