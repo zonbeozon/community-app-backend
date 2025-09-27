@@ -3,7 +3,7 @@ package com.zonbeozon.channel.api;
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.channel.dto.ChannelCreateCommand;
 import com.zonbeozon.channel.dto.ChannelCreateRequest;
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
 import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.service.ChannelCreator;
 import com.zonbeozon.channel.service.assembler.JoinedChannelAssembler;
@@ -22,7 +22,7 @@ public class ChannelCreateApi {
     private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final JoinedChannelAssembler joinedChannelAssembler;
 
-    public ChannelInfoWithRequesterDto addCommunityChannel(ChannelCreateRequest request) {
+    public ChannelInfoWithMembershipDto addCommunityChannel(ChannelCreateRequest request) {
         Member requester = authenticationService.getCurrentMember();
         imageOwnershipVerifier.verify(requester.getId(), request.imageId());
         ChannelCreateCommand command = request.toCommand(ChannelCreatorType.COMMUNITY);

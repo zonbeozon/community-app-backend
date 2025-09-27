@@ -6,8 +6,8 @@ import com.zonbeozon.channel.api.ChannelRemoveApi;
 import com.zonbeozon.channel.api.ChannelUpdateApi;
 import com.zonbeozon.channel.dto.*;
 import com.zonbeozon.channel.dto.ChannelInfoDto;
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
-import com.zonbeozon.channel.dto.ChannelInfosWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
+import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
 import com.zonbeozon.config.SwaggerConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -103,12 +103,12 @@ public class ChannelController {
                             }))
     })
     @PostMapping("/community")
-    public ResponseEntity<ChannelInfoWithRequesterDto> addCommunityChannel(
+    public ResponseEntity<ChannelInfoWithMembershipDto> addCommunityChannel(
             @Valid
             @RequestBody
             ChannelCreateRequest request
     ) {
-        ChannelInfoWithRequesterDto channelInfoWithRequester = channelCreateApi.addCommunityChannel(request);
+        ChannelInfoWithMembershipDto channelInfoWithRequester = channelCreateApi.addCommunityChannel(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(channelInfoWithRequester);
     }
 
@@ -141,11 +141,11 @@ public class ChannelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ChannelInfosWithRequesterDto.class))
+                    schema = @Schema(implementation = ChannelInfosWithMembershipDto.class))
             ),
     })
     @GetMapping("/joined")
-    public ResponseEntity<ChannelInfosWithRequesterDto> getJoinedChannels(
+    public ResponseEntity<ChannelInfosWithMembershipDto> getJoinedChannels(
     ) {
         return ResponseEntity.ok(channelQueryApi.getJoinedChannels());
     }
@@ -160,12 +160,12 @@ public class ChannelController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ChannelInfoWithRequesterDto.class))
+                    schema = @Schema(implementation = ChannelInfoWithMembershipDto.class))
             ),
             @ApiResponse(responseCode = "403", description = "주어진 id에 해당하는 채널에 참가하지 않은 상태일때")
     })
     @GetMapping("/joined/{channelId}")
-    public ResponseEntity<ChannelInfoWithRequesterDto> getJoinedChannel(
+    public ResponseEntity<ChannelInfoWithMembershipDto> getJoinedChannel(
             @PathVariable Long channelId
     ) {
         return ResponseEntity.ok(channelQueryApi.getJoinedChannel(channelId));
@@ -187,5 +187,23 @@ public class ChannelController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @Operation(
+            summary = "일반 단일 채널 정보 조회",
+            description = """
+                    사용자가 해당 채널 참가 여부에 따라 추가 필드가 붙는다.
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ChannelViewDto.class))
+            )
+    })
+    @GetMapping("/{channelId}")
+    public ResponseEntity<ChannelViewDto> getChannelView(
+            @PathVariable Long channelId
+    ) {
+        return ResponseEntity.ok(channelQueryApi.getChannelView(channelId));
+    }
 }

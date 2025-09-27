@@ -28,6 +28,10 @@ public class ChannelMemberFinder {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_MEMBER_NOT_FOUND));
     }
 
+    public Optional<ChannelMember> findByChannelIdAndMemberIdWithChannelAndMember(Long channelId, Long memberId) {
+        return channelMemberRepository.findByChannelIdAndMemberIdWithChannelAndMember(channelId, memberId);
+    }
+
     public boolean existsByChannelIdAndMemberId(Long channelId, Long memberId) {
         return channelMemberRepository.existsByChannelIdAndMemberId(channelId, memberId);
     }

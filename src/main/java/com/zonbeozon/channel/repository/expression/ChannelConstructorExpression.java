@@ -5,7 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.channel.dto.ChannelInfoDto;
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
 import com.zonbeozon.channel.dto.ChannelSettingDto;
 import com.zonbeozon.channel.entity.QChannel;
 import com.zonbeozon.channel.entity.QChannelMember;
@@ -15,7 +15,7 @@ import com.zonbeozon.member.domain.QMember;
 import com.zonbeozon.member.domain.QMemberProfile;
 
 public class ChannelConstructorExpression {
-    public static ConstructorExpression<ChannelInfoWithRequesterDto> channelInfoWithRequester(
+    public static ConstructorExpression<ChannelInfoWithMembershipDto> channelInfoWithMembership(
             QChannel channel,
             QChannelProfile channelProfile,
             QImage channelProfileImage,
@@ -24,7 +24,7 @@ public class ChannelConstructorExpression {
             QMemberProfile memberProfile,
             QImage memberProfileImage
     ) {
-        return Projections.constructor(ChannelInfoWithRequesterDto.class,
+        return Projections.constructor(ChannelInfoWithMembershipDto.class,
                 channelInfoDto(channel, channelProfile, channelProfileImage),
                 channelMemberDto(member, channelMember, memberProfile, memberProfileImage)
         );

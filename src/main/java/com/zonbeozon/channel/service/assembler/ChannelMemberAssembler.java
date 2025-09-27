@@ -56,9 +56,6 @@ public class ChannelMemberAssembler {
         return pendingChannelMemberRepository.findByChannelId(channelId, pageable);
     }
 
-    /**
-     * @throws NotFoundException
-     */
     public List<ChannelMemberDto> getChannelMembers(Long channelId, Collection<Long> memberIds) {
         channelFinder.findByIdElseThrow(channelId);
         List<ChannelMemberDto> channelMembers = channelMemberRepository.findChannelMemberDtoByChannelIdAndMemberIdIn(channelId, memberIds);

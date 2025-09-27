@@ -4,6 +4,7 @@ package com.zonbeozon.image.controller;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.image.api.ImageUploadApi;
 import com.zonbeozon.image.api.web.ImageController;
+import com.zonbeozon.image.dto.ImageDto;
 import com.zonbeozon.image.service.ImageUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,8 @@ public class ImageControllerTest {
 
     @BeforeEach
     void setup() {
-        Mockito.when(imageUploadApi.uploadImage(Mockito.any(InputStream.class), Mockito.anyLong(), Mockito.anyString())).thenReturn(1L);
+        Mockito.when(imageUploadApi.uploadImage(Mockito.any(InputStream.class), Mockito.anyLong(), Mockito.anyString()))
+                .thenReturn(new ImageDto(1L, "dummyurl"));
     }
 
     @DisplayName("Mutlipart-form 내부의 image 형식이 잘못되면 400 리턴")

@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.base.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.dto.ChannelInfosWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.service.assembler.JoinedChannelAssembler;
@@ -36,7 +36,7 @@ public class JoinedChannelAssemblerTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("주어진 맴버가 포함된 채널만 가져와야 한다.")
     void returnsOnlyChannelsJoinedByMember() {
-        ChannelInfosWithRequesterDto response = joinedChannelAssembler.getJoinedChannels(requester.getId());
+        ChannelInfosWithMembershipDto response = joinedChannelAssembler.getJoinedChannels(requester.getId());
         assertThat(response.channels()).hasSize(1);
         assertThat(response.channels().get(0).channelInfo().channelId()).isEqualTo(blogChannel_1.getId());
     }
@@ -44,9 +44,9 @@ public class JoinedChannelAssemblerTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("요청자의 채널에서의 정보가 포함되어야 한다.")
     void includeRequesterMetadataInJoinedChannelResponse() {
-        ChannelInfosWithRequesterDto response = joinedChannelAssembler.getJoinedChannels(requester.getId());
+        ChannelInfosWithMembershipDto response = joinedChannelAssembler.getJoinedChannels(requester.getId());
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).requester().memberId()).isEqualTo(requester.getId());
-        assertThat(response.channels().get(0).requester().channelRole()).isEqualTo(ChannelRole.CHANNEL_MEMBER);
+        assertThat(response.channels().get(0).membership().memberId()).isEqualTo(requester.getId());
+        assertThat(response.channels().get(0).membership().channelRole()).isEqualTo(ChannelRole.CHANNEL_MEMBER);
     }
 }

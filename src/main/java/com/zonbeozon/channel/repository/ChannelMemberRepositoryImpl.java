@@ -5,7 +5,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
 import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.repository.expression.ChannelConstructorExpression;
@@ -42,9 +42,9 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
 
 
     @Override
-    public List<ChannelInfoWithRequesterDto> findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(Long memberId) {
-        JPAQuery<ChannelInfoWithRequesterDto> query = queryFactory.select(
-                ChannelConstructorExpression.channelInfoWithRequester(
+    public List<ChannelInfoWithMembershipDto> findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(Long memberId) {
+        JPAQuery<ChannelInfoWithMembershipDto> query = queryFactory.select(
+                ChannelConstructorExpression.channelInfoWithMembership(
                         channel,
                         channelProfile,
                         channelProfileImage,
@@ -67,9 +67,9 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
     }
 
     @Override
-    public Optional<ChannelInfoWithRequesterDto> findChannelInfoWithRequesterByChannelIdAndMemberId(Long channelId, Long memberId) {
-        JPAQuery<ChannelInfoWithRequesterDto> query = queryFactory.select(
-                ChannelConstructorExpression.channelInfoWithRequester(
+    public Optional<ChannelInfoWithMembershipDto> findChannelInfoWithRequesterByChannelIdAndMemberId(Long channelId, Long memberId) {
+        JPAQuery<ChannelInfoWithMembershipDto> query = queryFactory.select(
+                ChannelConstructorExpression.channelInfoWithMembership(
                         channel,
                         channelProfile,
                         channelProfileImage,

@@ -1,9 +1,11 @@
 package com.zonbeozon.channel.api;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
-import com.zonbeozon.channel.dto.ChannelInfosWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
+import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
+import com.zonbeozon.channel.dto.ChannelViewDto;
 import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
+import com.zonbeozon.channel.service.assembler.ChannelViewAssembler;
 import com.zonbeozon.channel.service.assembler.JoinedChannelAssembler;
 import com.zonbeozon.global.annotation.ApiComponent;
 import com.zonbeozon.global.exception.AccessDeniedException;
@@ -19,16 +21,22 @@ public class ChannelQueryApi {
     private final JoinedChannelAssembler joinedChannelAssembler;
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
     private final AuthenticationService authenticationService;
+    private final ChannelViewAssembler channelViewAssembler;
 
-    public ChannelInfosWithRequesterDto getJoinedChannels() {
+    public ChannelInfosWithMembershipDto getJoinedChannels() {
         Member member = authenticationService.getCurrentMember();
         return joinedChannelAssembler.getJoinedChannels(member.getId());
     }
 
-    public ChannelInfoWithRequesterDto getJoinedChannel(Long channelId) {
+    public ChannelInfoWithMembershipDto getJoinedChannel(Long channelId) {
         if(!channelAuthorizationCheckService.isAtLeastMember(channelId))
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         Member member = authenticationService.getCurrentMember();
         return joinedChannelAssembler.getJoinedChannel(channelId, member.getId());
+    }
+
+    public ChannelViewDto getChannelView(Long channelId) {
+        Member member = authenticationService.getCurrentMember();
+        return channelViewAssembler.getChannelView(channelId, member.getId());
     }
 }

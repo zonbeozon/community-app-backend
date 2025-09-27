@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.service.assembler;
 
-import com.zonbeozon.channel.dto.ChannelInfoWithRequesterDto;
-import com.zonbeozon.channel.dto.ChannelInfosWithRequesterDto;
+import com.zonbeozon.channel.dto.ChannelInfoWithMembershipDto;
+import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -17,12 +17,12 @@ import java.util.List;
 public class JoinedChannelAssembler {
     private final ChannelMemberRepository channelMemberRepository;
 
-    public ChannelInfosWithRequesterDto getJoinedChannels(Long memberId) {
-        List<ChannelInfoWithRequesterDto> channelInfosWithRequester = channelMemberRepository.findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(memberId);
-        return new ChannelInfosWithRequesterDto(channelInfosWithRequester, channelInfosWithRequester.size());
+    public ChannelInfosWithMembershipDto getJoinedChannels(Long memberId) {
+        List<ChannelInfoWithMembershipDto> channelInfosWithRequester = channelMemberRepository.findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(memberId);
+        return new ChannelInfosWithMembershipDto(channelInfosWithRequester, channelInfosWithRequester.size());
     }
 
-    public ChannelInfoWithRequesterDto getJoinedChannel(Long channelId, Long memberId) {
+    public ChannelInfoWithMembershipDto getJoinedChannel(Long channelId, Long memberId) {
         return channelMemberRepository.findChannelInfoWithRequesterByChannelIdAndMemberId(channelId, memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CHANNEL_NOT_FOUND));
     }
