@@ -36,8 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-application.properties
-application.yml
+src/test/resources/application.yml
 docker-compose.yml
 
 ### Qclass는 포함 ###
