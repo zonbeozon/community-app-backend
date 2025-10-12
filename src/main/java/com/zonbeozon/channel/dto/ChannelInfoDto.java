@@ -1,13 +1,11 @@
 package com.zonbeozon.channel.dto;
 
-import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelType;
 import com.zonbeozon.image.dto.ImageDto;
 
 public record ChannelInfoDto(
         Long channelId,
         ChannelType channelType,
-        ChannelCreatorType creatorType,
         String title,
         String description,
         ImageDto profile,
@@ -17,7 +15,6 @@ public record ChannelInfoDto(
     public ChannelInfoDto(
             Long channelId,
             ChannelType channelType,
-            ChannelCreatorType creatorType,
             String title,
             String description,
             Long imageId,
@@ -28,7 +25,6 @@ public record ChannelInfoDto(
         this(
                 channelId,
                 channelType,
-                creatorType,
                 title,
                 description,
                 imageId == null ? null : new ImageDto(imageId, imageUrl),

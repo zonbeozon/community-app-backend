@@ -22,9 +22,9 @@ public record ChannelCreateRequest(
         @Valid
         ChannelSettingRequest settings
 ) implements ChannelTitleProvider {
-        public ChannelCreateCommand toCommand(ChannelCreatorType creatorType) {
+        public ChannelCreateCommand toCommand() {
                 return new ChannelCreateCommand(
-                        channelType, title, description, imageId, settings.contentVisibility(), settings.joinPolicy(), creatorType
+                        channelType, title, description, imageId, settings.contentVisibility(), settings.joinPolicy()
                 );
         }
 }

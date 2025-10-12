@@ -1,6 +1,5 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.enums.ChannelType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

@@ -23,6 +23,7 @@ import static com.zonbeozon.channel.entity.QBannedChannelMember.bannedChannelMem
 import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.member.domain.QMemberProfile.memberProfile;
+
 @Repository
 @RequiredArgsConstructor
 public class BannedChannelMemberRepositoryImpl implements BannedChannelMemberRepositoryCustom {

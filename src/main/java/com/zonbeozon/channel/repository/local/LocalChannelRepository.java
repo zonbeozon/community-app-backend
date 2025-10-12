@@ -11,10 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.zonbeozon.channel.entity.QChannel.*;
-import static com.zonbeozon.channel.entity.QChannelProfile.channelProfile;
-import static com.zonbeozon.image.entity.QImage.image;
-
 @Repository
 @Transactional
 @RequiredArgsConstructor

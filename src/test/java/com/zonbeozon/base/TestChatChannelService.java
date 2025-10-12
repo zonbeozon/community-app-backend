@@ -1,9 +1,7 @@
 package com.zonbeozon.base;
 
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.entity.ChatChannel;
-import com.zonbeozon.channel.enums.ChannelCreatorType;
 import com.zonbeozon.channel.repository.ChatChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
