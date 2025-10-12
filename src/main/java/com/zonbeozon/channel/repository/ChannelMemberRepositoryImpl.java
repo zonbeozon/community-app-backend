@@ -25,10 +25,9 @@ import java.util.Optional;
 
 import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
-import static com.zonbeozon.channel.entity.QChannelProfile.*;
+import static com.zonbeozon.channel.entity.QChannelProfile.channelProfile;
 import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.member.domain.QMemberProfile.memberProfile;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,7 +38,6 @@ public class ChannelMemberRepositoryImpl implements ChannelMemberRepositoryCusto
 
     private static final QImage memberProfileImage = new QImage("memberProfileImage");
     private static final QImage channelProfileImage = new QImage("channelProfileImage");
-
 
     @Override
     public List<ChannelInfoWithMembershipDto> findChannelInfoWithRequesterByMemberIdOrderByLatestEventOccurredDesc(Long memberId) {

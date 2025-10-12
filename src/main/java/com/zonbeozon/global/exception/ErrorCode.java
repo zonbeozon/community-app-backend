@@ -6,6 +6,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ErrorCode {
+
+    //405
+    METHOD_NOT_ALLOWED("지원하지 않는 Http Method입니다."),
+
+    //5xx
     INTERNAL_SERVER_ERROR("알수 없는 에러 발생."),
     SERVICE_NOT_READY("아직 제공되지 않는 서비스입니다."),
     DATA_IS_STALE("내부 문제로 인해 최신 데이터를 제공할 수 없습니다."),

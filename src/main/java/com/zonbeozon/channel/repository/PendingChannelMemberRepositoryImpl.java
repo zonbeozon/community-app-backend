@@ -9,7 +9,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.channel.dto.PendingChannelMemberDto;
 import com.zonbeozon.channel.entity.PendingChannelMember;
-import com.zonbeozon.image.dto.ImageDto;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

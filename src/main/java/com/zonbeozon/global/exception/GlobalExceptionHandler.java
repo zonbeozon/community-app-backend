@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -85,10 +86,10 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(MEth.class)
-    public ResponseEntity<?> handleDuplicateException(ConflictException e) {
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<?> handleDuplicateException(HttpMediaTypeNotSupportedException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ErrorResponse(e.getErrorCode(), e.getMessage())
+                new ErrorResponse(ErrorCode.METHOD_NOT_ALLOWED.name(), ErrorCode.METHOD_NOT_ALLOWED.getMessage())
         );
     }
 

@@ -39,3 +39,6 @@ out/
 application.properties
 application.yml
 docker-compose.yml
+
+### Qclass는 포함 ###
+!/build/generated/querydsl
