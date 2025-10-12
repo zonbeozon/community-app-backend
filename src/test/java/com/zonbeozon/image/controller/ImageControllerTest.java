@@ -102,6 +102,6 @@ public class ImageControllerTest {
                                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").value(1L));
+                .andExpect(jsonPath("$.imageId").value(1L));
     }
 }

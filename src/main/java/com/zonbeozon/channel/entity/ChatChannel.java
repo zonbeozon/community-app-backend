@@ -14,9 +14,8 @@ public class ChatChannel extends Channel {
     public ChatChannel(
             String title,
             String description,
-            ChannelSetting setting,
-            ChannelCreatorType creatorType
+            ChannelSetting setting
     ) {
-        super(title, description, setting, creatorType, ChannelType.CHAT);
+        super(title, description, setting, ChannelType.CHAT);
     }
 }

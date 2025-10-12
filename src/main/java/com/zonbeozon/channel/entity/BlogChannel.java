@@ -17,10 +17,9 @@ public class BlogChannel extends Channel {
     public BlogChannel(
             String title,
             String description,
-            ChannelSetting setting,
-            ChannelCreatorType creatorType
+            ChannelSetting setting
     ) {
-        super(title, description, setting, creatorType, ChannelType.BLOG);
+        super(title, description, setting, ChannelType.BLOG);
     }
 
 }

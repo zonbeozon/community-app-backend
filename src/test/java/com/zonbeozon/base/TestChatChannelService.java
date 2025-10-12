@@ -16,18 +16,17 @@ public class TestChatChannelService extends TestChannelService {
 
     public ChatChannel createAndSave(
             String channelName,
-            ChannelSetting channelSetting,
-            ChannelCreatorType creatorType
+            ChannelSetting channelSetting
     ) {
-        ChatChannel chatChannel = new ChatChannel(channelName, channelName + "'s description", channelSetting, creatorType);
+        ChatChannel chatChannel = new ChatChannel(channelName, channelName + "'s description", channelSetting);
         return channelRepository.save(chatChannel);
     }
 
     public ChatChannel createAndSave() {
-        return createAndSave(DEFAULT_NAME, DEFAULT_CHANNEL_SETTING, DEFAULT_CREATOR_TYPE);
+        return createAndSave(DEFAULT_NAME, DEFAULT_CHANNEL_SETTING);
     }
 
     public ChatChannel createAndSave(String channelName) {
-        return createAndSave(channelName, DEFAULT_CHANNEL_SETTING, DEFAULT_CREATOR_TYPE);
+        return createAndSave(channelName, DEFAULT_CHANNEL_SETTING);
     }
 }

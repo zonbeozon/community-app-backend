@@ -14,19 +14,18 @@ public class TestBlogChannelService extends TestChannelService {
 
     public BlogChannel createAndSave(
             String channelName,
-            ChannelSetting channelSetting,
-            ChannelCreatorType creatorType
+            ChannelSetting channelSetting
     ) {
-        BlogChannel blogChannel = new BlogChannel(channelName, channelName + "'s description", channelSetting, creatorType);
+        BlogChannel blogChannel = new BlogChannel(channelName, channelName + "'s description", channelSetting);
         return channelRepository.save(blogChannel);
     }
 
     public BlogChannel createAndSave() {
-        return createAndSave(DEFAULT_NAME, DEFAULT_CHANNEL_SETTING, DEFAULT_CREATOR_TYPE);
+        return createAndSave(DEFAULT_NAME, DEFAULT_CHANNEL_SETTING);
     }
 
     public BlogChannel createAndSave(String channelName) {
-        return createAndSave(channelName, DEFAULT_CHANNEL_SETTING, DEFAULT_CREATOR_TYPE);
+        return createAndSave(channelName, DEFAULT_CHANNEL_SETTING);
     }
 
 }

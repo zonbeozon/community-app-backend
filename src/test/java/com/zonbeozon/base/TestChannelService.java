@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestChannelService {
     protected static final ChannelSetting DEFAULT_CHANNEL_SETTING = new ChannelSetting(ChannelContentVisibility.PUBLIC, ChannelJoinPolicy.OPEN);
-    protected static final ChannelCreatorType DEFAULT_CREATOR_TYPE = ChannelCreatorType.COMMUNITY;
     protected static final String DEFAULT_NAME = "test-channel";
 
     @Autowired
