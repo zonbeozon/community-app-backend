@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ErrorCode {
     INTERNAL_SERVER_ERROR("알수 없는 에러 발생."),
+    SERVICE_NOT_READY("아직 제공되지 않는 서비스입니다."),
+    DATA_IS_STALE("내부 문제로 인해 최신 데이터를 제공할 수 없습니다."),
     //badrequest
     BAD_REQUEST("잘못된 요청입니다"),
     //authorization
@@ -55,7 +57,12 @@ public enum ErrorCode {
     IMAGE_NOT_FOUND("해당 조건에 맞는 image가 존재하지 않습니다."),
 
     //comment
-    COMMENT_NOT_FOUND("해당 조건에 맞는 comment가 존재하지 않습니다.");
+    COMMENT_NOT_FOUND("해당 조건에 맞는 comment가 존재하지 않습니다."),
+
+    //coinInfo
+    SYMBOL_NOT_FOUND("존재하지 않는 코인 심볼입니다."),
+    UNSUPPORTED_BASE_ASSET("지원하지 않는 통화입니다"),
+    UNSUPPORTED_LANGUAGE("지원하지 않는 언어입니다.");
 
     private final String message;
 }

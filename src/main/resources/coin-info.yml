@@ -1,0 +1,12 @@
+coin-info:
+  health-check:
+    data:
+      stale-threshold-minutes: 20
+  ticker:
+#    update-interval 이 1분 이하여도 cmc 기반 업데이트인 경우 cmc api 자체 업데이트 빈도가 1분 이기 때문에
+#    기능의 차이가 없다.
+    update-interval-cron: "10 */2 * * * ?" #매 2분마다 10초에 실행
+
+  metadata:
+    # 3일에 한번, 정확히 자정 10분(00:10)에 실행
+    update-interval-cron: "0 10 0 */3 * ?"

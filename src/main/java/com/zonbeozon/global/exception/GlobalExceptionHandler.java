@@ -84,4 +84,18 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage())
         );
     }
+
+    @ExceptionHandler(MEth.class)
+    public ResponseEntity<?> handleDuplicateException(ConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(e.getErrorCode(), e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<?> handleServiceUnavailableException(ServiceUnavailableException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
+                new ErrorResponse(e.getErrorCode(), e.getMessage())
+        );
+    }
 }

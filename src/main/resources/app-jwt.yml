@@ -1,0 +1,5 @@
+jwt:
+  key: ${APP_JWT_KEY}
+  #  access-token-expire-ms: 1800000       # 30분 = 1000 * 60 * 30
+  access-token-expire-ms: 604800000      #dev only
+  refresh-token-expire-ms: 604800000    # 7일 = 1000 * 60 * 60 * 24 * 7
