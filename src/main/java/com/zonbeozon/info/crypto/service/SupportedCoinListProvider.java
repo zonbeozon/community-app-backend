@@ -20,7 +20,7 @@ public class SupportedCoinListProvider {
     public void initializeFromFile() {
         ListFileLoaderTemplate<String> listFileLoaderTemplate = new ListFileLoaderTemplate<>(String.class);
         Set<String> symbolsReadFromFile = Set.copyOf(listFileLoaderTemplate.load("/data/supported-coin-symbols.json"));
-        if(symbols.isEmpty()) log.warn("등록된 symbol이 0개 입니다.");
+        if(symbolsReadFromFile.isEmpty()) log.warn("등록된 symbol이 0개 입니다.");
         symbols = symbolsReadFromFile;
     }
 }

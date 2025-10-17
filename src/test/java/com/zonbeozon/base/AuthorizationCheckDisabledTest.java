@@ -5,8 +5,10 @@ import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@ActiveProfiles("test")
 public class AuthorizationCheckDisabledTest {
     @MockitoBean
     protected ChannelAuthorizationCheckService channelAuthorizationCheckService;

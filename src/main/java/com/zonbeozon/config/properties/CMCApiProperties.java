@@ -2,7 +2,7 @@ package com.zonbeozon.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "external.api.cmc")
+@ConfigurationProperties(prefix = "api.cmc")
 public record CMCApiProperties(
         String baseUrl,
         Paths paths,

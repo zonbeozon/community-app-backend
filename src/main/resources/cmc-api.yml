@@ -1,15 +1,14 @@
-external:
-  api:
-    cmc:
-      base-url: "https://pro-api.coinmarketcap.com"
-      paths:
-        metadata: "/v1/cryptocurrency/info"
-        ticker: "/v1/cryptocurrency/quotes/latest"
-      headers:
-        auth-key: "X-CMC_PRO_API_KEY"
-        auth-value: ${CMC_API_KEY}
-      params:
-        symbol-key: "symbol"
-        aux-key: "aux"
-        ticker-aux-value: "cmc_rank,circulating_supply,max_supply,total_supply"
-        metadata-aux-value: "urls,logo,description"
+api:
+  cmc:
+    base-url: "https://pro-api.coinmarketcap.com"
+    paths:
+      metadata: "/v1/cryptocurrency/info"
+      ticker: "/v1/cryptocurrency/quotes/latest"
+    headers:
+      auth-key: "X-CMC_PRO_API_KEY"
+      auth-value: ${CMC_API_KEY}
+    params:
+      symbol-key: "symbol"
+      aux-key: "aux"
+      ticker-aux-value: "cmc_rank,circulating_supply,max_supply,total_supply"
+      metadata-aux-value: "urls,logo,description"

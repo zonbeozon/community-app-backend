@@ -2,6 +2,7 @@ package com.zonbeozon.image.controller;
 
 
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.image.api.ImageUploadApi;
 import com.zonbeozon.image.api.web.ImageController;
 import com.zonbeozon.image.dto.ImageDto;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SimpleSecurityEnabledWebMvcTest(value = ImageController.class)
-public class ImageControllerTest {
+public class ImageControllerTest extends AuthorizationCheckDisabledTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +55,7 @@ public class ImageControllerTest {
         MockMultipartFile invalidFile = new MockMultipartFile(
                 "image",
                 "aaaa",
-                MediaType.MULTIPART_FORM_DATA_VALUE, // 유효하지 않은 Content-Type
+                MediaType.MULTIPART_FORM_DATA_VALUE,
                 testImageByte
         );
 

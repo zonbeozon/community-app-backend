@@ -16,7 +16,7 @@ public class CoinInfoDataHealthIndicator {
     private final AtomicReference<Instant> atomicLastTickerSuccessTime = new AtomicReference<>();
     private final AtomicReference<Instant> atomicLastMetadataSuccessTime = new AtomicReference<>();
 
-    @Value("${health-check.data.stale-threshold-minutes}")
+    @Value("${coin-info.health-check.data.stale-threshold-minutes}")
     private long staleThresholdMinutes;
 
     public void recordTickerSuccess() {

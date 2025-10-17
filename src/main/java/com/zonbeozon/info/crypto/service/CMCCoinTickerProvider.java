@@ -4,7 +4,6 @@ import com.zonbeozon.config.properties.CMCApiProperties;
 import com.zonbeozon.global.fetch.FetchException;
 import com.zonbeozon.info.crypto.domain.BaseAsset;
 import com.zonbeozon.info.crypto.dto.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -15,23 +14,27 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-@RequiredArgsConstructor
 public class CMCCoinTickerProvider implements CoinTickerProvider {
     private final RestClient restClient;
     private final CMCApiProperties cmcApiProperties;
+
+    public CMCCoinTickerProvider(CMCApiProperties cmcApiProperties, RestClient.Builder restClientBuilder) {
+        this.cmcApiProperties = cmcApiProperties;
+        this.restClient = restClientBuilder
+                .baseUrl(cmcApiProperties.baseUrl())
+                .defaultHeader(cmcApiProperties.headers().authKey(), cmcApiProperties.headers().authValue())
+                .build();
+    }
 
     @Override
     public List<CoinTickerDto> provide(Collection<String> symbols) {
         String joinedSymbol = String.join(",", symbols);
         CMCTickerResponse response = Optional.ofNullable(restClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .host(cmcApiProperties.baseUrl())
                         .path(cmcApiProperties.paths().ticker())
                         .queryParam(cmcApiProperties.params().symbolKey(), joinedSymbol)
                         .queryParam(cmcApiProperties.params().auxKey(), cmcApiProperties.params().tickerAuxValue())
                         .build())
-                .header(cmcApiProperties.headers().authKey(), cmcApiProperties.headers().authValue())
                 .retrieve()
                 .body(CMCTickerResponse.class)
         ).orElseThrow(() -> new FetchException("response body is null"));

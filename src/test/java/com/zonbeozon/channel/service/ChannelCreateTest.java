@@ -42,7 +42,7 @@ public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("command로 부터 정상적으로 채널이 저장되어야 한다.")
     void createsChannelSuccessfullyFromCommand() {
-        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand();
         Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
         assertChannelMetadataEquals(channel, command);
@@ -51,7 +51,7 @@ public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("채널이 생성될때 요청자는 Owner로 등록된다.")
     void registerRequesterAsOwnerWhenChannelIsCreated() {
-        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand();
         Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
         ChannelMember channelMember = channelMemberFinder.findByChannelIdAndMemberIdElseThrow(channel.getId(), member.getId());
@@ -62,7 +62,7 @@ public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("중복 채널명은 예외를 발생시킨다.")
     void throwsExceptionWhenCreatingChannelWithDuplicateTitle() {
-        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand(ChannelCreatorType.COMMUNITY);
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().build().toCommand();
         //first time create
         channelCreator.addChannel(member.getId(), command);
 
@@ -79,7 +79,7 @@ public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     @DisplayName("이미지 id가 포함되어 있다면 채널 프로필로 등록한다.")
     void RegisterProfileWhenChannelIsCreatedWithImageId() {
         Image image = new TestMockImageBuilder(member, "1234").persist(entityManager);
-        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().setImageId(image.getId()).build().toCommand(ChannelCreatorType.COMMUNITY);
+        ChannelCreateCommand command = new TestChannelCreateRequestBuilder().setImageId(image.getId()).build().toCommand();
         Long id = channelCreator.addChannel(member.getId(), command);
         Channel channel = channelFinder.findByIdElseThrow(id);
 

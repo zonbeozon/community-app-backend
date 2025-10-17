@@ -13,24 +13,28 @@ import org.springframework.web.client.RestClient;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-@RequiredArgsConstructor
 @Component
 public class CMCCoinMetadataProvider implements CoinMetadataProvider {
     private final RestClient restClient;
     private final CMCApiProperties cmcApiProperties;
+
+    public CMCCoinMetadataProvider(RestClient.Builder restClientBuilder, CMCApiProperties cmcApiProperties) {
+        this.restClient = restClientBuilder
+                .baseUrl(cmcApiProperties.baseUrl())
+                .defaultHeader(cmcApiProperties.headers().authKey(), cmcApiProperties.headers().authValue())
+                .build();
+        this.cmcApiProperties = cmcApiProperties;
+    }
 
     @Override
     public List<CoinMetadataDto> provide(Collection<String> symbols) {
         String joinedSymbol = String.join(",", symbols);
         CMCMetadataResponse response = Optional.ofNullable(restClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .host(cmcApiProperties.baseUrl())
                         .path(cmcApiProperties.paths().metadata())
                         .queryParam(cmcApiProperties.params().symbolKey(), joinedSymbol)
                         .queryParam(cmcApiProperties.params().auxKey(), cmcApiProperties.params().metadataAuxValue())
                         .build())
-                .header(cmcApiProperties.headers().authKey(), cmcApiProperties.headers().authValue())
                 .retrieve()
                 .body(CMCMetadataResponse.class)
         ).orElseThrow(() -> new FetchException("response body is null"));
