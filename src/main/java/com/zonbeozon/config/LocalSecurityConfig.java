@@ -65,7 +65,7 @@ public class LocalSecurityConfig {
             if (request.getRequestURI().equals("/local/login")) {
                 // testuser 로 자동 인증
                 String email = request.getParameter("email");
-                Member member = memberFinder.findByEmail(email);
+                Member member = memberFinder.findByEmail(email).orElseThrow();
                 Authentication authentication = createAuthentication(member);
                 successHandler.onAuthenticationSuccess(request, response, authentication);
                 return;

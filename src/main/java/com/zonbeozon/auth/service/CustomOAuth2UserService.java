@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +35,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member getOrCreateMember(OAuth2UserInfo oAuth2UserInfo) {
-        try {
-            return memberFinder.findByEmail(oAuth2UserInfo.email());
-        } catch (NotFoundException e) {
-            return memberCreator.createMemberWithRandomUsername(
-                    oAuth2UserInfo.email(),
-                    ServerRole.USER
-            );
-        }
+        Optional<Member> optMember = memberFinder.findByEmail(oAuth2UserInfo.email());
+        return optMember.orElseGet(() -> memberCreator.createMemberWithRandomUsername(
+                oAuth2UserInfo.email(),
+                ServerRole.USER
+        ));
     }
 }
