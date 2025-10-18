@@ -38,7 +38,7 @@ public class TestMemberService {
     }
 
     public Member setProfile(Member member, MemberProfile profile) {
-        member.updateProfile(profile);
+        member.setProfile(profile);
         return member;
     }
 
@@ -67,8 +67,7 @@ public class TestMemberService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    public void clearAll() {
-        memberProfileRepository.deleteAll();
-        memberRepository.deleteAll();
+    public void deleteMember(Member member) {
+        memberRepository.delete(member);
     }
 }

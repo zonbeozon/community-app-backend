@@ -8,15 +8,14 @@ import org.springframework.lang.Nullable;
 public record MemberDto(
         Long memberId,
         String username,
-        @Nullable ImageDto profile,
+        ImageDto profile,
         ServerRole serverRole
 ) {
-    public static MemberDto from(Member member) {
-        ImageDto imageDto = member.getProfile() == null ? null : ImageDto.from(member.getProfile().getImage());
+    public static MemberDto from(Member member, ImageDto profile) {
         return new MemberDto(
                 member.getId(),
                 member.getUsername(),
-                imageDto,
+                profile,
                 member.getRole()
         );
     }

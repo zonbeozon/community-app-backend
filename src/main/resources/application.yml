@@ -29,6 +29,12 @@ spring:
         jdbc:
           batch_size: 100
     open-in-view: false
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      data-locations: classpath:data/system-admin.sql
+      mode: always
 
   security:
     oauth2:
@@ -77,5 +83,8 @@ outbox:
   schedule:
     initial-delay: 60000
     fixed-rate: 600000 #10분
+
+system-admin:
+  id: 1
 
 

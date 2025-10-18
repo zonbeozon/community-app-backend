@@ -46,7 +46,7 @@ public class ImageUploadTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setupImage() throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource("/test-image.jpeg");
+        ClassPathResource classPathResource = new ClassPathResource("data/test-image.jpeg");
         imageFile = classPathResource.getFile();
         contentLength = imageFile.length();
     }

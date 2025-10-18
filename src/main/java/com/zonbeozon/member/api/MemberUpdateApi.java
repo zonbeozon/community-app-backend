@@ -8,6 +8,7 @@ import com.zonbeozon.member.dto.MemberDto;
 import com.zonbeozon.member.dto.MemberProfileUpdateRequest;
 import com.zonbeozon.member.dto.UsernameUpdateRequest;
 import com.zonbeozon.member.service.MemberAssembler;
+import com.zonbeozon.member.service.MemberProfileService;
 import com.zonbeozon.member.service.MemberUpdater;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class MemberUpdateApi {
     private final AuthenticationService authenticationService;
     private final MemberAssembler memberAssembler;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
+    private final MemberProfileService memberProfileService;
 
     public MemberDto updateUsername(UsernameUpdateRequest request) {
         Member member = authenticationService.getCurrentMember();
@@ -30,7 +32,13 @@ public class MemberUpdateApi {
     public MemberDto updateProfile(MemberProfileUpdateRequest request) {
         Member member = authenticationService.getCurrentMember();
         imageOwnershipVerifier.verify(member.getId(), request.imageId());
-        memberUpdater.updateProfile(member.getId(), request.imageId());
+        memberProfileService.updateProfile(member.getId(), request.imageId());
+        return memberAssembler.getMemberResponse(member.getId());
+    }
+
+    public MemberDto setAsDefaultProfile() {
+        Member member = authenticationService.getCurrentMember();
+        memberProfileService.setAsDefaultProfile(member.getId());
         return memberAssembler.getMemberResponse(member.getId());
     }
 }

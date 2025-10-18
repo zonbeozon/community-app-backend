@@ -37,6 +37,7 @@ out/
 
 application-test.yml
 docker-compose.yml
+s3-data
 
 ### Qclass는 포함 ###
 !/build/generated/querydsl

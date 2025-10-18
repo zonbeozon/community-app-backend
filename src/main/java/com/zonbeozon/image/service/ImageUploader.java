@@ -1,6 +1,5 @@
 package com.zonbeozon.image.service;
 
-import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.global.UUIDGenerator;
 import com.zonbeozon.image.ImageS3Properties;
 import com.zonbeozon.image.S3UriBuilder;
@@ -26,6 +25,13 @@ public class ImageUploader {
 
     public Long uploadImage(Long memberId, InputStream fileContentStream, long contentLength, String contentType) {
         String key = uuidGenerator.generateUUID();
+        return uploadImage(memberId, key, fileContentStream, contentLength, contentType);
+    }
+
+    /**
+     * @param key 만약 이미 존재하는 키라면 덮어쓴다.
+     */
+    public Long uploadImage(Long memberId, String key, InputStream fileContentStream, long contentLength, String contentType) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(imageS3Properties.getBucket())
                 .key(key)

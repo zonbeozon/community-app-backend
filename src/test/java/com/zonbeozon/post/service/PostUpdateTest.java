@@ -57,9 +57,9 @@ public class PostUpdateTest extends AbstractChannelIntegrationTest {
         );
         postUpdater.updateContent(post.getId(), new PostUpdateRequest("", imagesToUpdate.stream().map(Image::getId).toList()));
 
-        List<PostImage> postImages = postImageRepository.findAll();
+        List<PostImage> postImages = postImageRepository.findAllByPostIdWithImage(post.getId());
         Assertions.assertThat(postImages).hasSize(3);
-        List<Image> images = imageRepository.findAll();
+        List<Image> images = postImages.stream().map(PostImage::getImage).toList();
         Assertions.assertThat(images).hasSize(3)
                 .map(Image::getId)
                 .containsExactlyInAnyOrderElementsOf(imagesToUpdate.stream().map(Image::getId).toList());

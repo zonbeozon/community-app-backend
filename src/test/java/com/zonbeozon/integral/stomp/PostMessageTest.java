@@ -42,7 +42,7 @@ public class PostMessageTest extends AbstractChannelIntegrationTest {
     void tearDown() {
         testPostService.clearAll();
         testBlogChannelService.clearAll();
-        testMemberService.clearAll();
+        testMemberService.deleteMember(member);
         TestTransaction.flagForCommit();
         TestTransaction.end();
     }

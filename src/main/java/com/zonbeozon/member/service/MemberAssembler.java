@@ -1,7 +1,7 @@
 package com.zonbeozon.member.service;
 
+import com.zonbeozon.image.dto.ImageDto;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.respository.MemberRepository;
 import com.zonbeozon.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,8 @@ public class MemberAssembler {
 
     public MemberDto getMemberResponse(Long memberId) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
-        return MemberDto.from(member);
+        ImageDto imageDto = member.getProfile() == null ? null : ImageDto.from(member.getProfile().getImage());
+        return MemberDto.from(member, imageDto);
     }
 
     /**

@@ -18,7 +18,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 @SpringBootTest
 @Transactional
 @Execution(ExecutionMode.CONCURRENT)
-@AutoConfigureTestDatabase
 @RecordApplicationEvents
 @ActiveProfiles({"test", "cache", "mocks3"})
 @TestPropertySource(properties = {

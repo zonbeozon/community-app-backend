@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,6 +19,10 @@ public class ImageFinder {
 
     public Image findByIdElseThrow(Long imageId) {
         return imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException(ErrorCode.IMAGE_NOT_FOUND));
+    }
+
+    public Optional<Image> findByKey(String key) {
+        return imageRepository.findByObjectKey(key);
     }
 
     public List<Image> findAllByIds(List<Long> imageIds) {

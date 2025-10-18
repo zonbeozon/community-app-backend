@@ -7,11 +7,9 @@ import com.zonbeozon.image.service.ImageDeleter;
 import com.zonbeozon.image.service.ImageFinder;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.domain.MemberProfile;
-import com.zonbeozon.member.dto.MemberDto;
 import com.zonbeozon.member.respository.MemberProfileRepository;
 import com.zonbeozon.member.respository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberUpdater {
     private final MemberRepository memberRepository;
-    private final MemberProfileRepository profileRepository;
     private final MemberFinder memberFinder;
-    private final ImageFinder imageFinder;
-    private final ImageDeleter imageDeleter;
 
     public void updateUsername(Long memberId, String newUsername) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
@@ -34,21 +29,5 @@ public class MemberUpdater {
 
     private boolean isExistUsername(String username) {
         return memberRepository.existsByUsername(username);
-    }
-
-    public void updateProfile(Long memberId, @Nullable Long imageId) {
-        Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
-        if(member.getProfile() != null) deleteExistProfile(member);
-        if(imageId == null) return;
-        Image image = imageFinder.findByIdElseThrow(imageId);
-        MemberProfile memberProfile = profileRepository.save(new MemberProfile(member, image));
-        member.updateProfile(memberProfile);
-    }
-
-    private void deleteExistProfile(Member member) {
-        Image existImage = member.getProfile().getImage();
-        profileRepository.deleteById(member.getProfile().getId());
-        member.updateProfile(null);
-        imageDeleter.deleteImage(existImage.getId());
     }
 }
