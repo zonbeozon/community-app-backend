@@ -32,7 +32,7 @@ public class MemberUpdateApi {
     public MemberDto updateProfile(MemberProfileUpdateRequest request) {
         Member member = authenticationService.getCurrentMember();
         imageOwnershipVerifier.verify(member.getId(), request.imageId());
-        memberProfileService.updateProfile(member.getId(), request.imageId());
+        memberProfileService.updateProfile(member.getId(), request.imageId(), false);
         return memberAssembler.getMemberResponse(member.getId());
     }
 

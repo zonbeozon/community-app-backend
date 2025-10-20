@@ -22,23 +22,23 @@ public class MemberProfileService {
 
     public void setAsDefaultProfile(Long memberId) {
         Image defaultProfile = defaultMemberProfileProvider.getDefaultProfile();
-        updateProfile(memberId, defaultProfile.getId());
+        updateProfile(memberId, defaultProfile.getId(), true);
     }
 
-    public void updateProfile(Long memberId, Long imageId) {
+    public void updateProfile(Long memberId, Long imageId, boolean isSharedResource) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
         if(member.getProfile() != null) deleteProfile(member);
         if(imageId == null) return;
         Image image = imageFinder.findByIdElseThrow(imageId);
-        MemberProfile memberProfile = profileRepository.save(new MemberProfile(member, image));
+        MemberProfile memberProfile = profileRepository.save(new MemberProfile(member, image, isSharedResource));
         member.setProfile(memberProfile);
     }
 
     private void deleteProfile(Member member) {
         MemberProfile profile = member.getProfile();
-        Image image = member.getProfile().getImage();
-        profileRepository.deleteById(member.getProfile().getId());
+        Image image = profile.getImage();
         member.setProfile(null);
+        profileRepository.deleteById(profile.getId());
         if (!profile.isSharedResource()) imageDeleter.deleteImage(image.getId());
     }
 }
