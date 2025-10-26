@@ -98,8 +98,6 @@ public class MemberController {
             summary = "맴버 프로필 업데이트",
             description = """
                     맴버 프로필을 변경한다.
-                    
-                    프로필을 없애고 싶다면 NULL로 보낸다.
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
@@ -120,6 +118,28 @@ public class MemberController {
             MemberProfileUpdateRequest request
     ) {
         MemberDto response = memberUpdateApi.updateProfile(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "맴버 프로필을 기본 프로필로 변경",
+            description = """
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = MemberDto.class)
+                    )
+            )}
+    )
+    @PatchMapping("/profile/default")
+    public ResponseEntity<MemberDto> setAsDefaultProfile() {
+        MemberDto response = memberUpdateApi.setAsDefaultProfile();
         return ResponseEntity.ok(response);
     }
 

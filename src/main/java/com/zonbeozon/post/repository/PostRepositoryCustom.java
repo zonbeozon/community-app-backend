@@ -1,13 +1,13 @@
 package com.zonbeozon.post.repository;
 
-import com.zonbeozon.global.LongTypeCursorPage;
+import com.zonbeozon.global.CursorPage;
+import com.zonbeozon.post.dto.PostCursor;
 import com.zonbeozon.post.entity.Post;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostRepositoryCustom {
     Optional<Post> findById(Long id, PostFetchOptions options);
-    LongTypeCursorPage<Post> findCursorBasedPostsByChannelId(Long channelId, Long cursor, int size, boolean inverted);
+    CursorPage<Post, PostCursor> findCursorBasedPostsByChannelId(Long channelId, PostCursor cursor, int size, boolean inverted);
     Optional<Post> findByIdWithImages(Long postId);
 }

@@ -1,17 +1,10 @@
-package com.zonbeozon.comment.controller;
+package com.zonbeozon.comment.api.web;
 
-import com.zonbeozon.auth.service.AuthenticationService;
+import com.zonbeozon.comment.api.CommentCommandApi;
+import com.zonbeozon.comment.api.CommentQueryApi;
 import com.zonbeozon.comment.dto.CommentAddRequest;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
-import com.zonbeozon.comment.service.CommentAssembler;
-import com.zonbeozon.comment.service.CommentAuthorizationCheckService;
-import com.zonbeozon.comment.service.CommentCreator;
-import com.zonbeozon.comment.service.CommentRemover;
 import com.zonbeozon.config.SwaggerConfig;
-import com.zonbeozon.global.exception.AccessDeniedException;
-import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,17 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "댓글", description = "댓글 관련 엔드포인트")
 public class CommentController {
-    private final CommentCreator commentCreator;
-    private final CommentRemover commentRemover;
-    private final CommentAssembler commentAssembler;
-    private final PostAuthorizationCheckService postAuthorizationCheckService;
-    private final CommentAuthorizationCheckService commentAuthorizationCheckService;
-    private final AuthenticationService authenticationService;
-
+    private final CommentQueryApi commentQueryApi;
+    private final CommentCommandApi commentCommandApi;
 
     @Operation(
             summary = "댓글 쓰기",
@@ -53,9 +44,7 @@ public class CommentController {
             @PathVariable Long postId,
             @Valid @RequestBody CommentAddRequest request)
     {
-        if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        Member member = authenticationService.getCurrentMember();
-        Long commentId = commentCreator.addComment(member.getId(), postId, request.content());
+        Long commentId = commentCommandApi.createComment(postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(commentId);
     }
 
@@ -77,11 +66,9 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId
     ) {
-        if(!commentAuthorizationCheckService.isAuthorOrHasHigherRoleThanAuthor(commentId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        commentRemover.deleteComment(commentId);
+        commentCommandApi.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
-
 
     @Operation(
             summary = "댓글 조회",
@@ -96,7 +83,21 @@ public class CommentController {
     public ResponseEntity<CommentsWithAuthorResponse> getComments(
             @PathVariable Long postId
     ) {
-        if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        return ResponseEntity.ok(commentAssembler.getCommentResponseByPostId(postId));
+        return ResponseEntity.ok(commentQueryApi.getComments(postId));
+    }
+
+
+    @Operation(
+            summary = "post별 댓글 개수 조회",
+            description = """
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @GetMapping("/channel/{channelId}/comments")
+    public ResponseEntity<Map<Long, Long>> getCommentCountsByPostIds(
+            @PathVariable Long channelId,
+            @RequestParam List<Long> postIds
+    ) {
+        return ResponseEntity.ok(commentQueryApi.getCommentCountsByPostIds(channelId, postIds));
     }
 }

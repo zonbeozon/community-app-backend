@@ -6,6 +6,7 @@ import com.zonbeozon.global.annotation.ApiComponent;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
+import com.zonbeozon.post.dto.PostCursor;
 import com.zonbeozon.post.dto.PostResponse;
 import com.zonbeozon.post.service.PostAssembler;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
@@ -23,15 +24,14 @@ public class PostQueryApi {
 
     public CursorBasedPostsResponse getCursorBasedPostResponse(
             Long channelId,
-            Long cursorPostId,
+            PostCursor cursor,
             int size,
             boolean inverted
     ) {
         if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         return postAssembler.getCursorBasedPostResponse(
-                authenticationService.getCurrentMember().getId(),
                 channelId,
-                cursorPostId,
+                cursor,
                 size,
                 inverted
         );

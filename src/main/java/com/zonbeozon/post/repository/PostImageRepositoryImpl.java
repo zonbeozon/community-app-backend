@@ -24,7 +24,7 @@ public class PostImageRepositoryImpl implements PostImageRepositoryCustom {
                         postImage.count()
                 ))
                 .from(post)
-                .leftJoin(post.images, postImage)
+                .leftJoin(post.postImages, postImage)
                 .where(post.id.in(postIds))
                 .groupBy(post.id)
                 .fetch();

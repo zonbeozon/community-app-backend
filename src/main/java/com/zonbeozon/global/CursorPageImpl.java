@@ -12,13 +12,13 @@ public class CursorPageImpl<T, C> implements CursorPage<T, C> {
     private final boolean isLast;
     private final int size;
 
-    public CursorPageImpl(List<T> content, C cursor, Long totalElements, boolean isInverted, boolean isLast, int size) {
+    public CursorPageImpl(List<T> content, C cursor, Long totalElements, boolean isInverted, boolean isLast) {
         this.content = Collections.unmodifiableList(content);
         this.cursor = cursor;
         this.totalElements = totalElements;
         this.isInverted = isInverted;
         this.isLast = isLast;
-        this.size = size;
+        this.size = content.size();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CursorPageImpl<T, C> implements CursorPage<T, C> {
     }
 
     @Override
-    public C getCursor() {
+    public C getNextCursor() {
         return cursor;
     }
 
@@ -60,8 +60,7 @@ public class CursorPageImpl<T, C> implements CursorPage<T, C> {
                 this.cursor,
                 this.totalElements,
                 this.isInverted,
-                this.isLast,
-                this.size
+                this.isLast
         );
     }
 }

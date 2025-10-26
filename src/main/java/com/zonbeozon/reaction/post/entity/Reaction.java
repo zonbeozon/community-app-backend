@@ -1,9 +1,7 @@
-package com.zonbeozon.reaction.entity;
+package com.zonbeozon.reaction.post.entity;
 
-import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.reaction.enums.ReactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

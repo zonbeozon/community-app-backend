@@ -39,7 +39,7 @@ public class TestPostService {
         postRepository.save(post);
         if(images != null && !images.isEmpty()) {
             List<PostImage> postImages = postImageRepository.saveAll(images.stream().map(image -> new PostImage(post, image)).toList());
-            post.getImages().addAll(postImages);
+            post.getPostImages().addAll(postImages);
         }
         return post;
     }
@@ -51,7 +51,7 @@ public class TestPostService {
     public List<PostImage> setPostImages(Post post, List<Image> images) {
         List<PostImage> postImages = images.stream().map(image -> new PostImage(post, image)).toList();
         postImageRepository.saveAll(postImages);
-        post.getImages().addAll(postImages);
+        post.getPostImages().addAll(postImages);
         return postImages;
     }
 

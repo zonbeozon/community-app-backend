@@ -10,17 +10,14 @@ import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
 import com.zonbeozon.post.api.PostUpdateApi;
 import com.zonbeozon.post.api.web.PostController;
-import com.zonbeozon.post.dto.PostCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SimpleSecurityEnabledWebMvcTest(PostController.class)
@@ -45,7 +42,17 @@ public class PostControllerTest extends AuthorizationCheckDisabledTest {
     @Test
     @WithMockUser
     void retrievePostsSuccessfully() throws Exception {
-        mockMvc.perform(get("/channels/1/posts"))
+        mockMvc.perform(get("/channels/1/posts")
+                        .param("inverted", "false"))
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("createdAt, postId를 null로 보냈지만 inverted가 true인 경우 400예외 발생")
+    @Test
+    @WithMockUser
+    void throwBadRequestWhenInvertedIsTrueAndCursorIsNull() throws Exception {
+        mockMvc.perform(get("/channels/1/posts")
+                        .param("inverted", "true"))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public interface CursorPage<T, C> {
     List<T> getContent();
-    C getCursor();
+    C getNextCursor();
     Long getTotalElements();
     int getSize();
     boolean isLast();

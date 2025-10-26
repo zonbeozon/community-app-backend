@@ -5,19 +5,19 @@ import com.zonbeozon.base.TestChannelService;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.reaction.entity.PostReaction;
-import com.zonbeozon.reaction.enums.ReactionContentType;
-import com.zonbeozon.reaction.enums.ReactionType;
-import com.zonbeozon.reaction.repository.PostReactionRepository;
+import com.zonbeozon.reaction.post.entity.PostReaction;
+import com.zonbeozon.reaction.post.entity.ReactionType;
+import com.zonbeozon.reaction.post.repository.PostReactionRepository;
+import com.zonbeozon.reaction.post.service.PostReactionMarker;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class ReactionMarkerTest extends AbstractChannelIntegrationTest {
+public class PostReactionMarkerTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private ReactionMarker reactionMarker;
+    private PostReactionMarker reactionMarker;
     @Autowired
     private PostReactionRepository postReactionRepository;
     @Qualifier("testChannelService")
@@ -31,7 +31,7 @@ public class ReactionMarkerTest extends AbstractChannelIntegrationTest {
         BlogChannel channel = testBlogChannelService.createAndSave();
         testChannelService.joinAsMember(channel,member);
         Post post = testPostService.createAndSave(channel, member);
-        reactionMarker.mark(member.getId(), post.getId(), ReactionContentType.POST, ReactionType.LIKE);
+        reactionMarker.mark(member.getId(), post.getId(), ReactionType.LIKE);
         PostReaction reaction = postReactionRepository.findByPostAndAuthor(post, member).get();
         Assertions.assertThat(reaction.getReactionType()).isEqualTo(ReactionType.LIKE);
     }

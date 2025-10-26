@@ -1,6 +1,8 @@
 package com.zonbeozon.post.api.web;
 
 import com.zonbeozon.config.SwaggerConfig;
+import com.zonbeozon.global.exception.BadRequestException;
+import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
 import com.zonbeozon.global.viewcount.ViewCounter;
 import com.zonbeozon.post.api.PostCreateApi;
@@ -27,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -224,19 +227,28 @@ public class PostController {
             @Parameter(name = "cursorPostId", description = """
                     해당 postId보다 작거나 큰 PostId를 size만큼 반환(cursor)
                     
-                    cursorPostId를 가장 최신 post로 설정하고 싶다면 null로 설정
+                    cursorPostId를 가장 최신 post로 설정하고 싶다면 createdAt, postId를 null , inverted를 false로 설정
                     """),
             @Parameter(name = "size", description = "원하는 size, 실제로 응답값은 이보다 작을 수 있다", example = "10"),
-            @Parameter(name = "inverted", description = "false라면 cursorId보다 작은 postId를 반환,  ", example = "true")
+            @Parameter(name = "inverted", description = "false라면 해당 cursor 이후의 post를 true라면 이전 post를 반환", example = "true")
     })
     @GetMapping("channels/{channelId}/posts")
     public ResponseEntity<CursorBasedPostsResponse> createCursorBasedPostResponse(
             @PathVariable Long channelId,
-            @RequestParam(required = false) Long cursorPostId,
+            @RequestParam(required = false) LocalDateTime createdAt,
+            @RequestParam(required = false) Long postId,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "false") boolean inverted
+            @RequestParam boolean inverted
     ) {
-        return ResponseEntity.ok(postQueryApi.getCursorBasedPostResponse(channelId, cursorPostId, size, inverted));
+        if((createdAt == null || postId == null) && inverted)
+            throw new BadRequestException(ErrorCode.INVERTED_SEARCH_REQUIRES_CURSOR);
+        if(createdAt != null && postId != null) {
+            return ResponseEntity.ok(postQueryApi.getCursorBasedPostResponse(channelId, new PostCursor(createdAt, postId), size, inverted));
+        }
+        if(createdAt == null && postId == null) {
+            return ResponseEntity.ok(postQueryApi.getCursorBasedPostResponse(channelId, null, size, false));
+        }
+        throw new BadRequestException(ErrorCode.INVALID_POST_CURSOR_COMBINATION);
     }
 
     @Operation(

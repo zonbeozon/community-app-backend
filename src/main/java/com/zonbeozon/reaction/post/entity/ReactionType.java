@@ -1,4 +1,4 @@
-package com.zonbeozon.reaction.enums;
+package com.zonbeozon.reaction.post.entity;
 
 public enum ReactionType {
     LIKE, DISLIKE;

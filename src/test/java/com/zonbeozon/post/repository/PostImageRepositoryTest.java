@@ -29,6 +29,6 @@ public class PostImageRepositoryTest extends AbstractChannelIntegrationTest {
         List<PostImageCount> postImageCounts = postImageRepository.countImagesByPostIds(List.of(post.getId()));
 
         Assertions.assertThat(postImageCounts).hasSize(1);
-        Assertions.assertThat(postImageCounts.get(0).getCount()).isEqualTo(0);
+        Assertions.assertThat(postImageCounts.get(0).count()).isEqualTo(0);
     }
 }

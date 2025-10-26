@@ -2,9 +2,9 @@ package com.zonbeozon.base;
 
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.reaction.entity.PostReaction;
-import com.zonbeozon.reaction.enums.ReactionType;
-import com.zonbeozon.reaction.repository.PostReactionRepository;
+import com.zonbeozon.reaction.post.entity.PostReaction;
+import com.zonbeozon.reaction.post.entity.ReactionType;
+import com.zonbeozon.reaction.post.repository.PostReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

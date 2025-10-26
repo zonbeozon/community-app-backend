@@ -2,19 +2,16 @@ package com.zonbeozon.post.entity;
 
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;
-import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.global.entity.ContentEntity;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.reaction.entity.PostReaction;
+import com.zonbeozon.reaction.post.entity.PostReaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -45,7 +42,8 @@ public class Post extends ContentEntity {
     private BlogChannel channel;
 
     @OneToMany(mappedBy = "post")
-    private Set<PostImage> images = new HashSet<>();
+    @Setter
+    private List<PostImage> postImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();

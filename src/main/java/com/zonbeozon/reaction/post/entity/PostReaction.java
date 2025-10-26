@@ -1,41 +1,42 @@
-package com.zonbeozon.reaction.entity;
+package com.zonbeozon.reaction.post.entity;
 
-import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.reaction.enums.ReactionType;
+import com.zonbeozon.post.entity.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class CommentReaction extends Reaction {
+@Getter
+public class PostReaction extends Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
+    @JoinColumn(name = "post_id")
+    @NotNull
+    private Post post;
 
-    private CommentReaction(
-            Comment comment,
+    private PostReaction(
+            Post post,
             ReactionType reactionType,
             Member author
     ) {
         super(reactionType, author);
-       this.comment = comment;
+        this.post = post;
     }
 
-    public static CommentReaction create(
-            Comment comment,
+    public static PostReaction create(
+            Post post,
             ReactionType reactionType,
             Member author
     ) {
-        return new CommentReaction(comment, reactionType, author);
+        return new PostReaction(post, reactionType, author);
     }
 }

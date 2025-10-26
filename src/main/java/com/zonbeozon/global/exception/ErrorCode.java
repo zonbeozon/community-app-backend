@@ -7,10 +7,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ErrorCode {
 
-    //405
+    //commons
+    INVERTED_SEARCH_REQUIRES_CURSOR("역방향(inverted) 조회 시에는 기준이 되는 커서 값(createdAt, postId)이 반드시 필요합니다."),
     METHOD_NOT_ALLOWED("지원하지 않는 Http Method입니다."),
-
-    //5xx
     INTERNAL_SERVER_ERROR("알수 없는 에러 발생."),
     SERVICE_NOT_READY("아직 제공되지 않는 서비스입니다."),
     DATA_IS_STALE("내부 문제로 인해 최신 데이터를 제공할 수 없습니다."),
@@ -54,6 +53,7 @@ public enum ErrorCode {
     //post
     POST_NOT_FOUND("post를 찾을 수 없습니다"),
     MAX_POST_IMAGE_REACHED("Post 이미지 최대 업로드 개수를 초과했습니다"),
+    INVALID_POST_CURSOR_COMBINATION("createdAt과 postId는 함께 제공되거나 함께 생략되어야 합니다."),
 
     //reaction
     REACTION_NOT_FOUND("해당 reaction 기록이 없습니다"),
