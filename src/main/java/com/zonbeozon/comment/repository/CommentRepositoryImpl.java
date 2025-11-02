@@ -22,7 +22,7 @@ import static com.zonbeozon.comment.entity.QComment.comment;
 import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.member.domain.QMember.member;
 import static com.zonbeozon.member.domain.QMemberProfile.memberProfile;
-import static com.zonbeozon.post.entity.QPost.post;
+import static com.zonbeozon.post.domain.QPost.post;
 
 @Repository
 @RequiredArgsConstructor

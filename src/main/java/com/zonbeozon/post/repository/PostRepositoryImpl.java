@@ -16,8 +16,8 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 import static com.zonbeozon.image.entity.QImage.image;
-import static com.zonbeozon.post.entity.QPost.post;
-import static com.zonbeozon.post.entity.QPostImage.postImage;
+import static com.zonbeozon.post.domain.QPost.post;
+import static com.zonbeozon.post.domain.QPostImage.postImage;
 
 @Repository
 @RequiredArgsConstructor
