@@ -3,7 +3,7 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.viewcount.ContentEntityFinder;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class PostFinder implements ContentEntityFinder {
+public class PostFinder {
     private final PostRepository postRepository;
 
     public Post findByIdElseThrow(Long postId) {

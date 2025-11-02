@@ -1,7 +1,6 @@
 package com.zonbeozon.post.repository;
 
-import com.zonbeozon.channel.entity.BlogChannel;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -4,7 +4,7 @@ import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
-import com.zonbeozon.global.viewcount.ViewCounter;
+import com.zonbeozon.global.viewcount.PostViewCounter;
 import com.zonbeozon.post.api.PostCreateApi;
 import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
@@ -36,7 +36,7 @@ import java.util.List;
 @Tag(name = "포스트", description = "포스트 관련 엔드포인트")
 public class PostController {
     private final CookieViewMarker postViewMarker;
-    private final ViewCounter postViewCounter;
+    private final PostViewCounter postViewCounter;
     private final PostCreateApi postCreateApi;
     private final PostDeleteApi postDeleteApi;
     private final PostUpdateApi postUpdateApi;
@@ -46,7 +46,7 @@ public class PostController {
             @Qualifier("postViewMarker")
             CookieViewMarker postViewMarker,
             @Qualifier("postViewCounter")
-            ViewCounter postViewCounter,
+            PostViewCounter postViewCounter,
             PostCreateApi postCreateApi,
             PostDeleteApi postDeleteApi,
             PostUpdateApi postUpdateApi,

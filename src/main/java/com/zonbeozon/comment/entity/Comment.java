@@ -1,9 +1,8 @@
 package com.zonbeozon.comment.entity;
 
 import com.zonbeozon.global.entity.BaseTimeEntity;
-import com.zonbeozon.global.entity.ContentEntity;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.comment.repository.CommentRepository;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.dto.PostDeletedEvent;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.repository.PostRepository;

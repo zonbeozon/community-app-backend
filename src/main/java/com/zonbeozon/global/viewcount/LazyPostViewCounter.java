@@ -1,5 +1,6 @@
 package com.zonbeozon.global.viewcount;
 
+import com.zonbeozon.post.service.PostFinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,18 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 인메모리로 저장해뒀다가 flush-interval-ms 마다 db에 반영한다.
- * 서버가 갑작스럽게 중단될 시 조회수는 flush-interval-ms 정도의 정보 손실이 발생할 수 있다.
- * 사용시 조회수 조회 딜레이가 최대 flush-interval-ms 발생한다.
- */
 @Slf4j
-public class LazyViewCounter extends SimpleViewCounter implements ViewCounter, SmartLifecycle {
+public class LazyPostViewCounter extends SimplePostViewCounter implements PostViewCounter, SmartLifecycle {
     private final ConcurrentHashMap<Long, Long> viewCountsCache = new ConcurrentHashMap<>();
     private volatile boolean isRunning = false;
 
-    public LazyViewCounter(ContentEntityFinder contentEntityFinder) {
-        super(contentEntityFinder);
+    public LazyPostViewCounter(PostFinder postFinder) {
+        super(postFinder);
     }
 
     @Override

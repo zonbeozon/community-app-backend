@@ -3,7 +3,7 @@ package com.zonbeozon.base;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

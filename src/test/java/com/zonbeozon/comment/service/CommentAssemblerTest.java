@@ -5,7 +5,7 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

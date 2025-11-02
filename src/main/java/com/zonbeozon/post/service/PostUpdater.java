@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.post.dto.PostUpdateRequest;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.dto.PostUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

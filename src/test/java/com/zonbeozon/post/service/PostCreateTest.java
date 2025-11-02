@@ -9,7 +9,7 @@ import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
 import com.zonbeozon.post.dto.PostCreatedEvent;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

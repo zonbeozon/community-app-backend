@@ -5,7 +5,7 @@ import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;

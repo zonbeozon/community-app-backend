@@ -1,7 +1,7 @@
 package com.zonbeozon.reaction.post.entity;
 
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

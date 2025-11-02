@@ -1,7 +1,7 @@
 package com.zonbeozon.reaction.post.repository;
 
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

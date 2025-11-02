@@ -4,7 +4,6 @@ import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.dto.ChannelDeletedEvent;
 import com.zonbeozon.channel.entity.*;
 
-import com.zonbeozon.channel.enums.ChannelMemberStatus;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.repository.BannedChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
@@ -13,7 +12,7 @@ import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostRepository;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;

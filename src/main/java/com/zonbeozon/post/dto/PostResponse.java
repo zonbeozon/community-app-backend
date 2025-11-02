@@ -3,8 +3,8 @@ package com.zonbeozon.post.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.image.dto.ImageDto;
-import com.zonbeozon.post.entity.Post;
-import com.zonbeozon.post.entity.PostImage;
+import com.zonbeozon.post.domain.Post;
+import com.zonbeozon.post.domain.PostImage;
 
 import java.time.LocalDateTime;
 import java.util.List;

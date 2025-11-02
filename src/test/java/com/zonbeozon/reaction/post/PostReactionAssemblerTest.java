@@ -4,7 +4,7 @@ import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.reaction.post.dto.PostReactionCountDto;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.service.PostReactionAssembler;

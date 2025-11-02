@@ -5,7 +5,7 @@ import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;

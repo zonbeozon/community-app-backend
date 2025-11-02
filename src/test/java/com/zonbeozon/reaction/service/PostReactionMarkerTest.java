@@ -4,7 +4,7 @@ import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.base.TestChannelService;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.repository.PostReactionRepository;

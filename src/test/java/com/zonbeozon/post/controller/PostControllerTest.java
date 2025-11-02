@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
-import com.zonbeozon.global.viewcount.ViewCounter;
+import com.zonbeozon.global.viewcount.PostViewCounter;
 import com.zonbeozon.post.api.PostCreateApi;
 import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
@@ -36,7 +36,7 @@ public class PostControllerTest extends AuthorizationCheckDisabledTest {
     @MockitoBean("postViewMarker")
     private CookieViewMarker postViewMarker;
     @MockitoBean("postViewCounter")
-    private ViewCounter postViewCounter;
+    private PostViewCounter postViewCounter;
 
     @DisplayName("정상 조회된다면 200 리턴")
     @Test

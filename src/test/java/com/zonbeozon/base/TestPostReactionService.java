@@ -1,7 +1,7 @@
 package com.zonbeozon.base;
 
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.repository.PostReactionRepository;

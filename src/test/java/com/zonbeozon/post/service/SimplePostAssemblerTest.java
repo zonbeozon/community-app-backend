@@ -7,7 +7,7 @@ import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.CursorBasedPostsResponse;
 import com.zonbeozon.post.dto.PostCursor;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

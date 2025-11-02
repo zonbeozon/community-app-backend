@@ -1,4 +1,4 @@
-package com.zonbeozon.post.entity;
+package com.zonbeozon.post.domain;
 
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;

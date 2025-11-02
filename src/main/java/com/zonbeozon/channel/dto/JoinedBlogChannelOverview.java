@@ -4,7 +4,7 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import lombok.Getter;
 import lombok.Setter;
 

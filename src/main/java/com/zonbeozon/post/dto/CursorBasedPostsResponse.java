@@ -3,7 +3,7 @@ package com.zonbeozon.post.dto;
 import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.image.dto.ImageDto;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 
 import java.util.List;
 

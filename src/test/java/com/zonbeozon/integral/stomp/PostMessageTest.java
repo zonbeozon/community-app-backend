@@ -4,7 +4,7 @@ import com.zonbeozon.base.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.*;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.service.PostStompSender;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;

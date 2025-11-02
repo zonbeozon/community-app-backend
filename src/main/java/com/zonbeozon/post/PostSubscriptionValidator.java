@@ -1,14 +1,9 @@
 package com.zonbeozon.post;
 
-import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.service.finder.BlogChannelFinder;
-import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
-import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;

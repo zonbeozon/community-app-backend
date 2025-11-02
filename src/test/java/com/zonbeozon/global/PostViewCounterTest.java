@@ -2,7 +2,7 @@ package com.zonbeozon.global;
 
 import com.zonbeozon.global.entity.ContentEntity;
 import com.zonbeozon.global.viewcount.ContentEntityFinder;
-import com.zonbeozon.global.viewcount.LazyViewCounter;
+import com.zonbeozon.global.viewcount.LazyPostViewCounter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
-public class ViewCounterTest {
+public class PostViewCounterTest {
     @Mock
     private ContentEntityFinder finder;
     @InjectMocks
-    private LazyViewCounter counter;
+    private LazyPostViewCounter counter;
 
     private ContentEntity contentEntity_1, contentEntity_2;
 

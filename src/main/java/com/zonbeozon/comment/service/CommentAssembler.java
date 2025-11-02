@@ -8,7 +8,7 @@ import com.zonbeozon.comment.dto.CommentDto;
 import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
-import com.zonbeozon.post.entity.Post;
+import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
