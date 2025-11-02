@@ -18,7 +18,7 @@ public class PostUpdater {
 
     public void updateContent(Long postId, PostUpdateRequest request) {
         Post post = postFinder.findByIdElseThrow(postId);
-        post.updateContent(request.content());
+        post.setContent(request.content());
         postImageService.updatePostImages(postId, request.imageIds());
         eventPublisher.publishEvent(new PostUpdatedEvent(post.getChannel().getId(), postId));
     }

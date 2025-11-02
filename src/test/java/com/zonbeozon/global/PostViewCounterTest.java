@@ -1,35 +1,28 @@
 package com.zonbeozon.global;
 
+import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.viewcount.LazyPostViewCounter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class PostViewCounterTest {
     @Mock
-    private ContentEntityFinder finder;
+    private PostRepository postRepository;
     @InjectMocks
     private LazyPostViewCounter counter;
-
-    private ContentEntity contentEntity_1, contentEntity_2;
-
-    @BeforeEach
-    void setup() {
-        contentEntity_1 = Mockito.mock(ContentEntity.class);
-        Mockito.when(contentEntity_1.getId()).thenReturn(1L);
-        contentEntity_2 = Mockito.mock(ContentEntity.class);
-        Mockito.when(contentEntity_2.getId()).thenReturn(2L);
-        Mockito.doReturn(List.of(contentEntity_1, contentEntity_2)).when(finder).findByIdIn(Mockito.eq(Set.of(1L, 2L)));
-    }
 
     @Test
     @DisplayName("각 ID에 대해 조회수를 1씩 증가시킨다")
@@ -37,8 +30,15 @@ public class PostViewCounterTest {
         counter.increase(List.of(1L , 2L));
         counter.flushViewCountsToDatabase();
 
-        Mockito.verify(contentEntity_1, Mockito.times(1)).increaseViewCount(1L);
-        Mockito.verify(contentEntity_2, Mockito.times(1)).increaseViewCount(1L);
+        ArgumentCaptor<Map<Long, Long>> captor = ArgumentCaptor.forClass(Map.class);
+        Mockito.verify(postRepository, Mockito.times(1)).updateViewCounts(captor.capture());
+
+
+        Map<Long, Long> capturedMap = captor.getValue();
+
+        assertThat(capturedMap).hasSize(2);
+        assertThat(capturedMap).containsEntry(1L, 1L);
+        assertThat(capturedMap).containsEntry(2L, 1L);
     }
 
     @Test
@@ -49,7 +49,14 @@ public class PostViewCounterTest {
         counter.increase(List.of(1L , 2L));
         counter.flushViewCountsToDatabase();
 
-        Mockito.verify(contentEntity_1, Mockito.times(1)).increaseViewCount(3L);
-        Mockito.verify(contentEntity_2, Mockito.times(1)).increaseViewCount(3L);
+        ArgumentCaptor<Map<Long, Long>> captor = ArgumentCaptor.forClass(Map.class);
+        Mockito.verify(postRepository, Mockito.times(1)).updateViewCounts(captor.capture());
+
+
+        Map<Long, Long> capturedMap = captor.getValue();
+
+        assertThat(capturedMap).hasSize(2);
+        assertThat(capturedMap).containsEntry(1L, 3L);
+        assertThat(capturedMap).containsEntry(2L, 3L);
     }
 }
