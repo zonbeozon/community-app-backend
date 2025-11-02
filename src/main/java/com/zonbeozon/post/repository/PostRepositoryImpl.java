@@ -2,6 +2,8 @@ package com.zonbeozon.post.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.global.CursorPage;
@@ -109,4 +111,30 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public long updateViewCounts(Map<Long, Long> viewCounts) {
+        if (viewCounts == null || viewCounts.isEmpty()) {
+            return 0;
+        }
+
+        CaseBuilder caseBuilder = new CaseBuilder();
+        NumberExpression<Long> viewCountCase = post.viewCount;
+        for (Map.Entry<Long, Long> entry : viewCounts.entrySet()) {
+            Long postId = entry.getKey();
+            Long incrementValue = entry.getValue();
+
+            viewCountCase = caseBuilder
+                    .when(post.id.eq(postId))
+                    .then(post.viewCount.add(incrementValue))
+                    .otherwise(viewCountCase);
+        }
+
+        return queryFactory
+                .update(post)
+                .set(post.viewCount, viewCountCase)
+                .where(post.id.in(viewCounts.keySet()))
+                .execute();
+    }
+
 }

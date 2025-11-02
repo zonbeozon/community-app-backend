@@ -4,7 +4,7 @@ import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
-import com.zonbeozon.global.viewcount.PostViewCounter;
+import com.zonbeozon.post.service.viewcount.PostViewCounter;
 import com.zonbeozon.post.api.PostCreateApi;
 import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;

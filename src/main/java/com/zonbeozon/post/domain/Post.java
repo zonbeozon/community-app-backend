@@ -2,7 +2,7 @@ package com.zonbeozon.post.domain;
 
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;
-import com.zonbeozon.global.entity.ContentEntity;
+import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import jakarta.persistence.*;
@@ -23,7 +23,7 @@ import java.util.List;
                 @Index(name = "idx_post_channel_id", columnList = "channel_id")
         }
 )
-public class Post extends ContentEntity {
+public class Post extends BaseTimeEntity {
     public static final int MAX_CONTENT_LENGTH = 2048;
     public static final int MIN_CONTENT_LENGTH = 0;
     public static final int MAX_IMAGE_COUNT = 5;
@@ -51,17 +51,24 @@ public class Post extends ContentEntity {
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<PostReaction> reactions = new ArrayList<>();
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    protected Member author;
+
+    private Long viewCount = 0L;
+
     protected Post(String content, BlogChannel channel, Member author) {
-        super(author);
         this.content = content;
         this.channel = channel;
+        this.author = author;
     }
 
     public static Post create(String content, BlogChannel channel, Member author) {
         return new Post(content, channel, author);
     }
 
-    public void updateContent(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 }

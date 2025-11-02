@@ -1,4 +1,4 @@
-package com.zonbeozon.global.viewcount;
+package com.zonbeozon.post.service.viewcount;
 
 import java.util.List;
 

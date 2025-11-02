@@ -1,6 +1,6 @@
-package com.zonbeozon.global.viewcount;
+package com.zonbeozon.post.service.viewcount;
 
-import com.zonbeozon.post.service.PostFinder;
+import com.zonbeozon.post.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,8 +15,8 @@ public class LazyPostViewCounter extends SimplePostViewCounter implements PostVi
     private final ConcurrentHashMap<Long, Long> viewCountsCache = new ConcurrentHashMap<>();
     private volatile boolean isRunning = false;
 
-    public LazyPostViewCounter(PostFinder postFinder) {
-        super(postFinder);
+    public LazyPostViewCounter(PostRepository postRepository) {
+        super(postRepository);
     }
 
     @Override

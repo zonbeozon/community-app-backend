@@ -2,7 +2,6 @@ package com.zonbeozon.post.service;
 
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
-import com.zonbeozon.global.viewcount.ContentEntityFinder;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.repository.PostRepository;

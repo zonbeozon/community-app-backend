@@ -1,8 +1,6 @@
 package com.zonbeozon.global;
 
-import com.zonbeozon.global.entity.ContentEntity;
-import com.zonbeozon.global.viewcount.ContentEntityFinder;
-import com.zonbeozon.global.viewcount.LazyPostViewCounter;
+import com.zonbeozon.post.service.viewcount.LazyPostViewCounter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
