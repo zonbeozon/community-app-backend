@@ -17,7 +17,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Table(
         indexes = {
-                @Index(name = "idx_comment_post_id", columnList = "post_id")
+                //댓글 조회용 인덱스
+                @Index(name = "idx_comment_post_id_createdAt", columnList = "post_id, createdAt"),
+                //댓글 집계용 인덱스
+                @Index(name = "idx_comment_aggregated_post_id", columnList = "aggregated, post_id")
         }
 )
 public class Comment extends BaseTimeEntity {
@@ -42,6 +45,15 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    /**
+     * 이 Comment가 PostMetric에 집계되었는지 여부.
+     * false: 아직 집계되지 않음 (실시간 집계 대상)
+     * true:  집계 완료
+     */
+    @Column(nullable = false)
+    private boolean aggregated = false;
+
 
     public Comment(String content, Member author, Post post) {
         this.content = content;
