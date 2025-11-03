@@ -1,9 +1,7 @@
 package com.zonbeozon.global;
 
 import com.zonbeozon.post.repository.PostMetricRepository;
-import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.service.viewcount.LazyPostViewCounter;
-import org.junit.jupiter.api.BeforeEach;
+import com.zonbeozon.post.service.metric.viewcount.LazyPostViewCounter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

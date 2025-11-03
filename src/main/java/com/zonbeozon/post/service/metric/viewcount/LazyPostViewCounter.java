@@ -1,7 +1,6 @@
-package com.zonbeozon.post.service.viewcount;
+package com.zonbeozon.post.service.metric.viewcount;
 
 import com.zonbeozon.post.repository.PostMetricRepository;
-import com.zonbeozon.post.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;

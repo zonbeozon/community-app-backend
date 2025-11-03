@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
 import com.zonbeozon.base.AuthorizationCheckDisabledTest;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
-import com.zonbeozon.post.service.viewcount.PostViewCounter;
+import com.zonbeozon.post.service.metric.viewcount.PostViewCounter;
 import com.zonbeozon.post.api.PostCreateApi;
 import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
