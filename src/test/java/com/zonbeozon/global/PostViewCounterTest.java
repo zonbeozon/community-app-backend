@@ -1,5 +1,6 @@
 package com.zonbeozon.global;
 
+import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.viewcount.LazyPostViewCounter;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class PostViewCounterTest {
     @Mock
-    private PostRepository postRepository;
+    private PostMetricRepository postMetricRepository;
     @InjectMocks
     private LazyPostViewCounter counter;
 
@@ -31,7 +32,7 @@ public class PostViewCounterTest {
         counter.flushViewCountsToDatabase();
 
         ArgumentCaptor<Map<Long, Long>> captor = ArgumentCaptor.forClass(Map.class);
-        Mockito.verify(postRepository, Mockito.times(1)).updateViewCounts(captor.capture());
+        Mockito.verify(postMetricRepository, Mockito.times(1)).updateViewCounts(captor.capture());
 
 
         Map<Long, Long> capturedMap = captor.getValue();
@@ -50,7 +51,7 @@ public class PostViewCounterTest {
         counter.flushViewCountsToDatabase();
 
         ArgumentCaptor<Map<Long, Long>> captor = ArgumentCaptor.forClass(Map.class);
-        Mockito.verify(postRepository, Mockito.times(1)).updateViewCounts(captor.capture());
+        Mockito.verify(postMetricRepository, Mockito.times(1)).updateViewCounts(captor.capture());
 
 
         Map<Long, Long> capturedMap = captor.getValue();

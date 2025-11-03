@@ -1,5 +1,6 @@
 package com.zonbeozon.post.service.viewcount;
 
+import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
@@ -15,8 +16,8 @@ public class LazyPostViewCounter extends SimplePostViewCounter implements PostVi
     private final ConcurrentHashMap<Long, Long> viewCountsCache = new ConcurrentHashMap<>();
     private volatile boolean isRunning = false;
 
-    public LazyPostViewCounter(PostRepository postRepository) {
-        super(postRepository);
+    public LazyPostViewCounter(PostMetricRepository postMetricRepository) {
+        super(postMetricRepository);
     }
 
     @Override

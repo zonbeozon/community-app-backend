@@ -30,7 +30,6 @@ public record CursorBasedPostsResponse(
                         post.getContent(),
                         images,
                         post.getAuthor().getId(),
-                        post.getViewCount(),
                         post.getCreatedAt(),
                         post.getModifiedAt()
                     );

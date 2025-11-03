@@ -56,8 +56,6 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "author_id")
     protected Member author;
 
-    private Long viewCount = 0L;
-
     protected Post(String content, BlogChannel channel, Member author) {
         this.content = content;
         this.channel = channel;

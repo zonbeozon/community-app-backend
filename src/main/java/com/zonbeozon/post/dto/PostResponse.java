@@ -16,7 +16,6 @@ public record PostResponse(
         ChannelMemberDto author,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Long commentCount,
-        Long viewCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -27,7 +26,6 @@ public record PostResponse(
                 post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::from).toList(),
                 authorResponse,
                 commentCount,
-                post.getViewCount(),
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );
