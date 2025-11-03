@@ -20,4 +20,8 @@ public class PostMetric {
 //    private Long commentCount = 0L;
 //    private Double contentScore = 0.0;
 //    private Double totalScore = 0.0;
+
+    public PostMetric(Post post) {
+        this.post = post;
+    }
 }
