@@ -8,6 +8,8 @@ import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.domain.Post;
+import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreatedEvent;
@@ -26,7 +28,7 @@ public class PostCreator {
     private final PostImageService postImageService;
     private final MemberFinder memberFinder;
 
-    public Long addPost(Long authorId, Long channelId, PostCreateCommand command) {
+    public Long createPost(Long authorId, Long channelId, PostCreateCommand command) {
         Member author = memberFinder.findByIdElseThrow(authorId);
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel instanceof BlogChannel blogChannel) {

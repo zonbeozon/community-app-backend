@@ -23,6 +23,6 @@ public class PostCreateApi {
     public Long createPost(Long channelId, PostCreateRequest request) {
         if(!channelAuthorizationCheckService.isAtLeastAdmin(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         Member member = authenticationService.getCurrentMember();
-        return postCreator.addPost(member.getId(), channelId, new PostCreateCommand(request.content(), request.imageIds()));
+        return postCreator.createPost(member.getId(), channelId, new PostCreateCommand(request.content(), request.imageIds()));
     }
 }

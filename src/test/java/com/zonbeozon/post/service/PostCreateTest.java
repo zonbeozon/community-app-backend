@@ -42,7 +42,7 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
     @DisplayName("요청이 올바르다면 정상적으로 저장되어야 한다.")
     void savesPostWhenRequestIsValid() {
         testBlogChannelService.joinAsOwner(blogChannel, author);
-        Long id = postCreator.addPost(
+        Long id = postCreator.createPost(
                 author.getId(),
                 blogChannel.getId(),
                 new PostCreateCommand(request.content(), request.imageIds())
@@ -59,7 +59,7 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
         Channel chatChannel = testChatChannelService.createAndSave("chat-channel-1");
         testChatChannelService.joinAsOwner(chatChannel, author);
         assertThatThrownBy(
-                () -> postCreator.addPost(author.getId(), chatChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()))
+                () -> postCreator.createPost(author.getId(), chatChannel.getId(), new PostCreateCommand(request.content(), request.imageIds()))
         ).isInstanceOf(BadRequestException.class)
                 .satisfies(e -> {
                     BadRequestException badRequestException = (BadRequestException) e;
@@ -71,7 +71,7 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
     @DisplayName("이벤트를 발생시킨다.")
     void publishesEventWithCorrectValues() {
         testBlogChannelService.joinAsOwner(blogChannel, author);
-        Long id = postCreator.addPost(
+        Long id = postCreator.createPost(
                 author.getId(),
                 blogChannel.getId(),
                 new PostCreateCommand(request.content(), request.imageIds())
