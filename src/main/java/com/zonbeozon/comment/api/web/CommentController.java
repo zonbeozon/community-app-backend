@@ -93,7 +93,7 @@ public class CommentController {
                     """,
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
-    @GetMapping("/channel/{channelId}/comments")
+    @GetMapping("/channels/{channelId}/comments")
     public ResponseEntity<Map<Long, Long>> getCommentCountsByPostIds(
             @PathVariable Long channelId,
             @RequestParam List<Long> postIds
