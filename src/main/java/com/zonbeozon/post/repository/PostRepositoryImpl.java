@@ -2,18 +2,23 @@ package com.zonbeozon.post.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.dto.PostCursor;
 import com.zonbeozon.post.domain.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 import static com.zonbeozon.post.domain.QPost.post;
 import static com.zonbeozon.post.domain.QPostImage.postImage;
+import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
 
 @Repository
 @RequiredArgsConstructor
@@ -98,5 +103,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Page<Post> findPostByOrderByTotalScoreDesc(Pageable pageable) {
+        List<Post> content = queryFactory.select(post)
+                .from(post)
+                .join(post.metric, postMetric).fetchJoin()
+                .orderBy(postMetric.totalScore.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(post.count())
+                .from(post);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 }

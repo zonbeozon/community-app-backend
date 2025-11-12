@@ -24,6 +24,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -311,5 +314,27 @@ public class PostController {
         postViewCounter.increase(notViewedPostIds);
         postViewMarker.setAsViewed(request, response, notViewedPostIds);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "POST 추천",
+            description = """
+                    채널에 가입과 상관 없이 호출가능
+                    """,
+            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = PagedRecommendPostResponse.class)
+            )),
+    })
+    @GetMapping("/posts/recommend")
+    public ResponseEntity<PagedRecommendPostResponse> getRecommendPostResponse(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PagedRecommendPostResponse response = postQueryApi.getRecommend(PageRequest.of(page, size));
+        return ResponseEntity.ok(response);
     }
 }

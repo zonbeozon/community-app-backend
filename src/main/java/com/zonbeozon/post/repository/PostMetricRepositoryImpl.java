@@ -2,12 +2,21 @@ package com.zonbeozon.post.repository;
 
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zonbeozon.post.domain.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static com.zonbeozon.post.domain.QPost.post;
 import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
 
 @Repository
