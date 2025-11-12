@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
         name = "post_reaction",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_post_author_type",
+                        name = "uk_post_id_author_id",
                         // 사용자는 포스트 1개에 대해 1개의 리액션만 가능
                         columnNames = {"post_id", "author_id"}
                 )

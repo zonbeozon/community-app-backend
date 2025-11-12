@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 @Transactional
@@ -26,12 +28,19 @@ public class PostReactionMarker implements ReactionMarkHandler, ReactionUnmarkHa
         Member requester = memberFinder.findByIdElseThrow(requesterId);
         Post post = postFinder.findByIdElseThrow(postId);
         //이미 해당 post에 대해 리엑션이 있다면 기존 리엑션을 삭제
-        postReactionRepository.findByPostAndAuthor(post, requester)
-                .ifPresent(postReactionRepository::delete);
-
+        Optional<PostReaction> optReaction = postReactionRepository.findByPostAndAuthor(post, requester);
+        if(optReaction.isPresent()) {
+            PostReaction reaction = optReaction.get();
+            updateReaction(reaction, reactionType);
+            return;
+        }
         PostReaction reaction = PostReaction.create(post, reactionType, requester);
         post.getReactions().add(reaction);
-        postReactionRepository.save(reaction);
+    }
+
+    private void updateReaction(PostReaction reaction, ReactionType typeWantToChange) {
+        if(reaction.getReactionType() == typeWantToChange) return;
+        reaction.setReactionType(typeWantToChange);
     }
 
     @Override

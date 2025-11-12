@@ -25,7 +25,7 @@ public abstract class Reaction extends BaseTimeEntity {
         this.author = author;
     }
 
-    public void updateReactionType(ReactionType reactionType) {
+    public void setReactionType(ReactionType reactionType) {
         this.reactionType = reactionType;
     }
 }

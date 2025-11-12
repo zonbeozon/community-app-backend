@@ -17,9 +17,9 @@ public class PostMetric {
     private Long viewCount = 0L;
     private Long likeCount = 0L;
     private Long dislikeCount = 0L;
-//    private Long commentCount = 0L;
-//    private Double contentScore = 0.0;
-//    private Double totalScore = 0.0;
+    private Long commentCount = 0L;
+    private Double contentScore = 0.0;
+    private Double totalScore = 0.0;
 
     public void setPost(Post post) {
         this.post = post;
