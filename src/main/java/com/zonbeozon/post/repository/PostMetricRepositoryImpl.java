@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 
-import static com.zonbeozon.post.domain.QPostMetric.postMetric;
+import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
 
 @Repository
 @RequiredArgsConstructor

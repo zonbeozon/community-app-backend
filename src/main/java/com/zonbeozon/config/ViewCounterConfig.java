@@ -2,7 +2,7 @@ package com.zonbeozon.config;
 
 import com.zonbeozon.global.CookieService;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
-import com.zonbeozon.post.repository.PostMetricRepositoryImpl;
+import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.service.metric.viewcount.LazyPostViewCounter;
 import com.zonbeozon.post.service.metric.viewcount.PostViewCounter;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ViewCounterConfig {
     @Bean
-    public PostViewCounter postViewCounter(PostMetricRepositoryImpl postMetricRepositoryImpl) {
-        return new LazyPostViewCounter(postMetricRepositoryImpl);
+    public PostViewCounter postViewCounter(PostMetricRepository postMetricRepository) {
+        return new LazyPostViewCounter(postMetricRepository);
     }
 
     @Bean
