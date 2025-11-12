@@ -21,11 +21,6 @@ import lombok.NoArgsConstructor;
                         // 사용자는 포스트 1개에 대해 1개의 리액션만 가능
                         columnNames = {"post_id", "author_id"}
                 )
-        },
-        indexes = {
-                // 집계를 위한 인덱스
-                @Index(name = "idx_aggregated_post_type",
-                        columnList = "aggregated, post_id, reactionType")
         }
 )
 public class PostReaction extends Reaction {
@@ -38,17 +33,9 @@ public class PostReaction extends Reaction {
     @NotNull
     private Post post;
 
-    /**
-     * 이 Reaction이 PostMetric에 집계되었는지 여부.
-     * false: 아직 집계되지 않음 (실시간 집계 대상)
-     * true:  집계 완료
-     */
-    @Column(nullable = false)
-    private boolean aggregated = false;
-
     private PostReaction(
             Post post,
-            ReactionType reactionType,
+            ReactionType  reactionType,
             Member author
     ) {
         super(reactionType, author);
