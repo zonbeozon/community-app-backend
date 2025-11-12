@@ -2,9 +2,6 @@ package com.zonbeozon.reaction.post.service;
 
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
-import com.zonbeozon.reaction.post.dto.PersonalizedPostReactionDto;
 import com.zonbeozon.reaction.post.dto.PostReactionCountDto;
 import com.zonbeozon.reaction.post.dto.PostReactionCountWithPersonalizedDto;
 import com.zonbeozon.reaction.post.repository.PostReactionRepository;

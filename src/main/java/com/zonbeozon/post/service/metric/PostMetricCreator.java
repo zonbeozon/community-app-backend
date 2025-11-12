@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service.metric;
 
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.domain.PostMetric;
+import com.zonbeozon.post.domain.metric.PostMetric;
 import com.zonbeozon.post.dto.PostCreatedEvent;
 import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.service.PostFinder;

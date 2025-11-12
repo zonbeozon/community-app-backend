@@ -1,7 +1,6 @@
 package com.zonbeozon.post.service.metric.viewcount;
 
 import com.zonbeozon.post.repository.PostMetricRepository;
-import com.zonbeozon.post.repository.PostMetricRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
