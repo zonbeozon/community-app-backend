@@ -10,11 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface PostReactionRepository extends JpaRepository<PostReaction, Long>, CustomPostReactionRepository {
+public interface PostReactionRepository extends JpaRepository<PostReaction, Long>, PostReactionRepositoryCustom {
     Optional<PostReaction> findByPostAndAuthor(Post post, Member author);
-    List<PostReaction> findByPostInAndAuthor(List<Post> posts, Member author);
-
     @Modifying
     @Query("DELETE FROM PostReaction pr WHERE pr.post.id IN :postIds")
     void deleteByPostIdIn(List<Long> postIds);
 }
+

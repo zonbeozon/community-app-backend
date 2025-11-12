@@ -18,7 +18,7 @@ import static com.zonbeozon.reaction.post.entity.QPostReaction.postReaction;
 
 @Repository
 @RequiredArgsConstructor
-public class PostReactionRepositoryImpl implements CustomPostReactionRepository {
+public class PostReactionRepositoryImpl implements PostReactionRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     public List<PostReactionCountDto> countByPostIdIn(Collection<Long> postIds) {
@@ -63,6 +63,5 @@ public class PostReactionRepositoryImpl implements CustomPostReactionRepository 
                 .where(post.id.in(postIds))
                 .fetch();
     }
-
 
 }
