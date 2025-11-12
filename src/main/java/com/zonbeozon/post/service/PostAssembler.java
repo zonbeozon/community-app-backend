@@ -5,7 +5,7 @@ import com.zonbeozon.post.dto.PostCursor;
 import com.zonbeozon.post.dto.PostResponse;
 
 public interface PostAssembler {
-    PostResponse getPostResponse(Long requesterId, Long postId);
+    PostResponse getPostResponse(Long postId);
     CursorBasedPostsResponse getCursorBasedPostResponse(
             Long channelId,
             PostCursor cursor,

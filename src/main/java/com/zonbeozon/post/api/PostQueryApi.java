@@ -39,6 +39,6 @@ public class PostQueryApi {
 
     public PostResponse getCursorBasedPostResponse(Long postId) {
         if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        return postAssembler.getPostResponse(authenticationService.getCurrentMember().getId(), postId);
+        return postAssembler.getPostResponse(postId);
     }
 }

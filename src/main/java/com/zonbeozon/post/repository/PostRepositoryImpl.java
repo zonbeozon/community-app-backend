@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static com.zonbeozon.image.entity.QImage.image;
 import static com.zonbeozon.post.domain.QPost.post;
 import static com.zonbeozon.post.domain.QPostImage.postImage;
 
@@ -21,35 +20,15 @@ import static com.zonbeozon.post.domain.QPostImage.postImage;
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-
     @Override
-    public Optional<Post> findById(Long id, PostFetchOptions options) {
-        JPAQuery<Post> query = queryFactory.selectFrom(post);
-        if (options.isWithAuthor()) {
-            query.join(post.author).fetchJoin();
-        }
-
-        if (options.isWithChannel()) {
-            query.join(post.channel).fetchJoin();
-        }
-
-        if (options.isWithImages()) {
-            query.leftJoin(post.postImages, postImage).fetchJoin()
-                    .leftJoin(postImage.image, image).fetchJoin();
-        }
-
-        query.where(post.id.eq(id));
-        return Optional.ofNullable(query.fetchOne());
-    }
-
-    @Override
-    public CursorPage<Post, PostCursor> findCursorBasedPostsByChannelId(Long channelId, PostCursor postCursor, int size, boolean inverted) {
+    public CursorPage<Post, PostCursor> searchByChannelIdWithMetric(Long channelId, PostCursor postCursor, int size, boolean inverted) {
         OrderSpecifier<?>[] orderSpecifiers = getOrderSpecifiers(inverted);
         BooleanExpression cursorCondition = cursorCondition(postCursor, inverted);
 
         List<Post> posts = queryFactory.selectFrom(post)
                 .where(post.channel.id.eq(channelId), cursorCondition)
                 .join(post.author).fetchJoin()
+                .join(post.metric).fetchJoin()
                 .orderBy(orderSpecifiers)
                 .limit(size + 1)
                 .fetch();
@@ -104,6 +83,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         Post result = queryFactory.selectFrom(post)
                 .leftJoin(post.postImages, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
+                .where(post.id.eq(postId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<Post> findByIdWithChannelAndImagesAndMetric(Long postId) {
+        Post result = queryFactory.selectFrom(post)
+                .leftJoin(post.postImages, postImage).fetchJoin()
+                .leftJoin(postImage.image).fetchJoin()
+                .join(post.metric).fetchJoin()
                 .where(post.id.eq(postId))
                 .fetchOne();
 

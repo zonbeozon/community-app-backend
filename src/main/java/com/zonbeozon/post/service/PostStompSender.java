@@ -18,7 +18,7 @@ public class PostStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(null, event.postId());
+        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.CREATED, body)
@@ -35,7 +35,7 @@ public class PostStompSender {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostUpdated(PostUpdatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(null, event.postId());
+        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
         messagingTemplate.convertAndSend(
                 getDestination(event.channelId()),
                 new PostEventResponse(PostEventType.UPDATED, body)

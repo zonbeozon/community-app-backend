@@ -9,7 +9,7 @@ import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.repository.PostFetchOptions;
+import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class CommentAssembler {
     private final ChannelMemberAssembler channelMemberAssembler;
 
     public CommentsWithAuthorResponse getCommentResponseByPostId(Long postId) {
-        Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build());
+        Post post = postFinder.findByIdElseThrow(postId);
         List<CommentDto> comments = commentRepository.findCommentDtoByPostIdWOrderByCreatedAtDesc(postId);
         List<Long> authorIds = comments.stream()
                 .map(CommentDto::authorId)

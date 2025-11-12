@@ -1,6 +1,5 @@
 package com.zonbeozon.comment.repository;
 
-import com.zonbeozon.post.repository.PostFetchOptions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

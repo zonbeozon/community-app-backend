@@ -6,7 +6,6 @@ import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.repository.PostFetchOptions;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,7 +22,7 @@ public class CommentCreator {
     private final ApplicationEventPublisher eventPublisher;
 
     public Long addComment(Long memberId, Long postId, String content) {
-        Post post = postFinder.findByIdElseThrow(postId, new PostFetchOptions.Builder().withChannel(true).build());
+        Post post = postFinder.findByIdElseThrow(postId);
         Member member = memberFinder.findByIdElseThrow(memberId);
         Comment comment = new Comment(content, member, post);
         commentRepository.save(comment);
