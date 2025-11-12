@@ -12,18 +12,27 @@ public record PostResponse(
         long postId,
         String content,
         List<ImageDto> images,
-        Long viewCount,
+        PostMetricResponse metric,
         ChannelMemberDto author,
+        boolean isLikedByRequester,
+        boolean isDislikedByRequester,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static PostResponse from(Post post, ChannelMemberDto authorResponse) {
+    public static PostResponse from(
+            Post post,
+            boolean isLikedByRequester,
+            boolean isDislikedByRequester,
+            ChannelMemberDto authorResponse
+    ) {
         return new PostResponse(
                 post.getId(),
                 post.getContent(),
                 post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::from).toList(),
-                post.getMetric().getViewCount(),
+                PostMetricResponse.from(post.getMetric()),
                 authorResponse,
+                isLikedByRequester,
+                isDislikedByRequester,
                 post.getCreatedAt(),
                 post.getModifiedAt()
         );

@@ -85,19 +85,4 @@ public class CommentController {
     ) {
         return ResponseEntity.ok(commentQueryApi.getComments(postId));
     }
-
-
-    @Operation(
-            summary = "post별 댓글 개수 조회",
-            description = """
-                    """,
-            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
-    )
-    @GetMapping("/channels/{channelId}/comments")
-    public ResponseEntity<Map<Long, Long>> getCommentCountsByPostIds(
-            @PathVariable Long channelId,
-            @RequestParam List<Long> postIds
-    ) {
-        return ResponseEntity.ok(commentQueryApi.getCommentCountsByPostIds(channelId, postIds));
-    }
 }

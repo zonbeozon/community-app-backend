@@ -29,7 +29,9 @@ public class PostQueryApi {
             boolean inverted
     ) {
         if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        Long requesterId = authenticationService.getCurrentMember().getId();
         return postAssembler.getCursorBasedPostResponse(
+                requesterId,
                 channelId,
                 cursor,
                 size,
@@ -39,6 +41,7 @@ public class PostQueryApi {
 
     public PostResponse getCursorBasedPostResponse(Long postId) {
         if(!postAuthorizationCheckService.canAccessChannelContent(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        return postAssembler.getPostResponse(postId);
+        Long requesterId = authenticationService.getCurrentMember().getId();
+        return postAssembler.getPostResponse(requesterId, postId);
     }
 }

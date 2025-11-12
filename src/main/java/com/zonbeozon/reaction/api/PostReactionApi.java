@@ -7,7 +7,6 @@ import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
-import com.zonbeozon.reaction.post.dto.PostReactionCountWithPersonalizedDto;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.service.PostReactionAssembler;
 import com.zonbeozon.reaction.post.service.PostReactionMarker;
@@ -38,13 +37,5 @@ public class PostReactionApi {
         if(!postAuthorizationCheckService.isAtLeastMember(postId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         Member member = authenticationService.getCurrentMember();
         reactionMarker.unmark(member.getId(), postId);
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, PostReactionCountWithPersonalizedDto> getReactionCountsByPostIdIn(Long channelId, List<Long> postIds) {
-        if(!channelAuthorizationCheckService.canAccessChannelContent(channelId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        postAuthorizationCheckService.validatePostsInChannel(channelId, postIds);
-        Member requester = authenticationService.getCurrentMember();
-        return postReactionAssembler.getReactionCountWithPersonalizedInfoByPostIdIn(requester.getId(), postIds);
     }
 }

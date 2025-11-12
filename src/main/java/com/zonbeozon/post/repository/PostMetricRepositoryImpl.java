@@ -38,4 +38,28 @@ public class PostMetricRepositoryImpl implements PostMetricRepositoryCustom {
                 .where(postMetric.id.in(viewCounts.keySet()))
                 .execute();
     }
+
+    @Override
+    public void updateLikeCount(Long postId, Long delta) {
+        queryFactory.update(postMetric)
+                .set(postMetric.likeCount, postMetric.likeCount.add(delta))
+                .where(postMetric.id.eq(postId))
+                .execute();
+    }
+
+    @Override
+    public void updateDislikeCount(Long postId, Long delta) {
+        queryFactory.update(postMetric)
+                .set(postMetric.dislikeCount, postMetric.dislikeCount.add(delta))
+                .where(postMetric.id.eq(postId))
+                .execute();
+    }
+
+    @Override
+    public void updateCommentCount(Long postId, Long delta) {
+        queryFactory.update(postMetric)
+                .set(postMetric.commentCount, postMetric.commentCount.add(delta))
+                .where(postMetric.id.eq(postId))
+                .execute();
+    }
 }

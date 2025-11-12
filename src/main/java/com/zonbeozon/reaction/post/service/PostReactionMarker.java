@@ -6,10 +6,14 @@ import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.service.PostFinder;
+import com.zonbeozon.reaction.post.dto.PostReactionAddEvent;
+import com.zonbeozon.reaction.post.dto.PostReactionUnmarkEvent;
+import com.zonbeozon.reaction.post.dto.PostReactionUpdateEvent;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.repository.PostReactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ public class PostReactionMarker implements ReactionMarkHandler, ReactionUnmarkHa
     private final PostFinder postFinder;
     private final MemberFinder memberFinder;
     private final PostReactionRepository postReactionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void mark(Long requesterId, Long postId, ReactionType reactionType) {
@@ -36,11 +41,13 @@ public class PostReactionMarker implements ReactionMarkHandler, ReactionUnmarkHa
         }
         PostReaction reaction = PostReaction.create(post, reactionType, requester);
         post.getReactions().add(reaction);
+        eventPublisher.publishEvent(new PostReactionAddEvent(postId, reactionType));
     }
 
     private void updateReaction(PostReaction reaction, ReactionType typeWantToChange) {
         if(reaction.getReactionType() == typeWantToChange) return;
         reaction.setReactionType(typeWantToChange);
+        eventPublisher.publishEvent(new PostReactionUpdateEvent(reaction.getPost().getId(), typeWantToChange));
     }
 
     @Override
@@ -51,5 +58,6 @@ public class PostReactionMarker implements ReactionMarkHandler, ReactionUnmarkHa
                 .orElseThrow(() -> new NotFoundException(ErrorCode.REACTION_NOT_FOUND));
         post.getReactions().remove(reaction);
         postReactionRepository.delete(reaction);
+        eventPublisher.publishEvent(new PostReactionUnmarkEvent(postId, reaction.getReactionType()));
     }
 }

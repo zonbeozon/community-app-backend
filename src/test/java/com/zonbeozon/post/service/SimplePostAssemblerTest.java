@@ -52,6 +52,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @Test
     void fetchOlderPostsWhenInvertedIsFalse() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+                member.getId(),
                 blogChannel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 2,
@@ -67,6 +68,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @Test
     void fetchOneOlderPostWhenSizeIsOne() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+                member.getId(),
                 blogChannel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 1,
@@ -82,6 +84,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @Test
     void fetchNewerPostsInDescWhenInvertedIsTrue() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+                member.getId(),
                 blogChannel.getId(),
                 new PostCursor(post_2.getCreatedAt(), post_2.getId()),
                 10,

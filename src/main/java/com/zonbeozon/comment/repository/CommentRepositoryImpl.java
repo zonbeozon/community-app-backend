@@ -1,14 +1,10 @@
 package com.zonbeozon.comment.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zonbeozon.channel.repository.ChannelMemberRepositoryImpl;
 import com.zonbeozon.channel.repository.expression.ChannelConstructorExpression;
-import com.zonbeozon.comment.dto.CommentCountResult;
 import com.zonbeozon.comment.dto.CommentDto;
 import com.zonbeozon.comment.dto.CommentWithAuthorResponse;
-import com.zonbeozon.comment.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -43,34 +39,6 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .where(comment.post.id.eq(postId))
                 .orderBy(comment.createdAt.desc())
                 .fetch();
-    }
-
-    @Override
-    public List<CommentCountResult> countCommentsByPostIds(Collection<Long> postIds) {
-        return queryFactory
-                .select(Projections.constructor(CommentCountResult.class,
-                        post.id,
-                        comment.count()
-                ))
-                .from(post)
-                .leftJoin(comment).on(comment.post.id.eq(post.id))
-                .where(post.id.in(postIds))
-                .groupBy(post)
-                .fetch();
-    }
-
-    @Override
-    public Optional<Comment> findById(Long id, CommentFetchOptions options) {
-        JPAQuery<Comment> query = queryFactory.selectFrom(comment);
-        if (options.isWithAuthor()) {
-            query.join(comment.author).fetchJoin();
-        }
-
-        if (options.isWithPost()) {
-            query.join(comment.post).fetchJoin();
-        }
-
-        return Optional.ofNullable(query.where(comment.id.eq(id)).fetchOne());
     }
 
     @Override

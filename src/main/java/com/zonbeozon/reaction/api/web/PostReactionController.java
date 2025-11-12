@@ -2,7 +2,6 @@ package com.zonbeozon.reaction.api.web;
 
 import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.reaction.api.PostReactionApi;
-import com.zonbeozon.reaction.post.dto.PostReactionCountWithPersonalizedDto;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -70,26 +69,5 @@ public class PostReactionController {
     ) {
         postReactionApi.unmark(postId);
         return ResponseEntity.noContent().build();
-    }
-
-    @Operation(
-            summary = "리엑션 갯수 및 요청자의 리엑션 여부 조회",
-            description = """
-                    특정 채널 내 여러 게시물(postIds)의 리엑션 집계와
-                    API 요청자 본인의 리엑션 여부를 함께 조회
-                    """,
-            security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200"
-            )
-    })
-    @GetMapping("/channels/{channelId}/posts/reactions")
-    public ResponseEntity<Map<Long, PostReactionCountWithPersonalizedDto>> getReactionCountsWithPersonalizedInfo(
-            @PathVariable Long channelId,
-            @RequestParam List<Long> postIds
-    ) {
-        return ResponseEntity.ok(postReactionApi.getReactionCountsByPostIdIn(channelId, postIds));
     }
 }

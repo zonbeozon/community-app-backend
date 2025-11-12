@@ -2,6 +2,9 @@ package com.zonbeozon.comment.service;
 
 import com.zonbeozon.comment.dto.*;
 import com.zonbeozon.comment.entity.CommentEventType;
+import com.zonbeozon.global.exception.ErrorCode;
+import com.zonbeozon.global.exception.NotFoundException;
+import com.zonbeozon.post.repository.PostMetricRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -13,7 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class CommentStompSender {
     private final SimpMessagingTemplate messagingTemplate;
     private final CommentAssembler commentAssembler;
-    private final CommentCounter commentCounter;
+    private final PostMetricRepository postMetricRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentCreated(CommentCreatedEvent event) {
@@ -35,7 +38,9 @@ public class CommentStompSender {
     }
 
     private void sendCommentCountUpdate(Long channelId, Long postId) {
-        long newCommentCount = commentCounter.countCommentsByPostId(postId);
+        long newCommentCount = postMetricRepository.findByPostId(postId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND))
+                .getCommentCount();
         messagingTemplate.convertAndSend(
                 getCommentCountDestination(channelId),
                 new CommentCountEventResponse(postId, newCommentCount)

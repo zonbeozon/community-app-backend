@@ -9,7 +9,9 @@ public record SimplifiedPostResponse(
         long postId,
         String content,
         List<ImageDto> images,
-        long viewCount,
+        PostMetricResponse metric,
+        boolean isLikedByRequester,
+        boolean isDislikedByRequester,
         Long authorId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

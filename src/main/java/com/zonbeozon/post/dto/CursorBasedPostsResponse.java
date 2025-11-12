@@ -4,8 +4,10 @@ import com.zonbeozon.channel.dto.ChannelMemberDto;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.image.dto.ImageDto;
 import com.zonbeozon.post.domain.Post;
+import com.zonbeozon.reaction.post.dto.PersonalizedPostReactionDto;
 
 import java.util.List;
+import java.util.Map;
 
 public record CursorBasedPostsResponse(
         List<ChannelMemberDto> authors,
@@ -18,6 +20,7 @@ public record CursorBasedPostsResponse(
 ) {
     public static CursorBasedPostsResponse from(
             CursorPage<Post, PostCursor> posts,
+            Map<Long, PersonalizedPostReactionDto> personalizedPostReactions,
             List<ChannelMemberDto> authors
     ) {
         List<SimplifiedPostResponse> simplifiedPosts = posts.getContent().stream()
@@ -25,14 +28,17 @@ public record CursorBasedPostsResponse(
                     List<ImageDto> images = post.getPostImages().stream()
                             .map(postImage -> new ImageDto(postImage.getImage().getId(), postImage.getImage().getUrl()))
                             .toList();
+                    PersonalizedPostReactionDto personalizedReaction = personalizedPostReactions.get(post.getId());
                     return new SimplifiedPostResponse(
-                        post.getId(),
-                        post.getContent(),
-                        images,
-                        post.getMetric().getViewCount(),
+                            post.getId(),
+                            post.getContent(),
+                            images,
+                            PostMetricResponse.from(post.getMetric()),
+                            personalizedReaction.likedByRequester(),
+                            personalizedReaction.dislikedByRequester(),
                             post.getAuthor().getId(),
                             post.getCreatedAt(),
-                        post.getModifiedAt()
+                            post.getModifiedAt()
                     );
                 })
                 .toList();
