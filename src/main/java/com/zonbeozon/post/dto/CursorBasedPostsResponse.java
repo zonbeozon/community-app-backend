@@ -29,9 +29,9 @@ public record CursorBasedPostsResponse(
                         post.getId(),
                         post.getContent(),
                         images,
-                        post.getAuthor().getId(),
                         post.getMetric().getViewCount(),
-                        post.getCreatedAt(),
+                            post.getAuthor().getId(),
+                            post.getCreatedAt(),
                         post.getModifiedAt()
                     );
                 })
