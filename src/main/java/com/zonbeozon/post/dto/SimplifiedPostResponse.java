@@ -9,6 +9,7 @@ public record SimplifiedPostResponse(
         long postId,
         String content,
         List<ImageDto> images,
+        long viewCount,
         Long authorId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

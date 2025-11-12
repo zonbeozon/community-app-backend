@@ -27,17 +27,23 @@ public class PostCreator {
     private final ChannelFinder channelFinder;
     private final PostImageService postImageService;
     private final MemberFinder memberFinder;
+    private final PostMetricRepository postMetricRepository;
 
     public Long createPost(Long authorId, Long channelId, PostCreateCommand command) {
         Member author = memberFinder.findByIdElseThrow(authorId);
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         if(channel instanceof BlogChannel blogChannel) {
-            Post post = Post.create(command.content(), blogChannel, author);
+            PostMetric metric = createPostMetric();
+            Post post = Post.create(command.content(), blogChannel, author, metric);
             postRepository.save(post);
             if(!command.imageIds().isEmpty()) postImageService.updatePostImages(post.getId(), command.imageIds());
             eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
             return post.getId();
         }
         throw new BadRequestException(ErrorCode.OPERATION_FOR_BLOG_CHANNEL_ONLY);
+    }
+
+    private PostMetric createPostMetric() {
+        return postMetricRepository.save(new PostMetric());
     }
 }

@@ -4,11 +4,13 @@ import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
+import com.zonbeozon.post.domain.metric.PostMetric;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,8 @@ import java.util.List;
 @ToString
 @Table(
         indexes = {
-                @Index(name = "idx_post_channel_id", columnList = "channel_id")
+                @Index(name = "idx_post_channel_id", columnList = "channel_id"),
+                @Index(name = "idx_post_created_at", columnList = "createdAt")
         }
 )
 public class Post extends BaseTimeEntity {
@@ -56,14 +59,19 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "author_id")
     protected Member author;
 
-    protected Post(String content, BlogChannel channel, Member author) {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_metric_id", nullable = false)
+    private PostMetric metric;
+
+    protected Post(String content, BlogChannel channel, Member author, PostMetric metric) {
         this.content = content;
         this.channel = channel;
         this.author = author;
+        this.metric = metric;
     }
 
-    public static Post create(String content, BlogChannel channel, Member author) {
-        return new Post(content, channel, author);
+    public static Post create(String content, BlogChannel channel, Member author, PostMetric metric) {
+        return new Post(content, channel, author, metric);
     }
 
     public void setContent(String content) {

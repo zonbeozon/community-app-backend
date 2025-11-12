@@ -12,6 +12,7 @@ public record PostResponse(
         long postId,
         String content,
         List<ImageDto> images,
+        Long viewCount,
         ChannelMemberDto author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -21,6 +22,7 @@ public record PostResponse(
                 post.getId(),
                 post.getContent(),
                 post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::from).toList(),
+                post.getMetric().getViewCount(),
                 authorResponse,
                 post.getCreatedAt(),
                 post.getModifiedAt()

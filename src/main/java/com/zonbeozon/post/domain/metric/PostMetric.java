@@ -2,18 +2,16 @@ package com.zonbeozon.post.domain.metric;
 
 import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class PostMetric {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @OneToOne(mappedBy = "metric", optional = false)
     private Post post;
 
     private Long viewCount = 0L;
@@ -23,7 +21,7 @@ public class PostMetric {
 //    private Double contentScore = 0.0;
 //    private Double totalScore = 0.0;
 
-    public PostMetric(Post post) {
+    public void setPost(Post post) {
         this.post = post;
     }
 }

@@ -7,7 +7,9 @@ import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.domain.PostImage;
+import com.zonbeozon.post.domain.metric.PostMetric;
 import com.zonbeozon.post.repository.PostImageRepository;
+import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,8 @@ public class TestPostService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    private PostMetricRepository postMetricRepository;
+    @Autowired
     private PostImageRepository postImageRepository;
     @Autowired
     private TestBlogChannelService testBlogChannelService;
@@ -35,7 +39,9 @@ public class TestPostService {
         ChannelMember chMember = testBlogChannelService.findByChannelAndMemberElseThrow(blogChannel, author);
         if(!chMember.getRole().isHigherThan(ChannelRole.CHANNEL_MEMBER))
             logger.warn("Admin 이하의 채널 권한을 가진 유저가 Post를 생성합니다.");
-        Post post = Post.create(content, blogChannel, author);
+        PostMetric metric = postMetricRepository.save(new PostMetric());
+        Post post = Post.create(content, blogChannel, author, metric);
+        metric.setPost(post);
         postRepository.save(post);
         if(images != null && !images.isEmpty()) {
             List<PostImage> postImages = postImageRepository.saveAll(images.stream().map(image -> new PostImage(post, image)).toList());
