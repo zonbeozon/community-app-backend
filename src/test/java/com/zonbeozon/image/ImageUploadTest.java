@@ -1,6 +1,6 @@
 package com.zonbeozon.image;
 
-import com.zonbeozon.base.AbstractIntegrationTest;
+import com.zonbeozon.test.AbstractIntegrationTest;
 import com.zonbeozon.global.UUIDGenerator;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.image.service.ImageUploader;

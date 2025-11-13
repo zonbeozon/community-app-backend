@@ -1,10 +1,11 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.global.s3.outbox.ImageOutboxProcessor;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -22,6 +23,7 @@ import software.amazon.awssdk.services.s3.S3Client;
         "DOCKER_S3MOCK_URL=http://s3mock:9090",
         "EXTERNAL_S3MOCK_URL=http://localhost:9090"
 })
+@Import({TestBatchConfig.class})
 public abstract class AbstractIntegrationTest {
     @Autowired
     protected HibernateQueryInterceptor queryInterceptor;

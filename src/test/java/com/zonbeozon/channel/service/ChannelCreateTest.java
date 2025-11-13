@@ -1,9 +1,8 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.dto.ChannelCreateCommand;
-import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.service.finder.ChannelFinder;

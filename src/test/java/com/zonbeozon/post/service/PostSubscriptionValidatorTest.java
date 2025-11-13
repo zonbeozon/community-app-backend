@@ -1,6 +1,6 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.base.AbstractIntegrationTest;
+import com.zonbeozon.test.AbstractIntegrationTest;
 import com.zonbeozon.post.PostSubscriptionValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

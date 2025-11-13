@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.ChannelMember;
@@ -35,11 +35,11 @@ public class TestPostService {
     /**
      * @param author author는 채널에 가입되어 있어야 한다.
      */
-    public Post createAndSave(String content, List<Image> images, BlogChannel blogChannel, Member author) {
+    public Post createAndSave(String content, List<Image> images, BlogChannel blogChannel, Member author, PostMetric postMetric) {
         ChannelMember chMember = testBlogChannelService.findByChannelAndMemberElseThrow(blogChannel, author);
         if(!chMember.getRole().isHigherThan(ChannelRole.CHANNEL_MEMBER))
             logger.warn("Admin 이하의 채널 권한을 가진 유저가 Post를 생성합니다.");
-        PostMetric metric = postMetricRepository.save(new PostMetric());
+        PostMetric metric = postMetricRepository.save(postMetric);
         Post post = Post.create(content, blogChannel, author, metric);
         metric.setPost(post);
         postRepository.save(post);
@@ -51,7 +51,11 @@ public class TestPostService {
     }
 
     public Post createAndSave(BlogChannel blogChannel, Member author) {
-        return createAndSave(DEFAULT_CONTENT, null, blogChannel, author);
+        return createAndSave(DEFAULT_CONTENT, null, blogChannel, author, new PostMetric());
+    }
+
+    public Post createAndSave(BlogChannel blogChannel, Member author, PostMetric postMetric) {
+        return createAndSave(DEFAULT_CONTENT, null, blogChannel, author, postMetric);
     }
 
     public List<PostImage> setPostImages(Post post, List<Image> images) {

@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.springframework.stereotype.Component;

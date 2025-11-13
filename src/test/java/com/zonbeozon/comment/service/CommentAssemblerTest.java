@@ -1,6 +1,6 @@
 package com.zonbeozon.comment.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.entity.Comment;

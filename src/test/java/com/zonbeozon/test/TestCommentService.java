@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;

@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 public interface FixtureApplier {
     void applyFixture();

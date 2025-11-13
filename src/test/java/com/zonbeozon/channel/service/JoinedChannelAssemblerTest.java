@@ -1,6 +1,6 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.enums.ChannelRole;

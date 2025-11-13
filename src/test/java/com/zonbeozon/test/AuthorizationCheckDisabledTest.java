@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.image.service.ImageOwnershipVerifier;

@@ -1,6 +1,6 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;

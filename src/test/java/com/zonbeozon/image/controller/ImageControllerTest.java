@@ -2,11 +2,10 @@ package com.zonbeozon.image.controller;
 
 
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
-import com.zonbeozon.base.AuthorizationCheckDisabledTest;
+import com.zonbeozon.test.AuthorizationCheckDisabledTest;
 import com.zonbeozon.image.api.ImageUploadApi;
 import com.zonbeozon.image.api.web.ImageController;
 import com.zonbeozon.image.dto.ImageDto;
-import com.zonbeozon.image.service.ImageUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.zonbeozon.reaction.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
-import com.zonbeozon.base.TestChannelService;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.TestChannelService;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;

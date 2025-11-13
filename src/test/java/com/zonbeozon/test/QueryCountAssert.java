@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import org.assertj.core.api.AbstractAssert;
 

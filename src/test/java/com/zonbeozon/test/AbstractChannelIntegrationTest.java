@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,4 +13,6 @@ public class AbstractChannelIntegrationTest extends AbstractIntegrationTest {
     protected TestPostReactionService testPostReactionService;
     @Autowired
     protected TestCommentService testCommentService;
+    @Autowired
+    protected TestPostMetricService testPostMetricService;
 }

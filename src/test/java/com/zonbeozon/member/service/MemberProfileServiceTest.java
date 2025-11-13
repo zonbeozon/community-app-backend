@@ -1,6 +1,6 @@
 package com.zonbeozon.member.service;
 
-import com.zonbeozon.base.AbstractIntegrationTest;
+import com.zonbeozon.test.AbstractIntegrationTest;
 import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.image.service.ImageDeleter;

@@ -1,7 +1,7 @@
 package com.zonbeozon.integral.stomp;
 
 import com.jayway.jsonpath.JsonPath;
-import com.zonbeozon.base.AbstractStompTest;
+import com.zonbeozon.test.AbstractStompTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.messaging.simp.stomp.StompCommand;

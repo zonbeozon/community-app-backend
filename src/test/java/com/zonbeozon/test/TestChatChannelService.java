@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.entity.ChatChannel;

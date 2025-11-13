@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 @FunctionalInterface
 public interface ThrowingProducer<T, E extends Exception> {

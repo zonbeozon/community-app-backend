@@ -1,6 +1,7 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.TestMockImageBuilder;
@@ -42,7 +43,7 @@ public class PostUpdateTest extends AbstractChannelIntegrationTest {
             new TestMockImageBuilder(member, "3").build()
         );
         imageRepository.saveAll(images);
-        post = testPostService.createAndSave("", images, blogChannel, member);
+        post = testPostService.createAndSave("", images, blogChannel, member, new PostMetric());
     }
 
     @Test

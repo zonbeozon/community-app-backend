@@ -1,8 +1,7 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.auth.TestAuthenticationBuilder;
 import com.zonbeozon.auth.service.TokenService;
-import com.zonbeozon.integral.stomp.AbstractTestSessionHandler;
 import com.zonbeozon.integral.stomp.ReceiptAckConfig;
 import com.zonbeozon.integral.stomp.TestStompMessageReceiver;
 import com.zonbeozon.member.domain.Member;

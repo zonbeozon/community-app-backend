@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;

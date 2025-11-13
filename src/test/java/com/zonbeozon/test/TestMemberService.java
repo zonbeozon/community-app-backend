@@ -1,4 +1,4 @@
-package com.zonbeozon.base;
+package com.zonbeozon.test;
 
 import com.zonbeozon.auth.dto.SimpleAuthenticatedPrincipal;
 import com.zonbeozon.member.domain.Member;

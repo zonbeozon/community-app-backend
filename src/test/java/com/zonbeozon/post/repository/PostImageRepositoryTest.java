@@ -1,6 +1,6 @@
 package com.zonbeozon.post.repository;
 
-import com.zonbeozon.base.AbstractChannelIntegrationTest;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.PostImageCount;
