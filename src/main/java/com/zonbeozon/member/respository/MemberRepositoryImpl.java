@@ -4,6 +4,7 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.SimpleExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zonbeozon.image.dto.ImageDto;
 import com.zonbeozon.member.dto.MemberDto;
@@ -27,19 +28,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return queryFactory.select(Projections.constructor(MemberDto.class,
                 member.id,
                 member.username,
-                new CaseBuilder()
-                        .when(image.id.isNotNull())
-                        .then(Projections.constructor(ImageDto.class,
-                                image.id,
-                                image.url
-                        ))
-                        .otherwise(Expressions.nullExpression()),
+                image.id,
+                image.url,
                 member.role
                 ))
                 .from(member)
-                .where(member.id.in(ids))
                 .leftJoin(member.profile, memberProfile)
                 .leftJoin(memberProfile.image, image)
+                .where(member.id.in(ids))
                 .fetch();
     }
 }
