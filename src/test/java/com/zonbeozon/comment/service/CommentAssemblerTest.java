@@ -1,7 +1,7 @@
 package com.zonbeozon.comment.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.member.domain.Member;
@@ -17,15 +17,15 @@ public class CommentAssemblerTest extends AbstractChannelIntegrationTest {
     private CommentAssembler commentAssembler;
 
     private Member member;
-    private BlogChannel blogChannel;
+    private Channel channel;
     private Post post;
 
     @BeforeEach
     void setup() {
         member = testMemberService.createAndSave();
-        blogChannel = testBlogChannelService.createAndSave();
-        testBlogChannelService.joinAsOwner(blogChannel, member);
-        post = testPostService.createAndSave(blogChannel, member);
+        channel = testChannelService.createAndSave();
+        testChannelService.joinAsOwner(channel, member);
+        post = testPostService.createAndSave(channel, member);
 
     }
 

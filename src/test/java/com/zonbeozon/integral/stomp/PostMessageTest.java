@@ -1,7 +1,7 @@
 package com.zonbeozon.integral.stomp;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.*;
 import com.zonbeozon.post.domain.Post;
@@ -19,7 +19,7 @@ public class PostMessageTest extends AbstractChannelIntegrationTest {
     @Autowired
     private PostStompSender postStompSender;
 
-    private BlogChannel channel;
+    private Channel channel;
     private Member member;
     private Post post;
 
@@ -28,9 +28,9 @@ public class PostMessageTest extends AbstractChannelIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        channel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
-        testBlogChannelService.joinAsMember(channel, member);
+        testChannelService.joinAsMember(channel, member);
         post = testPostService.createAndSave(channel, member);
         //postStompSender가 requires_new를 사용하기 떄문에 정보조회를 위해서는 커밋 되어야함
         TestTransaction.flagForCommit();
@@ -41,7 +41,7 @@ public class PostMessageTest extends AbstractChannelIntegrationTest {
     @AfterEach
     void tearDown() {
         testPostService.clearAll();
-        testBlogChannelService.clearAll();
+        testChannelService.clearAll();
         testMemberService.deleteMember(member);
         TestTransaction.flagForCommit();
         TestTransaction.end();

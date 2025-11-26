@@ -1,5 +1,6 @@
 package com.zonbeozon.post.service.recommend;
 
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
 import com.zonbeozon.member.dto.MemberDto;
 import com.zonbeozon.member.service.MemberAssembler;
@@ -32,7 +33,7 @@ public class PostRecommendService {
     private final PostImageService postImageService;
 
     public PagedRecommendPostResponse recommend(Pageable pageable) {
-        Page<Post> posts = postRepository.findPostByOrderByTotalScoreDesc(pageable);
+        Page<Post> posts = postRepository.findPostByContentVisibilityOrderByTotalScoreDesc(pageable, ChannelContentVisibility.PUBLIC);
         postImageService.loadImages(posts.getContent());
         List<Long> authorIds = posts.stream().map(post -> post.getAuthor().getId()).distinct().toList();
         Map<Long, MemberDto> authors = memberAssembler.getMemberResponse(authorIds);

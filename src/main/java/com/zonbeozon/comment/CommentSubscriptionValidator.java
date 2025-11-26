@@ -1,8 +1,13 @@
 package com.zonbeozon.comment;
 
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
+import com.zonbeozon.post.domain.Post;
+import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
+import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -19,7 +24,8 @@ import java.util.Map;
 public class CommentSubscriptionValidator implements StompSubscriptionValidateHandler {
     private static final String COMMENT_SUBSCRIPTION_PATTERN = "/topic/post/{postId}/comment";
     private final PathMatcher pathMatcher = new AntPathMatcher();
-    private final PostAuthorizationCheckService postAuthorizationCheckService;
+    private final PostRepository postRepository;
+    private final ChannelMemberFinder channelMemberFinder;
 
     @Override
     public boolean isSupport(String destination) {
@@ -34,10 +40,11 @@ public class CommentSubscriptionValidator implements StompSubscriptionValidateHa
         }
         Long memberId = Long.parseLong(principal.getName());
         Long postId = extractPostIdFromDestination(accessor.getDestination());
-
-        if(!postAuthorizationCheckService.isAtLeastMember(postId, memberId)) {
-            throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
-        }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new SubscriptionException(SubscriptionException.ErrorCode.POST_NOT_FOUND));
+        if(post.getChannel().getSetting().getContentVisibility() == ChannelContentVisibility.PUBLIC) return;
+        if(channelMemberFinder.findByChannelIdAndMemberId(post.getChannel().getId(), memberId).isPresent()) return;
+        throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
     }
 
     private Long extractPostIdFromDestination(String destination) {

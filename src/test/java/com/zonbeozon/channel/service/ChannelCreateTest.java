@@ -1,7 +1,7 @@
 package com.zonbeozon.channel.service;
 
-import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
+import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.dto.ChannelCreateCommand;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
@@ -87,7 +87,6 @@ public class ChannelCreateTest extends AbstractChannelIntegrationTest {
     }
 
     static void assertChannelMetadataEquals(Channel channel, ChannelCreateCommand command) {
-        assertThat(channel.getChannelType()).isEqualTo(command.type());
         assertThat(channel.getTitle()).isEqualTo(command.title());
         assertThat(channel.getDescription()).isEqualTo(command.description());
         assertThat(channel.getSetting().getContentVisibility()).isEqualTo(command.visibility());

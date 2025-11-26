@@ -1,8 +1,8 @@
 package com.zonbeozon.channel.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.dto.ChannelInfosWithMembershipDto;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.channel.service.assembler.JoinedChannelAssembler;
 import com.zonbeozon.member.domain.Member;
@@ -18,19 +18,18 @@ public class JoinedChannelAssemblerTest extends AbstractChannelIntegrationTest {
     @Autowired
     private JoinedChannelAssembler joinedChannelAssembler;
 
-    private BlogChannel blogChannel_1;
-    private BlogChannel blogChannel_2;
+    private Channel channel_1;
+    private Channel channel_2;
 
     private Member requester;
 
     @BeforeEach
     void setup() {
         requester = testMemberService.createAndSave();
-        blogChannel_1 = testBlogChannelService.createAndSave("channel_1");
-        blogChannel_2 = testBlogChannelService.createAndSave("channel_2");
+        channel_1 = testChannelService.createAndSave("channel_1");
+        channel_2 = testChannelService.createAndSave("channel_2");
 
-        //요청자를 blogChannel_1 에 가입시킨다.
-        testBlogChannelService.joinAsMember(blogChannel_1, requester);
+        testChannelService.joinAsMember(channel_1, requester);
     }
 
     @Test
@@ -38,7 +37,7 @@ public class JoinedChannelAssemblerTest extends AbstractChannelIntegrationTest {
     void returnsOnlyChannelsJoinedByMember() {
         ChannelInfosWithMembershipDto response = joinedChannelAssembler.getJoinedChannels(requester.getId());
         assertThat(response.channels()).hasSize(1);
-        assertThat(response.channels().get(0).channelInfo().channelId()).isEqualTo(blogChannel_1.getId());
+        assertThat(response.channels().get(0).channelInfo().channelId()).isEqualTo(channel_1.getId());
     }
 
     @Test

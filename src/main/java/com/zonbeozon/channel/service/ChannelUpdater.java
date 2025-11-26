@@ -32,11 +32,11 @@ public class ChannelUpdater {
         if(!channel.getTitle().equals(request.title())) {
             if(isDuplicateTitle(request.title()))
                 throw new ConflictException(ErrorCode.DUPLICATE_CHANNEL_TITLE);
-            channel.updateTitle(request.title());
+            channel.setTitle(request.title());
         }
 
         if(!channel.getDescription().equals(request.description())) {
-            channel.updateDescription(request.description());
+            channel.setDescription(request.description());
         }
 
         channelProfileService.updateImage(channel.getId(), request.imageId());

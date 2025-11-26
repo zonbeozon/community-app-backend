@@ -59,7 +59,6 @@ public class ChannelConstructorExpression {
     ) {
         return Projections.constructor(ChannelInfoDto.class,
                 channel.id,
-                channel.channelType,
                 channel.title,
                 channel.description,
                 new CaseBuilder()

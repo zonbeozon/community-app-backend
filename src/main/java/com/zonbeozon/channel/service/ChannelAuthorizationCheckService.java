@@ -75,7 +75,6 @@ public class ChannelAuthorizationCheckService {
         return actorRole.isHigherThan(targetMemberRole);
     }
 
-
     @CheckReturnValue
     public boolean canAccessChannelContent(Long channelId) {
         Channel channel = channelFinder.findByIdElseThrow(channelId);
@@ -83,4 +82,10 @@ public class ChannelAuthorizationCheckService {
         return isAtLeastMember(channel.getId());
     }
 
+    @CheckReturnValue
+    public boolean canAccessChannelContent(Long channelId, Long memberId) {
+        Channel channel = channelFinder.findByIdElseThrow(channelId);
+        if(channel.getSetting().getContentVisibility() == ChannelContentVisibility.PUBLIC) return true;
+        return isAtLeastMember(channel.getId(), memberId);
+    }
 }

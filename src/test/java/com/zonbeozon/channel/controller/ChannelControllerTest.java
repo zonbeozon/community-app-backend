@@ -3,8 +3,10 @@ package com.zonbeozon.channel.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SecurityTestUtils;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.channel.dto.ChannelSettingRequest;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.enums.ChannelJoinPolicy;
 import com.zonbeozon.test.AuthorizationCheckDisabledTest;
-import com.zonbeozon.channel.TestChannelCreateRequestBuilder;
 import com.zonbeozon.channel.api.ChannelCreateApi;
 import com.zonbeozon.channel.api.ChannelQueryApi;
 import com.zonbeozon.channel.api.ChannelRemoveApi;
@@ -49,7 +51,12 @@ public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
         @WithMockUser
         void withInvalidTitleShouldReturnBadRequest () throws Exception {
             String invalidTitle = "a";
-            ChannelCreateRequest request = new TestChannelCreateRequestBuilder().setTitle(invalidTitle).build();
+            ChannelCreateRequest request = new ChannelCreateRequest(
+                    invalidTitle,
+                    "",
+                    null,
+                    new ChannelSettingRequest(ChannelContentVisibility.PUBLIC, ChannelJoinPolicy.OPEN)
+            );
             mockMvc.perform(
                             post("/channels/community")
                                     .contentType(MediaType.APPLICATION_JSON)

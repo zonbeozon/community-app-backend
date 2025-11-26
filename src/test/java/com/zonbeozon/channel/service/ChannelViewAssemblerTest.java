@@ -20,14 +20,14 @@ public class ChannelViewAssemblerTest extends AbstractChannelIntegrationTest {
 
     @BeforeEach
     void setup() {
-        channel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
     }
 
     @Test
     @DisplayName("참가한 채널이라면 채널 맴버쉽 정보가 추가된다.")
     void shouldIncludeMembershipWhenMemberJoinedChannel() {
-        testBlogChannelService.joinAsMember(channel, member);
+        testChannelService.joinAsMember(channel, member);
         ChannelViewDto channelView = channelViewAssembler.getChannelView(channel.getId(), member.getId());
         Assertions.assertThat(channelView.isJoined()).isTrue();
         Assertions.assertThat(channelView.membership().memberId()).isEqualTo(member.getId());

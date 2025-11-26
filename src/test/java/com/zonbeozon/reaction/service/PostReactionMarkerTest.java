@@ -1,8 +1,8 @@
 package com.zonbeozon.reaction.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.test.TestChannelService;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.reaction.post.entity.PostReaction;
@@ -28,7 +28,7 @@ public class PostReactionMarkerTest extends AbstractChannelIntegrationTest {
     @Test
     void testMarkingLikeSavesReaction() {
         Member member = testMemberService.createAndSave();
-        BlogChannel channel = testBlogChannelService.createAndSave();
+        Channel channel = testChannelService.createAndSave();
         testChannelService.joinAsMember(channel,member);
         Post post = testPostService.createAndSave(channel, member);
         reactionMarker.mark(member.getId(), post.getId(), ReactionType.LIKE);

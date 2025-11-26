@@ -44,8 +44,8 @@ public class ChannelDeleteTest extends AbstractChannelIntegrationTest {
     void createChannelAndJoinAsMember() {
         //맴버 채널 생성 후 Member로 가입
         member = testMemberService.createAndSave();
-        channel = testBlogChannelService.createAndSave();
-        channelMember = testBlogChannelService.joinAsMember(channel, member);
+        channel = testChannelService.createAndSave();
+        channelMember = testChannelService.joinAsMember(channel, member);
     }
 
     @Test
@@ -77,22 +77,11 @@ public class ChannelDeleteTest extends AbstractChannelIntegrationTest {
         private BannedChannelMemberRepository bannedChannelMemberRepository;
 
         @Test
-        @DisplayName("만일 BlogChannel이라면 채널 내 포스트가 삭제되어야 한다.")
-        void DeletePostsInChannel() {
-            assert channel instanceof BlogChannel;
-            Post post = testPostService.createAndSave((BlogChannel) channel, member);
-            channelRemover.removeChannel(channel.getId());
-
-            Assertions.assertThat(channelRepository.findById(channel.getId())).isEmpty();
-            Assertions.assertThat(postRepository.findById(post.getId())).isEmpty();
-        }
-
-        @Test
         @DisplayName("채널 프로필이 존재한다면 삭제 되어야 한다.")
         void DeleteChannelProfileIfExists() {
-            testBlogChannelService.changeRole(channelMember, ChannelRole.CHANNEL_OWNER);
+            testChannelService.changeRole(channelMember, ChannelRole.CHANNEL_OWNER);
             Image image = new TestMockImageBuilder(member,"dummy").persist(entityManager);
-            testBlogChannelService.setChannelProfile(channel, image);
+            testChannelService.setChannelProfile(channel, image);
             ChannelProfile profile = channel.getProfile();
             channelRemover.removeChannel(channel.getId());
             Assertions.assertThat(channelProfileRepository.findById(profile.getId())).isEmpty();

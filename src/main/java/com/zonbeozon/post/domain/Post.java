@@ -1,6 +1,6 @@
 package com.zonbeozon.post.domain;
 
-import com.zonbeozon.channel.entity.BlogChannel;
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import com.zonbeozon.member.domain.Member;
@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
-    private BlogChannel channel;
+    private Channel channel;
 
     @OneToMany(mappedBy = "post")
     @Setter
@@ -63,14 +62,14 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "post_metric_id", nullable = false)
     private PostMetric metric;
 
-    protected Post(String content, BlogChannel channel, Member author, PostMetric metric) {
+    protected Post(String content, Channel channel, Member author, PostMetric metric) {
         this.content = content;
         this.channel = channel;
         this.author = author;
         this.metric = metric;
     }
 
-    public static Post create(String content, BlogChannel channel, Member author, PostMetric metric) {
+    public static Post create(String content, Channel channel, Member author, PostMetric metric) {
         return new Post(content, channel, author, metric);
     }
 

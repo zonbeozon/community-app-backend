@@ -34,7 +34,8 @@ spring:
   sql:
     init:
       data-locations: classpath:data/system-admin.sql
-      mode: always
+      mode: ${SQL_INIT_MODE}
+      schema-locations: classpath:data/spring-batch-schema-mysql.sql
 
   security:
     oauth2:

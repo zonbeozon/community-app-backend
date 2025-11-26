@@ -28,6 +28,18 @@ public class TestChannelService {
     @Autowired
     private ImageRepository imageRepository;
 
+    public Channel createAndSave() {
+        return createAndSave(DEFAULT_NAME, DEFAULT_CHANNEL_SETTING);
+    }
+
+    public Channel createAndSave(String title) {
+        return createAndSave(title, DEFAULT_CHANNEL_SETTING);
+    }
+
+    public Channel createAndSave(String title, ChannelSetting channelSetting) {
+        return channelRepository.save(new Channel(title, "", channelSetting));
+    }
+
     public ChannelMember joinAsMember(Channel channel, Member member) {
         ChannelMember channelMember = ChannelMember.create(member, channel, ChannelRole.CHANNEL_MEMBER);
         return channelMemberRepository.save(channelMember);

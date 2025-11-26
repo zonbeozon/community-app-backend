@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.image.TestMockImageBuilder;
@@ -9,6 +9,7 @@ import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.domain.PostImage;
 import com.zonbeozon.post.repository.PostImageRepository;
+import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +27,16 @@ public class PostImageCreateTest extends AbstractChannelIntegrationTest {
     @Autowired
     private PostImageRepository postImageRepository;
 
-    private BlogChannel blogChannel;
+    private Channel channel;
     private Post post;
     private Member member;
 
     @BeforeEach
     void setup() {
-        blogChannel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
-        testBlogChannelService.joinAsAdmin(blogChannel, member);
-        post = testPostService.createAndSave(blogChannel, member);
+        testChannelService.joinAsAdmin(channel, member);
+        post = testPostService.createAndSave(channel, member);
     }
 
     @DisplayName("이미지가 5개가 넘으면 예외가 발생한다.")

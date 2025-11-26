@@ -10,6 +10,7 @@ import java.util.List;
 
 public record RecommendPostDto(
         long postId,
+        long channelId,
         String content,
         List<ImageDto> images,
         PostMetricResponse metric,
@@ -20,6 +21,7 @@ public record RecommendPostDto(
     public static RecommendPostDto from(Post post, MemberDto author) {
         return new RecommendPostDto(
                 post.getId(),
+                post.getChannel().getId(),
                 post.getContent(),
                 post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::from).toList(),
                 PostMetricResponse.from(post.getMetric()),

@@ -1,7 +1,7 @@
 package com.zonbeozon.comment.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.dto.CommentDeletedEvent;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;
@@ -24,15 +24,15 @@ public class CommentDeleteTest extends AbstractChannelIntegrationTest {
     private CommentRepository commentRepository;
 
     private Member member;
-    private BlogChannel channel;
+    private Channel channel;
     private Post post;
     private Comment comment;
 
     @BeforeEach
     void setup() {
         member = testMemberService.createAndSave();
-        channel = testBlogChannelService.createAndSave();
-        testBlogChannelService.joinAsOwner(channel, member);
+        channel = testChannelService.createAndSave();
+        testChannelService.joinAsOwner(channel, member);
         post = testPostService.createAndSave(channel, member);
         comment = testCommentService.createAndSave(member, post);
     }

@@ -1,8 +1,9 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberDto;
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
-import com.zonbeozon.channel.service.finder.BlogChannelFinder;
+import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -15,7 +16,6 @@ import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.reaction.post.dto.PersonalizedPostReactionDto;
 import com.zonbeozon.reaction.post.service.PostReactionAssembler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +27,10 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class SimplePostAssembler implements PostAssembler {
     private final PostRepository postRepository;
-    private final BlogChannelFinder blogChannelFinder;
     private final ChannelMemberAssembler channelMemberAssembler;
     private final PostReactionAssembler postReactionAssembler;
     private final PostImageService postImageService;
+    private final ChannelFinder channelFinder;
 
     public CursorBasedPostsResponse getCursorBasedPostResponse(
             Long requesterId,
@@ -39,7 +39,7 @@ public class SimplePostAssembler implements PostAssembler {
             int size,
             boolean inverted
     ) {
-        blogChannelFinder.findByIdElseThrow(channelId);
+        channelFinder.findByIdElseThrow(channelId);
         CursorPage<Post, PostCursor> pagedPosts = postRepository.searchByChannelIdWithMetric(channelId, cursor, size, inverted);
         postImageService.loadImages(pagedPosts.getContent());
         List<ChannelMemberDto> authorResponse = channelMemberAssembler.getChannelMembers(

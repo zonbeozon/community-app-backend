@@ -33,15 +33,15 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @BeforeEach
     void setUp() {
         member = testMemberService.createAndSave();
-        channel = testBlogChannelService.createAndSave();
-        testBlogChannelService.joinAsOwner(channel, member);
+        channel = testChannelService.createAndSave();
+        testChannelService.joinAsOwner(channel, member);
     }
 
     @Test
     @DisplayName("중복 채널 명이 있다면 예외가 발생한다")
     void throwExceptionWhenDuplicateChannelTitleProvided() {
         //create another channel
-        testBlogChannelService.createAndSave("duplicate");
+        testChannelService.createAndSave("duplicate");
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withTitle("duplicate").build();
         assertThatThrownBy(() -> channelUpdater.updateChannel(channel.getId(), request))
@@ -52,7 +52,7 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @DisplayName("채널 프로필 이미지 id가 기존에 없었다면 프로필 이미지를 추가한다.")
     void addProfileImageWhenChannelHasNoExistingProfileImage() {
         Image image = new TestMockImageBuilder(member, "dummy").persist(entityManager);
-        testBlogChannelService.setChannelProfile(channel, image);
+        testChannelService.setChannelProfile(channel, image);
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(image.getId()).build();
         channelUpdater.updateChannel(channel.getId(), request);
@@ -65,7 +65,7 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @DisplayName("채널 프로필 이미지 id가 기존에 있었지만 변경되었다면 프로필 이미지를 변경한다.")
     void updateProfileImageWhenChannelHasExistingProfileImage() {
         Image existImage = new TestMockImageBuilder(member, "exist").persist(entityManager);
-        testBlogChannelService.setChannelProfile(channel, existImage);
+        testChannelService.setChannelProfile(channel, existImage);
 
         Image newImage = new TestMockImageBuilder(member, "new").persist(entityManager);
 
@@ -80,7 +80,7 @@ public class ChannelUpdateTest extends AbstractChannelIntegrationTest {
     @DisplayName("채널 이미지 id가 null로 되어있다면 기존 프로필 이미지를 삭제하고 프로필 이미지를 null로 변경한다.")
     void d() {
         Image existImage = new TestMockImageBuilder(member, "exist").persist(entityManager);
-        ChannelProfile profile = testBlogChannelService.setChannelProfile(channel, existImage);
+        ChannelProfile profile = testChannelService.setChannelProfile(channel, existImage);
 
         ChannelUpdateRequest request = new TestChannelUpdateRequestBuilder().withImageId(null).build();
         channelUpdater.updateChannel(channel.getId(), request);

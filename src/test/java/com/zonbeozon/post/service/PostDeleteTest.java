@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.image.TestMockImageBuilder;
@@ -14,6 +14,7 @@ import com.zonbeozon.post.repository.PostImageRepository;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import com.zonbeozon.reaction.post.entity.ReactionType;
 import com.zonbeozon.reaction.post.repository.PostReactionRepository;
+import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,18 +37,18 @@ public class PostDeleteTest extends AbstractChannelIntegrationTest {
     @Autowired
     private PostImageRepository postImageRepository;
 
-    private BlogChannel blogChannel;
+    private Channel channel;
 
     private Member member;
     private Post post;
 
     @BeforeEach
     void setUp() {
-        blogChannel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
-        testBlogChannelService.joinAsOwner(blogChannel, member);
+        testChannelService.joinAsOwner(channel, member);
 
-        post = testPostService.createAndSave(blogChannel, member);
+        post = testPostService.createAndSave(channel, member);
     }
 
     @Test
@@ -90,6 +91,6 @@ public class PostDeleteTest extends AbstractChannelIntegrationTest {
         List<PostDeletedEvent> events = applicationEvents.stream(PostDeletedEvent.class).toList();
         assertThat(events).hasSize(1);
         assertThat(events.get(0).postId()).isEqualTo(post.getId());
-        assertThat(events.get(0).channelId()).isEqualTo(blogChannel.getId());
+        assertThat(events.get(0).channelId()).isEqualTo(channel.getId());
     }
 }

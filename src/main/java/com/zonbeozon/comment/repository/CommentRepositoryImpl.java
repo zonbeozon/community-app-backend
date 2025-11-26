@@ -8,11 +8,10 @@ import com.zonbeozon.comment.dto.CommentWithAuthorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zonbeozon.channel.entity.QBlogChannel.blogChannel;
+import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.channel.entity.QChannelMember.channelMember;
 import static com.zonbeozon.comment.entity.QComment.comment;
 import static com.zonbeozon.image.entity.QImage.image;
@@ -54,8 +53,8 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .leftJoin(member.profile, memberProfile)
                 .leftJoin(memberProfile.image, image)
                 .join(comment.post, post)
-                .join(post.channel, blogChannel)
-                .join(channelMember).on(channelMember.member.eq(member).and(channelMember.channel.id.eq(blogChannel.id)))
+                .join(post.channel, channel)
+                .join(channelMember).on(channelMember.member.eq(member).and(channelMember.channel.id.eq(channel.id)))
                 .where(comment.id.eq(commentId))
                 .fetchOne();
         return Optional.ofNullable(result);

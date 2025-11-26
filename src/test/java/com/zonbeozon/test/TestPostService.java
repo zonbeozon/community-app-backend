@@ -1,6 +1,6 @@
 package com.zonbeozon.test;
 
-import com.zonbeozon.channel.entity.BlogChannel;
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.enums.ChannelRole;
 import com.zonbeozon.image.entity.Image;
@@ -30,17 +30,17 @@ public class TestPostService {
     @Autowired
     private PostImageRepository postImageRepository;
     @Autowired
-    private TestBlogChannelService testBlogChannelService;
+    private TestChannelService testChannelService;
 
     /**
      * @param author author는 채널에 가입되어 있어야 한다.
      */
-    public Post createAndSave(String content, List<Image> images, BlogChannel blogChannel, Member author, PostMetric postMetric) {
-        ChannelMember chMember = testBlogChannelService.findByChannelAndMemberElseThrow(blogChannel, author);
+    public Post createAndSave(String content, List<Image> images, Channel channel, Member author, PostMetric postMetric) {
+        ChannelMember chMember = testChannelService.findByChannelAndMemberElseThrow(channel, author);
         if(!chMember.getRole().isHigherThan(ChannelRole.CHANNEL_MEMBER))
             logger.warn("Admin 이하의 채널 권한을 가진 유저가 Post를 생성합니다.");
         PostMetric metric = postMetricRepository.save(postMetric);
-        Post post = Post.create(content, blogChannel, author, metric);
+        Post post = Post.create(content, channel, author, metric);
         metric.setPost(post);
         postRepository.save(post);
         if(images != null && !images.isEmpty()) {
@@ -50,12 +50,12 @@ public class TestPostService {
         return post;
     }
 
-    public Post createAndSave(BlogChannel blogChannel, Member author) {
-        return createAndSave(DEFAULT_CONTENT, null, blogChannel, author, new PostMetric());
+    public Post createAndSave(Channel channel, Member author) {
+        return createAndSave(DEFAULT_CONTENT, null, channel, author, new PostMetric());
     }
 
-    public Post createAndSave(BlogChannel blogChannel, Member author, PostMetric postMetric) {
-        return createAndSave(DEFAULT_CONTENT, null, blogChannel, author, postMetric);
+    public Post createAndSave(Channel channel, Member author, PostMetric postMetric) {
+        return createAndSave(DEFAULT_CONTENT, null, channel, author, postMetric);
     }
 
     public List<PostImage> setPostImages(Post post, List<Image> images) {

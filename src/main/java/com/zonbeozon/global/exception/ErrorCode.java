@@ -39,7 +39,6 @@ public enum ErrorCode {
     BANNED_MEMBER_CANNOT_JOIN("강퇴당한 사용자는 재가입이 불가능 합니다."),
     ALREADY_JOINED_CHANNEL("이미 참가했거나 참가 신청을 한 채널입니다."),
     INVITE_GENERATE_DENIED("채널의 가입 정책에 따라 초대코드를 생성할 수 없습니다."),
-    OPERATION_FOR_BLOG_CHANNEL_ONLY("블로그 채널 전용 작업입니다."),
     CHANNEL_MEMBER_IS_NOT_PENDING_STATUS("승인 대기중인 맴버가 아닙니다"),
     CHANNEL_MEMBER_IS_NOT_BAN_STATUS("해당 채널 맴버는 BAN 상태가 아닙니다."),
 

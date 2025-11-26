@@ -4,6 +4,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
 import com.zonbeozon.global.CursorPage;
 import com.zonbeozon.global.CursorPageImpl;
 import com.zonbeozon.post.dto.PostCursor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.post.domain.QPost.post;
 import static com.zonbeozon.post.domain.QPostImage.postImage;
 import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
@@ -106,10 +108,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Page<Post> findPostByOrderByTotalScoreDesc(Pageable pageable) {
+    public Page<Post> findPostByContentVisibilityOrderByTotalScoreDesc(Pageable pageable, ChannelContentVisibility contentVisibility) {
         List<Post> content = queryFactory.select(post)
                 .from(post)
+                .join(post.channel, channel)
                 .join(post.metric, postMetric).fetchJoin()
+                .where(channel.setting.contentVisibility.eq(ChannelContentVisibility.PUBLIC))
                 .orderBy(postMetric.totalScore.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

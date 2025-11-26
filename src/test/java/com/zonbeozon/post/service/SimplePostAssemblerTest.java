@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
@@ -23,7 +23,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @Autowired
     private EntityManager entityManager;
 
-    private BlogChannel blogChannel;
+    private Channel channel;
     private Member member;
 
     private Post post_1, post_2, post_3, post_4, post_5;
@@ -32,15 +32,15 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
 
     @BeforeEach
     void setup() {
-        blogChannel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
-        testBlogChannelService.joinAsAdmin(blogChannel, member);
+        testChannelService.joinAsAdmin(channel, member);
 
-        post_1 = testPostService.createAndSave(blogChannel, member);
-        post_2 = testPostService.createAndSave(blogChannel, member);
-        post_3 = testPostService.createAndSave(blogChannel, member);
-        post_4 = testPostService.createAndSave(blogChannel, member);
-        post_5 = testPostService.createAndSave(blogChannel, member);
+        post_1 = testPostService.createAndSave(channel, member);
+        post_2 = testPostService.createAndSave(channel, member);
+        post_3 = testPostService.createAndSave(channel, member);
+        post_4 = testPostService.createAndSave(channel, member);
+        post_5 = testPostService.createAndSave(channel, member);
 
         image_1 = new TestMockImageBuilder(member, "1").persist(entityManager);
         image_2 = new TestMockImageBuilder(member, "2").persist(entityManager);
@@ -53,7 +53,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     void fetchOlderPostsWhenInvertedIsFalse() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
                 member.getId(),
-                blogChannel.getId(),
+                channel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 2,
                 false);
@@ -69,7 +69,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     void fetchOneOlderPostWhenSizeIsOne() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
                 member.getId(),
-                blogChannel.getId(),
+                channel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 1,
                 false
@@ -85,7 +85,7 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     void fetchNewerPostsInDescWhenInvertedIsTrue() {
         CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
                 member.getId(),
-                blogChannel.getId(),
+                channel.getId(),
                 new PostCursor(post_2.getCreatedAt(), post_2.getId()),
                 10,
                 true

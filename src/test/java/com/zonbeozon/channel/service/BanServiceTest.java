@@ -32,9 +32,9 @@ public class BanServiceTest extends AbstractChannelIntegrationTest {
 
     @BeforeEach
     void setup() {
-        channel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
-        channelMember = testBlogChannelService.joinAsMember(channel, member);
+        channelMember = testChannelService.joinAsMember(channel, member);
     }
 
     @Test

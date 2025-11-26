@@ -1,8 +1,8 @@
 package com.zonbeozon.post.service;
 
+import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.post.domain.metric.PostMetric;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
@@ -28,22 +28,22 @@ public class PostUpdateTest extends AbstractChannelIntegrationTest {
     private PostImageRepository postImageRepository;
 
     private Member member;
-    private BlogChannel blogChannel;
+    private Channel channel;
     private Post post;
     private List<Image> images;
 
     @BeforeEach
     void setUp() {
         member = testMemberService.createAndSave();
-        blogChannel = testBlogChannelService.createAndSave();
-        testBlogChannelService.joinAsAdmin(blogChannel, member);
+        channel = testChannelService.createAndSave();
+        testChannelService.joinAsAdmin(channel, member);
         images = List.of(
             new TestMockImageBuilder(member, "1").build(),
             new TestMockImageBuilder(member, "2").build(),
             new TestMockImageBuilder(member, "3").build()
         );
         imageRepository.saveAll(images);
-        post = testPostService.createAndSave("", images, blogChannel, member, new PostMetric());
+        post = testPostService.createAndSave("", images, channel, member, new PostMetric());
     }
 
     @Test

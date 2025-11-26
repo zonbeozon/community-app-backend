@@ -1,7 +1,6 @@
 package com.zonbeozon.channel.service;
 
 import com.zonbeozon.channel.dto.ChannelDeletedEvent;
-import com.zonbeozon.channel.entity.BlogChannel;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.repository.BannedChannelMemberRepository;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
@@ -37,10 +36,9 @@ public class ChannelRemover {
         channelMemberRepository.deleteAllByChannelId(channelId);
         //채널 프로필 삭제
         channelProfileService.deleteProfile(channelId);
-        //블로그 타입 채널이라면
-        if(channel instanceof BlogChannel) {
-            postRemover.deleteAllPostsByChannelId(channelId);
-        }
+        //post삭제
+        postRemover.deleteAllPostsByChannelId(channelId);
+
         //채널 삭제
         channelRepository.deleteById(channelId);
         eventPublisher.publishEvent(new ChannelDeletedEvent(channelId));

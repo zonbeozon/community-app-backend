@@ -24,7 +24,7 @@ public class ChannelSubscribeTest extends AbstractChannelIntegrationTest {
 
     @BeforeEach
     void setup() {
-        channel = testBlogChannelService.createAndSave();
+        channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
         subscribeAccessor = StompHeaderAccessor.create(StompCommand.SUBSCRIBE);
         subscribeAccessor.setDestination("/topic/channel/" + channel.getId());
@@ -34,7 +34,7 @@ public class ChannelSubscribeTest extends AbstractChannelIntegrationTest {
     @DisplayName("채널에 참가된 유저면 구독가능 하다.")
     @Test
     void subscribeWhenUserIsChannelMember()  {
-        testBlogChannelService.joinAsMember(channel, member);
+        testChannelService.joinAsMember(channel, member);
         channelSubscriptionValidator.handle(subscribeAccessor);
     }
 

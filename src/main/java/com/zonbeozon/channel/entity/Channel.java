@@ -1,6 +1,5 @@
 package com.zonbeozon.channel.entity;
 
-import com.zonbeozon.channel.enums.*;
 import com.zonbeozon.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,10 +13,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "channel_category")
 @Table(indexes = @Index(name = "idx_channel_latest_event", columnList = "latestEventOccurred DESC"))
-public abstract class Channel extends BaseTimeEntity {
+public class Channel extends BaseTimeEntity {
     public static final int MIN_TITLE_LENGTH = 2;
     public static final int MAX_TITLE_LENGTH = 32;
 
@@ -50,26 +47,21 @@ public abstract class Channel extends BaseTimeEntity {
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChannelMember> channelMembers = new HashSet<>();
 
-    @NotNull
-    private ChannelType channelType;
-
-    protected Channel(
+    public Channel(
             String title,
             String description,
-            ChannelSetting setting,
-            ChannelType channelType
+            ChannelSetting setting
     ) {
         this.title = title;
         this.description = description;
         this.setting = setting;
-        this.channelType = channelType;
     }
 
-    public void updateTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public void updateDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 }

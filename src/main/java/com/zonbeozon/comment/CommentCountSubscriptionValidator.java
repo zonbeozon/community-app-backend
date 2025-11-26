@@ -1,14 +1,11 @@
 package com.zonbeozon.comment;
 
-import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.channel.service.finder.BlogChannelFinder;
+import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
-import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -25,8 +22,7 @@ import java.util.Map;
 public class CommentCountSubscriptionValidator implements StompSubscriptionValidateHandler {
     private static final String COMMENT_COUNT_SUBSCRIPTION_PATTERN = "/topic/channel/{channelId}/comment-count";
     private final PathMatcher pathMatcher = new AntPathMatcher();
-    private final ChannelMemberFinder channelMemberFinder;
-    private final BlogChannelFinder blogChannelFinder;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
 
     @Override
     public boolean isSupport(String destination) {
@@ -41,10 +37,7 @@ public class CommentCountSubscriptionValidator implements StompSubscriptionValid
         }
         Long memberId = Long.parseLong(principal.getName());
         Long channelId = extractChannelIdFromDestination(accessor.getDestination());
-
-        if(!blogChannelFinder.existsById(channelId))
-            throw new SubscriptionException(SubscriptionException.ErrorCode.CHANNEL_NOT_FOUND);
-        if(!channelMemberFinder.existsByChannelIdAndMemberId(channelId, memberId))
+        if(!channelAuthorizationCheckService.canAccessChannelContent(channelId, memberId))
             throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
     }
 
