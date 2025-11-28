@@ -19,6 +19,7 @@ public class SubscriptionException extends RuntimeException {
         FORBIDDEN("접근할 권한이 없습니다."),
         INVALID_DESTINATION("잘못된 구독 주소입니다."),
         CHANNEL_NOT_FOUND("존재하지 않는 채널입니다."),
+        CHATTING_GROUP_NOT_FOUND("존재하지 않는 채팅 그룹입니다"),
         POST_NOT_FOUND("존재하지 않는 포스트입니다.");
 
         private final String message;

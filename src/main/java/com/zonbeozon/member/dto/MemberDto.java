@@ -26,4 +26,12 @@ public record MemberDto(
                 member.getRole()
         );
     }
+    public static MemberDto from(Member member) {
+        return new MemberDto(
+                member.getId(),
+                member.getUsername(),
+                new ImageDto(member.getProfile().getImage().getId(), member.getProfile().getImage().getUrl()),
+                member.getRole()
+        );
+    }
 }

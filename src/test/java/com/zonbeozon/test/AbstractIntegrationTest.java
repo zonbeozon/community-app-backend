@@ -1,6 +1,12 @@
 package com.zonbeozon.test;
 
 import com.zonbeozon.global.s3.outbox.ImageOutboxProcessor;
+import com.zonbeozon.image.ImageRepository;
+import com.zonbeozon.image.entity.Image;
+import com.zonbeozon.image.service.ImageDbService;
+import com.zonbeozon.image.service.ImageFinder;
+import com.zonbeozon.image.service.ImageUploader;
+import com.zonbeozon.member.domain.Member;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,12 @@ public abstract class AbstractIntegrationTest {
     protected TestMemberService testMemberService;
     @Autowired
     protected ApplicationEvents applicationEvents;
+    @Autowired
+    protected ImageDbService imageDbService;
+    @Autowired
+    protected ImageFinder imageFinder;
+    @Autowired
+    protected ImageRepository imageRepository;
 
     //s3 실제 통신 비활성화
     @MockitoBean
@@ -39,5 +51,10 @@ public abstract class AbstractIntegrationTest {
 
     protected <T, E extends Exception> QueryCountAssert<T, E> assertThatDb(ThrowingProducer<T, E> call) {
         return QueryCountAssert.assertThatDb(queryInterceptor, call);
+    }
+
+    protected Image createMockImage(String url, String key, Member uploader) {
+        Long id = imageDbService.saveImage(new Image(url, key, uploader));
+        return imageFinder.findByIdElseThrow(id);
     }
 }

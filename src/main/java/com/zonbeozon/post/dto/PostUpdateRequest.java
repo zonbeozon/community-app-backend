@@ -12,7 +12,7 @@ public record PostUpdateRequest(
         @Size(min = Post.MIN_CONTENT_LENGTH, max = Post.MAX_CONTENT_LENGTH, message = "{post.content}")
         String content,
         @Schema(description = "이미지 업로드로 부터 받은 응답Id를 리스트 형식으로 전달")
-        @NotNull(message = "이미지id 필드를 포함해야 됩니다.")
+        @NotNull(message = "이미지id 필드를 포함해야 됩니다(없다면 빈 리스트 포함).")
         List<Long> imageIds
 ) {
 }

@@ -47,6 +47,14 @@ public enum ErrorCode {
     DUPLICATE_USERNAME("중복된 유저명입니다"),
     DUPLICATE_EMAIL("중복된 이메일입니다"),
 
+    //chat
+    CHATTING_GROUP_NAME_DUPLICATE("채팅 그룹 이름이 중복됩니다."),
+    CHAT_NOT_FOUND("채팅을 찾을 수 없습니다."),
+    CHAT_IMAGE_NOT_FOUND("채팅 이미지를 찾을 수 없습니다."),
+    MAX_CHAT_IMAGE_REACHED("Chat 이미지 최대 업로드 개수를 초과했습니다."),
+
+    CHATTING_GROUP_NOT_FOUND("채팅 그룹을 찾을 수 없습니다"),
+    CHAT_REPLY_LIMIT_REACHED("대댓글 깊이 제한에 도달했습니다."),
 
 
     //post

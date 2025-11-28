@@ -6,8 +6,6 @@ import com.zonbeozon.global.StompSubscriptionValidateHandler;
 import com.zonbeozon.global.exception.stomp.SubscriptionException;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.service.PostAuthorizationCheckService;
-import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -22,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String COMMENT_SUBSCRIPTION_PATTERN = "/topic/post/{postId}/comment";
+    private static final String COMMENT_SUBSCRIPTION_PATTERN = "/topic/posts/{postId}/comments";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final PostRepository postRepository;
     private final ChannelMemberFinder channelMemberFinder;

@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ChannelSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String CHANNEL_SUBSCRIPTION_PATTERN = "/topic/channel/{channelId}";
+    private static final String CHANNEL_SUBSCRIPTION_PATTERN = "/topic/channels/{channelId}";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChannelFinder channelFinder;
     private final ChannelMemberFinder channelMemberFinder;

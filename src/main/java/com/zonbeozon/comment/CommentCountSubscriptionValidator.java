@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentCountSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String COMMENT_COUNT_SUBSCRIPTION_PATTERN = "/topic/channel/{channelId}/comment-count";
+    private static final String COMMENT_COUNT_SUBSCRIPTION_PATTERN = "/topic/channels/{channelId}/comment-count";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
 

@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String POST_SUBSCRIPTION_PATTERN = "/topic/channel/{channelId}/post";
+    private static final String POST_SUBSCRIPTION_PATTERN = "/topic/channels/{channelId}/posts";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChannelMemberFinder channelMemberFinder;
     private final ChannelFinder channelFinder;
