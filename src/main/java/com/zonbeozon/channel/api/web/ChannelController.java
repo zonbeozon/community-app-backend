@@ -102,8 +102,8 @@ public class ChannelController {
                                     )
                             }))
     })
-    @PostMapping("/community")
-    public ResponseEntity<ChannelInfoWithMembershipDto> addCommunityChannel(
+    @PostMapping
+    public ResponseEntity<ChannelInfoWithMembershipDto> addChannel(
             @Valid
             @RequestBody
             ChannelCreateRequest request

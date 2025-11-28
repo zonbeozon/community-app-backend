@@ -6,8 +6,6 @@ import com.zonbeozon.channel.entity.ChannelSetting;
 import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.global.exception.ConflictException;
 import com.zonbeozon.global.exception.ErrorCode;
-import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.member.service.MemberFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +17,6 @@ public class ChannelCreator {
     private final ChannelRepository channelRepository;
     private final ChannelMemberJoiner channelMemberJoiner;
     private final ChannelProfileService channelProfileService;
-    private final MemberFinder memberFinder;
 
     public Long addChannel(Long ownerId, ChannelCreateCommand command) {
         if(isDuplicateTitle(command.title()))
