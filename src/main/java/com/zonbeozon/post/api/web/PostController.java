@@ -4,11 +4,9 @@ import com.zonbeozon.config.SwaggerConfig;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
+import com.zonbeozon.post.api.PostCommendApi;
 import com.zonbeozon.post.service.metric.viewcount.PostViewCounter;
-import com.zonbeozon.post.api.PostCreateApi;
-import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
-import com.zonbeozon.post.api.PostUpdateApi;
 import com.zonbeozon.post.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,9 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +36,7 @@ import java.util.List;
 public class PostController {
     private final CookieViewMarker postViewMarker;
     private final PostViewCounter postViewCounter;
-    private final PostCreateApi postCreateApi;
-    private final PostDeleteApi postDeleteApi;
-    private final PostUpdateApi postUpdateApi;
+    private final PostCommendApi postCommendApi;
     private final PostQueryApi postQueryApi;
 
     public PostController(
@@ -50,16 +44,12 @@ public class PostController {
             CookieViewMarker postViewMarker,
             @Qualifier("postViewCounter")
             PostViewCounter postViewCounter,
-            PostCreateApi postCreateApi,
-            PostDeleteApi postDeleteApi,
-            PostUpdateApi postUpdateApi,
+            PostCommendApi postCommendApi,
             PostQueryApi postQueryApi
     ) {
         this.postViewMarker = postViewMarker;
         this.postViewCounter = postViewCounter;
-        this.postCreateApi = postCreateApi;
-        this.postDeleteApi = postDeleteApi;
-        this.postUpdateApi = postUpdateApi;
+        this.postCommendApi = postCommendApi;
         this.postQueryApi = postQueryApi;
     }
 
@@ -143,7 +133,7 @@ public class PostController {
             @Valid
             PostCreateRequest request
     ) {
-        Long postId = postCreateApi.createPost(channelId, request);
+        Long postId = postCommendApi.createPost(channelId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(postId);
     }
 
@@ -164,7 +154,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId
     ) {
-        postDeleteApi.deletePost(postId);
+        postCommendApi.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
@@ -188,7 +178,7 @@ public class PostController {
             @Valid
             PostUpdateRequest request
     ) {
-        postUpdateApi.updatePost(postId, request);
+        postCommendApi.updatePost(postId, request);
         return ResponseEntity.noContent().build();
     }
 
@@ -204,7 +194,7 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = CursorBasedPostsResponse.class)
+                    schema = @Schema(implementation = PagedPostsPayload.class)
             )
             ),
             @ApiResponse(
@@ -236,7 +226,7 @@ public class PostController {
             @Parameter(name = "inverted", description = "false라면 해당 cursor 이후의 post를 true라면 이전 post를 반환", example = "true")
     })
     @GetMapping("channels/{channelId}/posts")
-    public ResponseEntity<CursorBasedPostsResponse> createCursorBasedPostResponse(
+    public ResponseEntity<PagedPostsPayload> createCursorBasedPostResponse(
             @PathVariable Long channelId,
             @RequestParam(required = false) LocalDateTime createdAt,
             @RequestParam(required = false) Long postId,
@@ -246,10 +236,10 @@ public class PostController {
         if((createdAt == null || postId == null) && inverted)
             throw new BadRequestException(ErrorCode.INVERTED_SEARCH_REQUIRES_CURSOR);
         if(createdAt != null && postId != null) {
-            return ResponseEntity.ok(postQueryApi.getCursorBasedPostResponse(channelId, new PostCursor(createdAt, postId), size, inverted));
+            return ResponseEntity.ok(postQueryApi.getPostPayload(channelId, new PostCursor(createdAt, postId), size, inverted));
         }
         if(createdAt == null && postId == null) {
-            return ResponseEntity.ok(postQueryApi.getCursorBasedPostResponse(channelId, null, size, false));
+            return ResponseEntity.ok(postQueryApi.getPostPayload(channelId, null, size, false));
         }
         throw new BadRequestException(ErrorCode.INVALID_POST_CURSOR_COMBINATION);
     }
@@ -264,7 +254,7 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = PostResponse.class)
+                    schema = @Schema(implementation = PostPayload.class)
             )),
             @ApiResponse(
                     responseCode = "403",
@@ -286,10 +276,10 @@ public class PostController {
             )
     })
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostResponse> getPostResponse(
+    public ResponseEntity<PostPayload> getPostResponse(
             @PathVariable Long postId
     ) {
-        PostResponse response = postQueryApi.getCursorBasedPostResponse(postId);
+        PostPayload response = postQueryApi.getPostPayload(postId);
         return ResponseEntity.ok(response);
     }
 
@@ -326,15 +316,15 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = PagedRecommendPostResponse.class)
+                    schema = @Schema(implementation = PagedRecommendPostPayload.class)
             )),
     })
     @GetMapping("/posts/recommend")
-    public ResponseEntity<PagedRecommendPostResponse> getRecommendPostResponse(
+    public ResponseEntity<PagedRecommendPostPayload> getRecommendPostResponse(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        PagedRecommendPostResponse response = postQueryApi.getRecommend(PageRequest.of(page, size));
+        PagedRecommendPostPayload response = postQueryApi.getRecommend(PageRequest.of(page, size));
         return ResponseEntity.ok(response);
     }
 }

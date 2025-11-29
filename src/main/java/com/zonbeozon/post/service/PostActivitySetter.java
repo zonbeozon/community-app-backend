@@ -1,9 +1,8 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.service.ChannelLatestEventSetter;
-import com.zonbeozon.post.dto.PostCreatedEvent;
-import com.zonbeozon.post.dto.PostDeletedEvent;
 import com.zonbeozon.post.domain.Post;
+import com.zonbeozon.post.dto.PostEvent;
 import com.zonbeozon.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,19 +18,18 @@ public class PostActivitySetter {
     private final ChannelLatestEventSetter channelLatestEventSetter;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void handlePostCreated(PostCreatedEvent event) {
-        channelLatestEventSetter.updateAsNow(event.channelId());
-
+    public void handlePostCreated(PostEvent.Created event) {
+        channelLatestEventSetter.updateAsNow(event.channelId);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void handlePostDeleted(PostDeletedEvent event) {
-        Optional<Post> optPost = postRepository.findTopByChannelIdOrderByIdDesc(event.channelId());
+    public void handlePostDeleted(PostEvent.Deleted event) {
+        Optional<Post> optPost = postRepository.findTopByChannelIdOrderByIdDesc(event.channelId);
         if(optPost.isPresent()) {
             Post post = optPost.get();
-            channelLatestEventSetter.update(event.channelId(), post.getCreatedAt());
+            channelLatestEventSetter.update(event.channelId, post.getCreatedAt());
             return;
         }
-        channelLatestEventSetter.updateAsNull(event.channelId());
+        channelLatestEventSetter.updateAsNull(event.channelId);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface PostRepositoryCustom {
-    CursorPage<Post, PostCursor> searchByChannelIdWithMetric(Long channelId, PostCursor cursor, int size, boolean inverted);
+    CursorPage<Post, PostCursor> findByChannelIdWithMetric(Long channelId, PostCursor cursor, int size, boolean inverted);
     Optional<Post> findByIdWithImages(Long postId);
     Optional<Post> findByIdWithChannelAndImagesAndMetric(Long postId);
     Page<Post> findPostByContentVisibilityOrderByTotalScoreDesc(Pageable pageable, ChannelContentVisibility contentVisibility);

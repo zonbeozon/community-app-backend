@@ -23,7 +23,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class ChannelMemberAssembler {
+public class ChannelMemberQueryService {
     private static final Set<String> ALLOWED_ACTIVE_CH_SORT_PROPERTIES = Set.of(
             "createdAt"
     );

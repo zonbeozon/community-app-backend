@@ -1,7 +1,7 @@
 package com.zonbeozon.comment.service;
 
 import com.zonbeozon.channel.dto.ChannelMemberDto;
-import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
+import com.zonbeozon.channel.service.assembler.ChannelMemberQueryService;
 import com.zonbeozon.comment.dto.CommentWithAuthorResponse;
 import com.zonbeozon.comment.dto.CommentsWithAuthorResponse;
 import com.zonbeozon.comment.dto.CommentDto;
@@ -9,7 +9,6 @@ import com.zonbeozon.comment.repository.CommentRepository;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.PostFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import java.util.List;
 public class CommentAssembler {
     private final CommentRepository commentRepository;
     private final PostFinder postFinder;
-    private final ChannelMemberAssembler channelMemberAssembler;
+    private final ChannelMemberQueryService channelMemberQueryService;
 
     public CommentsWithAuthorResponse getCommentResponseByPostId(Long postId) {
         Post post = postFinder.findByIdElseThrow(postId);
@@ -32,7 +31,7 @@ public class CommentAssembler {
                 .map(CommentDto::authorId)
                 .distinct()
                 .toList();
-        List<ChannelMemberDto> authorResponse = channelMemberAssembler.getChannelMembers(post.getChannel().getId(), authorIds);
+        List<ChannelMemberDto> authorResponse = channelMemberQueryService.getChannelMembers(post.getChannel().getId(), authorIds);
 
         return new CommentsWithAuthorResponse(
                 authorResponse,

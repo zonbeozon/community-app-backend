@@ -4,7 +4,7 @@ import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.comment.dto.CommentAddRequest;
 import com.zonbeozon.comment.service.CommentAuthorizationCheckService;
 import com.zonbeozon.comment.service.CommentCreator;
-import com.zonbeozon.comment.service.CommentRemover;
+import com.zonbeozon.comment.service.CommentDeleteService;
 import com.zonbeozon.global.annotation.ApiComponent;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class CommentCommandApi {
     private final PostAuthorizationCheckService postAuthorizationCheckService;
     private final CommentAuthorizationCheckService commentAuthorizationCheckService;
-    private final CommentRemover commentRemover;
+    private final CommentDeleteService commentDeleteService;
     private final AuthenticationService authenticationService;
     private final CommentCreator commentCreator;
 
@@ -29,6 +29,6 @@ public class CommentCommandApi {
 
     public void deleteComment(Long commentId) {
         if(!commentAuthorizationCheckService.isAuthorOrHasHigherRoleThanAuthor(commentId)) throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        commentRemover.deleteComment(commentId);
+        commentDeleteService.delete(commentId);
     }
 }

@@ -1,14 +1,12 @@
-package com.zonbeozon.post.controller;
+package com.zonbeozon.post.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zonbeozon.SimpleSecurityEnabledWebMvcTest;
+import com.zonbeozon.post.api.PostCommendApi;
 import com.zonbeozon.test.AuthorizationCheckDisabledTest;
 import com.zonbeozon.global.viewcount.CookieViewMarker;
 import com.zonbeozon.post.service.metric.viewcount.PostViewCounter;
-import com.zonbeozon.post.api.PostCreateApi;
-import com.zonbeozon.post.api.PostDeleteApi;
 import com.zonbeozon.post.api.PostQueryApi;
-import com.zonbeozon.post.api.PostUpdateApi;
 import com.zonbeozon.post.api.web.PostController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,11 +24,7 @@ public class PostControllerTest extends AuthorizationCheckDisabledTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
     @MockitoBean
-    private PostCreateApi postCreateApi;
-    @MockitoBean
-    private PostDeleteApi postDeleteApi;
-    @MockitoBean
-    private PostUpdateApi postUpdateApi;
+    private PostCommendApi postCommendApi;
     @MockitoBean
     private PostQueryApi postQueryApi;
     @MockitoBean("postViewMarker")

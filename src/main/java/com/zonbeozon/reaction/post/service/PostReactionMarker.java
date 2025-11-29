@@ -40,7 +40,7 @@ public class PostReactionMarker implements ReactionMarkHandler, ReactionUnmarkHa
             return;
         }
         PostReaction reaction = PostReaction.create(post, reactionType, requester);
-        post.getReactions().add(reaction);
+        postReactionRepository.save(reaction);
         eventPublisher.publishEvent(new PostReactionAddEvent(postId, reactionType));
     }
 

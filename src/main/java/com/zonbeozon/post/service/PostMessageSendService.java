@@ -12,33 +12,33 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
-public class PostStompSender {
+public class PostMessageSendService {
     private final SimpMessagingTemplate messagingTemplate;
-    private final SimplePostAssembler simplePostAssembler;
+    private final PostQueryService postQueryService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handlePostCreated(PostCreatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
+    public void handlePostCreated(PostEvent.Created event) {
+        PostPayload body = postQueryService.getPostPayload(event.postId);
         messagingTemplate.convertAndSend(
-                getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.CREATED, body)
+                getDestination(event.channelId),
+                new PostEventMessage(PostEventType.CREATED, body)
         );
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handlePostDeleted(PostDeletedEvent event) {
+    public void handlePostDeleted(PostEvent.Deleted event) {
         messagingTemplate.convertAndSend(
-                getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.DELETED, null)
+                getDestination(event.channelId),
+                PostEventMessage.createDeleted(event.postId)
         );
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handlePostUpdated(PostUpdatedEvent event) {
-        PostResponse body = simplePostAssembler.getPostResponse(event.postId());
+    public void handlePostUpdated(PostEvent.Updated event) {
+        PostPayload body = postQueryService.getPostPayload(event.postId);
         messagingTemplate.convertAndSend(
-                getDestination(event.channelId()),
-                new PostEventResponse(PostEventType.UPDATED, body)
+                getDestination(event.channelId),
+                new PostEventMessage(PostEventType.UPDATED, body)
         );
     }
 

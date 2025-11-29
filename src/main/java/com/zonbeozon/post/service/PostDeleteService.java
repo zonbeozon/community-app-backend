@@ -1,12 +1,10 @@
 package com.zonbeozon.post.service;
 
-import com.zonbeozon.comment.repository.CommentRepository;
+import com.zonbeozon.comment.service.CommentDeleteService;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.dto.PostDeletedEvent;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.reaction.post.repository.PostReactionRepository;
+import com.zonbeozon.reaction.post.service.PostReactionDeleteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,28 +13,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PostRemover {
+public class PostDeleteService {
     private final PostFinder postFinder;
-    private final ApplicationEventPublisher eventPublisher;
     private final PostRepository postRepository;
     private final PostImageService postImageService;
-    private final PostReactionRepository postReactionRepository;
-    private final CommentRepository commentRepository;
+    private final CommentDeleteService commentDeleteService;
+    private final PostReactionDeleteService postReactionDeleteService;
 
-    public void deletePost(Long postId) {
+    public void delete(Long postId) {
         Post post = postFinder.findByIdElseThrow(postId);
-        //postImage 삭제
         postImageService.deletePostImagesByPostId(postId);
-        //comment, postReaction은 cascade option을 통해 삭제한다.
+        commentDeleteService.deleteByPostId(postId);
+        postReactionDeleteService.deleteAll(postId);
         postRepository.deleteById(post.getId());
-        eventPublisher.publishEvent(new PostDeletedEvent(post.getChannel().getId(), postId));
     }
 
-    public void deleteAllPostsByChannelId(Long channelId) {
+    public void deleteAllByChannelId(Long channelId) {
         List<Long> postIds = postFinder.findByChannelId(channelId).stream().map(Post::getId).toList();
         postImageService.deletePostImagesByPostIdIn(postIds);
-        postReactionRepository.deleteByPostIdIn(postIds);
-        commentRepository.deleteByPostIdIn(postIds);
+        postReactionDeleteService.deleteAll(postIds);
+        commentDeleteService.deleteByPostIdIn(postIds);
         postRepository.deleteAllById(postIds);
     }
 }

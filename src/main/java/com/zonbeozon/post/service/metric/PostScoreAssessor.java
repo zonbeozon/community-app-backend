@@ -1,6 +1,6 @@
 package com.zonbeozon.post.service.metric;
 
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

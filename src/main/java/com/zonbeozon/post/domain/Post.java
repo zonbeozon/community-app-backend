@@ -3,8 +3,8 @@ package com.zonbeozon.post.domain;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.comment.entity.Comment;
 import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.domain.metric.PostMetric;
 import com.zonbeozon.reaction.post.entity.PostReaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -47,10 +47,10 @@ public class Post extends BaseTimeEntity {
     @Setter
     private List<PostImage> postImages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     private List<PostReaction> reactions = new ArrayList<>();
 
     @NotNull
@@ -75,5 +75,9 @@ public class Post extends BaseTimeEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public List<Image> getImages() {
+        return postImages.stream().map(PostImage::getImage).toList();
     }
 }

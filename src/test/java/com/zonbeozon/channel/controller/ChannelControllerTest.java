@@ -58,7 +58,7 @@ public class ChannelControllerTest extends AuthorizationCheckDisabledTest {
                     new ChannelSettingRequest(ChannelContentVisibility.PUBLIC, ChannelJoinPolicy.OPEN)
             );
             mockMvc.perform(
-                            post("/channels/community")
+                            post("/channels")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(request))
                     )

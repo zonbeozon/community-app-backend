@@ -3,9 +3,7 @@ package com.zonbeozon.post.service;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.dto.PostCreateCommand;
 import com.zonbeozon.post.dto.PostCreateRequest;
-import com.zonbeozon.post.dto.PostCreatedEvent;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostCreateTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private PostCreator postCreator;
+    private PostCreateService postCreateService;
     @Autowired
     private PostRepository postRepository;
 
@@ -38,29 +36,15 @@ public class PostCreateTest extends AbstractChannelIntegrationTest {
     @DisplayName("요청이 올바르다면 정상적으로 저장되어야 한다.")
     void savesPostWhenRequestIsValid() {
         testChannelService.joinAsOwner(channel, author);
-        Long id = postCreator.createPost(
+        Long id = postCreateService.createPost(
                 author.getId(),
                 channel.getId(),
-                new PostCreateCommand(request.content(), request.imageIds())
+                request.content(),
+                request.imageIds()
         );
         Post post = postRepository.findById(id).get();
 
         assertThat(post.getContent()).isEqualTo(request.content());
         assertThat(post.getAuthor()).isEqualTo(author);
-    }
-
-    @Test
-    @DisplayName("이벤트를 발생시킨다.")
-    void publishesEventWithCorrectValues() {
-        testChannelService.joinAsOwner(channel, author);
-        Long id = postCreator.createPost(
-                author.getId(),
-                channel.getId(),
-                new PostCreateCommand(request.content(), request.imageIds())
-        );
-        List<PostCreatedEvent> events = applicationEvents.stream(PostCreatedEvent.class).toList();
-        assertThat(events).hasSize(1);
-        assertThat(events.get(0).postId()).isEqualTo(id);
-        assertThat(events.get(0).channelId()).isEqualTo(channel.getId());
     }
 }

@@ -20,14 +20,14 @@ import java.util.*;
 import static com.zonbeozon.channel.entity.QChannel.channel;
 import static com.zonbeozon.post.domain.QPost.post;
 import static com.zonbeozon.post.domain.QPostImage.postImage;
-import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
+import static com.zonbeozon.post.domain.QPostMetric.postMetric;
 
 @Repository
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     @Override
-    public CursorPage<Post, PostCursor> searchByChannelIdWithMetric(Long channelId, PostCursor postCursor, int size, boolean inverted) {
+    public CursorPage<Post, PostCursor> findByChannelIdWithMetric(Long channelId, PostCursor postCursor, int size, boolean inverted) {
         OrderSpecifier<?>[] orderSpecifiers = getOrderSpecifiers(inverted);
         BooleanExpression cursorCondition = cursorCondition(postCursor, inverted);
 
@@ -90,6 +90,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(post.postImages, postImage).fetchJoin()
                 .leftJoin(postImage.image).fetchJoin()
                 .where(post.id.eq(postId))
+                .distinct()
                 .fetchOne();
 
         return Optional.ofNullable(result);
@@ -102,6 +103,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(postImage.image).fetchJoin()
                 .join(post.metric).fetchJoin()
                 .where(post.id.eq(postId))
+                .distinct()
                 .fetchOne();
 
         return Optional.ofNullable(result);

@@ -5,7 +5,7 @@ import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.image.TestMockImageBuilder;
 import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
-import com.zonbeozon.post.dto.CursorBasedPostsResponse;
+import com.zonbeozon.post.dto.PagedPostsPayload;
 import com.zonbeozon.post.dto.PostCursor;
 import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.EntityManager;
@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
+public class PostQueryServiceTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private SimplePostAssembler simplePostAssembler;
+    private PostQueryService postQueryService;
     @Autowired
     private EntityManager entityManager;
 
@@ -51,13 +51,12 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @DisplayName("커서로 (3번째 포스트 생성시각, 3번째 포스트 ID)쌍이 주어지고 inverted가 false라면, 이전 2개 포스트(2번, 1번)가 조회되어야 한다")
     @Test
     void fetchOlderPostsWhenInvertedIsFalse() {
-        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+        PagedPostsPayload response = postQueryService.getPagedPostsPayload(
                 member.getId(),
                 channel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 2,
                 false);
-        Assertions.assertThat(response.authors()).hasSize(1);
         Assertions.assertThat(response.posts()).hasSize(2);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_2.getId());
         Assertions.assertThat(response.posts().get(1).postId()).isEqualTo(post_1.getId());
@@ -67,14 +66,13 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @DisplayName("조회 사이즈가 1, inverted가 false인 경우, 커서 ID 이전의 포스트 1개만 조회되어야 한다.")
     @Test
     void fetchOneOlderPostWhenSizeIsOne() {
-        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+        PagedPostsPayload response = postQueryService.getPagedPostsPayload(
                 member.getId(),
                 channel.getId(),
                 new PostCursor(post_3.getCreatedAt(), post_3.getId()),
                 1,
                 false
         );
-        Assertions.assertThat(response.authors()).hasSize(1);
         Assertions.assertThat(response.posts()).hasSize(1);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_2.getId());
         Assertions.assertThat(response.nextCursor()).isEqualTo(new PostCursor(post_2.getCreatedAt(), post_2.getId()));
@@ -83,15 +81,13 @@ public class SimplePostAssemblerTest extends AbstractChannelIntegrationTest {
     @DisplayName("inverted가 true일 때, 커서보다 최신 게시물을 조회하며 결과는 시간기준 내림차순으로 정렬된다")
     @Test
     void fetchNewerPostsInDescWhenInvertedIsTrue() {
-        CursorBasedPostsResponse response = simplePostAssembler.getCursorBasedPostResponse(
+        PagedPostsPayload response = postQueryService.getPagedPostsPayload(
                 member.getId(),
                 channel.getId(),
                 new PostCursor(post_2.getCreatedAt(), post_2.getId()),
                 10,
                 true
         );
-        Assertions.assertThat(response.authors()).hasSize(1);
-        Assertions.assertThat(response.authors().get(0).memberId()).isEqualTo(member.getId());
         Assertions.assertThat(response.posts()).hasSize(3);
         Assertions.assertThat(response.size()).isEqualTo(3);
         Assertions.assertThat(response.posts().get(0).postId()).isEqualTo(post_5.getId());

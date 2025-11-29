@@ -7,7 +7,7 @@ import com.zonbeozon.image.entity.Image;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;
 import com.zonbeozon.post.domain.PostImage;
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import com.zonbeozon.post.repository.PostImageRepository;
 import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;

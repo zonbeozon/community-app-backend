@@ -1,20 +1,15 @@
 package com.zonbeozon.reaction.api;
 
 import com.zonbeozon.auth.service.AuthenticationService;
-import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.global.annotation.ApiComponent;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.service.PostAuthorizationCheckService;
 import com.zonbeozon.reaction.post.entity.ReactionType;
-import com.zonbeozon.reaction.post.service.PostReactionAssembler;
 import com.zonbeozon.reaction.post.service.PostReactionMarker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @ApiComponent
 @RequiredArgsConstructor
@@ -22,8 +17,6 @@ public class PostReactionApi {
     private final PostReactionMarker reactionMarker;
     private final AuthenticationService authenticationService;
     private final PostAuthorizationCheckService postAuthorizationCheckService;
-    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
-    private final PostReactionAssembler postReactionAssembler;
 
     @Transactional
     public void mark(Long postId, ReactionType reactionType) {

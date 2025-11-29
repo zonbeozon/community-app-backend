@@ -1,11 +1,10 @@
 package com.zonbeozon.post.service.metric;
 
 import com.zonbeozon.global.QuerydslPagingItemReader;
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import com.zonbeozon.post.dto.PostMetricScoreDto;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -22,9 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
-import java.time.LocalDateTime;
-
-import static com.zonbeozon.post.domain.metric.QPostMetric.postMetric;
+import static com.zonbeozon.post.domain.QPostMetric.postMetric;
 
 @Configuration
 @RequiredArgsConstructor

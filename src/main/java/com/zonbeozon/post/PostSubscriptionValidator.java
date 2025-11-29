@@ -2,6 +2,7 @@ package com.zonbeozon.post;
 
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.enums.ChannelContentVisibility;
+import com.zonbeozon.channel.service.ChannelAuthorizationCheckService;
 import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.channel.service.finder.ChannelMemberFinder;
 import com.zonbeozon.global.StompSubscriptionValidateHandler;
@@ -22,8 +23,7 @@ import java.util.Map;
 public class PostSubscriptionValidator implements StompSubscriptionValidateHandler {
     private static final String POST_SUBSCRIPTION_PATTERN = "/topic/channels/{channelId}/posts";
     private final PathMatcher pathMatcher = new AntPathMatcher();
-    private final ChannelMemberFinder channelMemberFinder;
-    private final ChannelFinder channelFinder;
+    private final ChannelAuthorizationCheckService channelAuthorizationCheckService;
 
     @Override
     public boolean isSupport(String destination) {
@@ -38,10 +38,10 @@ public class PostSubscriptionValidator implements StompSubscriptionValidateHandl
         }
         Long memberId = Long.parseLong(principal.getName());
         Long channelId = extractChannelIdFromDestination(accessor.getDestination());
-        Channel channel = channelFinder.findByIdElseThrow(channelId);
-        if(channel.getSetting().getContentVisibility() == ChannelContentVisibility.PUBLIC) return;
-        if(channelMemberFinder.findByChannelIdAndMemberId(channelId, memberId).isPresent()) return;
-        throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
+
+        if(!channelAuthorizationCheckService.canAccessChannelContent(channelId, memberId)) {
+            throw new SubscriptionException(SubscriptionException.ErrorCode.FORBIDDEN);
+        }
     }
 
     private Long extractChannelIdFromDestination(String destination) {

@@ -13,7 +13,7 @@ public record RecommendPostDto(
         long channelId,
         String content,
         List<ImageDto> images,
-        PostMetricResponse metric,
+        PostMetricPayload metric,
         MemberDto author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -24,7 +24,7 @@ public record RecommendPostDto(
                 post.getChannel().getId(),
                 post.getContent(),
                 post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::create).toList(),
-                PostMetricResponse.from(post.getMetric()),
+                PostMetricPayload.from(post.getMetric()),
                 author,
                 post.getCreatedAt(),
                 post.getModifiedAt()

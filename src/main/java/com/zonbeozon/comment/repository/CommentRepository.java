@@ -12,7 +12,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     @Query("SELECT c FROM Comment c JOIN FETCH c.post WHERE c.id = :commentId")
     Optional<Comment> findByIdWithPost(Long commentId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Comment c WHERE c.post.id = :postId")
+    void deleteByPostId(Long postId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Comment c WHERE c.post.id IN :postIds")
     void deleteByPostIdIn(List<Long> postIds);
 

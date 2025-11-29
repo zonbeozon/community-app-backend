@@ -1,13 +1,13 @@
 package com.zonbeozon.post.recommend;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.post.dto.PagedRecommendPostResponse;
+import com.zonbeozon.post.dto.PagedRecommendPostPayload;
 import com.zonbeozon.post.dto.RecommendPostDto;
 import com.zonbeozon.post.service.recommend.PostRecommendService;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class PostRecommendServiceTest extends AbstractChannelIntegrationTest {
         Post post_2 = testPostService.createAndSave(channel, member, postMetric_2);
         Post post_3 = testPostService.createAndSave(channel, member, postMetric_3);
 
-        PagedRecommendPostResponse response = postRecommendService.recommend(PageRequest.of(0, 2));
+        PagedRecommendPostPayload response = postRecommendService.recommend(PageRequest.of(0, 2));
         Assertions.assertThat(response.content())
                 .extracting(RecommendPostDto::postId)
                 .containsExactly(post_3.getId(), post_2.getId());

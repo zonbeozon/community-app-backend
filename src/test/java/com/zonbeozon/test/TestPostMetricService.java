@@ -1,6 +1,6 @@
 package com.zonbeozon.test;
 
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import com.zonbeozon.post.repository.PostMetricRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

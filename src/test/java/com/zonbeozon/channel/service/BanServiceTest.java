@@ -5,7 +5,7 @@ import com.zonbeozon.channel.dto.BannedChannelMemberDto;
 import com.zonbeozon.channel.entity.Channel;
 import com.zonbeozon.channel.entity.ChannelMember;
 import com.zonbeozon.channel.repository.ChannelMemberRepository;
-import com.zonbeozon.channel.service.assembler.ChannelMemberAssembler;
+import com.zonbeozon.channel.service.assembler.ChannelMemberQueryService;
 import com.zonbeozon.global.exception.AccessDeniedException;
 import com.zonbeozon.member.domain.Member;
 import org.assertj.core.api.Assertions;
@@ -20,7 +20,7 @@ public class BanServiceTest extends AbstractChannelIntegrationTest {
     @Autowired
     private ChannelMemberBanService channelMemberBanService;
     @Autowired
-    private ChannelMemberAssembler channelMemberAssembler;
+    private ChannelMemberQueryService channelMemberQueryService;
     @Autowired
     private ChannelMemberJoiner channelMemberJoiner;
     @Autowired
@@ -56,7 +56,7 @@ public class BanServiceTest extends AbstractChannelIntegrationTest {
     @DisplayName("벤 된 맴버는 조회가능하다.")
     void bannedMemberShouldAppearInBannedList() {
         channelMemberBanService.ban(channel.getId(), member.getId(), null);
-        Page<BannedChannelMemberDto> bannedChannelMembers = channelMemberAssembler.getPagedBannedChannelMember(channel.getId(), PageRequest.of(0, 10));
+        Page<BannedChannelMemberDto> bannedChannelMembers = channelMemberQueryService.getPagedBannedChannelMember(channel.getId(), PageRequest.of(0, 10));
         Assertions.assertThat(bannedChannelMembers.getTotalElements()).isEqualTo(1);
         Assertions.assertThat(bannedChannelMembers.getContent().getFirst().memberId()).isEqualTo(member.getId());
     }

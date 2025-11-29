@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostReactionAssembler {
+public class PostReactionQueryService {
     private final PostReactionRepository postReactionRepository;
 
     public Map<Long, PersonalizedPostReactionDto> getPersonalizedInfoByPostIdIn(long requesterId, Collection<Long> postIds) {

@@ -12,8 +12,13 @@ import java.util.Optional;
 
 public interface PostReactionRepository extends JpaRepository<PostReaction, Long>, PostReactionRepositoryCustom {
     Optional<PostReaction> findByPostAndAuthor(Post post, Member author);
-    @Modifying
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("DELETE FROM PostReaction pr WHERE pr.post.id IN :postIds")
     void deleteByPostIdIn(List<Long> postIds);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("DELETE FROM PostReaction pr WHERE pr.post.id = :postId")
+    void deleteByPostId(Long postId);
 }
 

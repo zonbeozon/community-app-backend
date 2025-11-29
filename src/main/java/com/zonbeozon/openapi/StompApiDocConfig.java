@@ -24,7 +24,7 @@ package com.zonbeozon.openapi;
 //            Schema channelEventResponseSchema = ModelConverters.getInstance()
 //                    .resolveAsResolvedSchema(new AnnotatedType(ChannelEventResponse.class)).schema;
 //            Schema postEventResponseSchema = ModelConverters.getInstance()
-//                    .resolveAsResolvedSchema(new AnnotatedType(PostEventResponse.class)).schema;
+//                    .resolveAsResolvedSchema(new AnnotatedType(PostEventPayload.class)).schema;
 //            Schema commentEventResponseSchema = ModelConverters.getInstance()
 //                    .resolveAsResolvedSchema(new AnnotatedType(CommentEventResponse.class)).schema;
 //            Schema CommentCountEventResponseSchema = ModelConverters.getInstance()

@@ -1,6 +1,5 @@
-package com.zonbeozon.post.domain.metric;
+package com.zonbeozon.post.domain;
 
-import com.zonbeozon.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 

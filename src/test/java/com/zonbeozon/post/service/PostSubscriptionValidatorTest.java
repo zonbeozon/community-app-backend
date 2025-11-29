@@ -14,7 +14,7 @@ public class PostSubscriptionValidatorTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("지원하는 url이라면 true를 리턴한다.")
     void ReturnTrueWhenUrlIsSupported() {
-        boolean isSupport = validator.isSupport("/topic/channel/1/post");
+        boolean isSupport = validator.isSupport("/topic/channels/1/posts");
         Assertions.assertThat(isSupport).isTrue();
     }
 }

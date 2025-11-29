@@ -8,7 +8,7 @@ import com.zonbeozon.channel.repository.ChannelRepository;
 import com.zonbeozon.channel.repository.PendingChannelMemberRepository;
 import com.zonbeozon.channel.service.cache.ChannelCacheEvict;
 import com.zonbeozon.channel.service.finder.ChannelFinder;
-import com.zonbeozon.post.service.PostRemover;
+import com.zonbeozon.post.service.PostDeleteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ChannelRemover {
     private final PendingChannelMemberRepository pendingChannelMemberRepository;
     private final ChannelProfileService channelProfileService;
     private final ChannelFinder channelFinder;
-    private final PostRemover postRemover;
+    private final PostDeleteService postDeleteService;
 
     @ChannelCacheEvict
     public void removeChannel(Long channelId) {
@@ -37,7 +37,7 @@ public class ChannelRemover {
         //채널 프로필 삭제
         channelProfileService.deleteProfile(channelId);
         //post삭제
-        postRemover.deleteAllPostsByChannelId(channelId);
+        postDeleteService.deleteAllByChannelId(channelId);
 
         //채널 삭제
         channelRepository.deleteById(channelId);

@@ -1,6 +1,6 @@
 package com.zonbeozon.post.repository;
 
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

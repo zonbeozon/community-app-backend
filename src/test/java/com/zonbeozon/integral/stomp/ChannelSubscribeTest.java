@@ -27,7 +27,7 @@ public class ChannelSubscribeTest extends AbstractChannelIntegrationTest {
         channel = testChannelService.createAndSave();
         member = testMemberService.createAndSave();
         subscribeAccessor = StompHeaderAccessor.create(StompCommand.SUBSCRIBE);
-        subscribeAccessor.setDestination("/topic/channel/" + channel.getId());
+        subscribeAccessor.setDestination("/topic/channels/" + channel.getId());
         subscribeAccessor.setUser(new TestAuthenticationBuilder(member).build());
     }
 

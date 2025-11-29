@@ -5,7 +5,7 @@ import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.post.dto.*;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.service.PostStompSender;
+import com.zonbeozon.post.service.PostMessageSendService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +17,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 
 public class PostMessageTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private PostStompSender postStompSender;
+    private PostMessageSendService postStompSender;
 
     private Channel channel;
     private Member member;
@@ -50,44 +50,44 @@ public class PostMessageTest extends AbstractChannelIntegrationTest {
     @DisplayName("post생성시 post생성 메시지가 브로드케스트되어야 한다.")
     @Test
     void postCreationBroadcastsPostCreationMessage()  {
-        postStompSender.handlePostCreated(new PostCreatedEvent(channel.getId(), post.getId()));
-        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
+        postStompSender.handlePostCreated(new PostEvent.Created(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventMessage> responseCaptor = ArgumentCaptor.forClass(PostEventMessage.class);
 
         Mockito.verify(simpMessagingTemplate)
                 .convertAndSend(
                         Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
                         responseCaptor.capture()
                 );
-        PostEventResponse capturedResponse = responseCaptor.getValue();
+        PostEventMessage capturedResponse = responseCaptor.getValue();
         Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.CREATED);
     }
 
     @DisplayName("post삭제시 post삭제 메시지가 브로드케스트되어야 한다.")
     @Test
     void shouldBroadcastDeleteEventWhenPostIsDeleted()  {
-        postStompSender.handlePostDeleted(new PostDeletedEvent(channel.getId(), post.getId()));
-        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
+        postStompSender.handlePostDeleted(new PostEvent.Deleted(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventMessage> responseCaptor = ArgumentCaptor.forClass(PostEventMessage.class);
         Mockito.verify(simpMessagingTemplate)
                 .convertAndSend(
                         Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
                         responseCaptor.capture()
                 );
-        PostEventResponse capturedResponse = responseCaptor.getValue();
+        PostEventMessage capturedResponse = responseCaptor.getValue();
         Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.DELETED);
     }
 
     @DisplayName("post업데이트시 post업데이트 메시지가 브로드케스트되어야 한다.")
     @Test
     void shouldBroadcastUpdateEventWhenPostIsUpdated()  {
-        postStompSender.handlePostUpdated(new PostUpdatedEvent(channel.getId(), post.getId()));
-        ArgumentCaptor<PostEventResponse> responseCaptor = ArgumentCaptor.forClass(PostEventResponse.class);
+        postStompSender.handlePostUpdated(new PostEvent.Updated(channel.getId(), post.getId()));
+        ArgumentCaptor<PostEventMessage> responseCaptor = ArgumentCaptor.forClass(PostEventMessage.class);
 
         Mockito.verify(simpMessagingTemplate)
                 .convertAndSend(
                         Mockito.eq("/topic/channel/" + channel.getId() + "/post"),
                         responseCaptor.capture()
                 );
-        PostEventResponse capturedResponse = responseCaptor.getValue();
+        PostEventMessage capturedResponse = responseCaptor.getValue();
         Assertions.assertThat(capturedResponse.type()).isEqualTo(PostEventType.UPDATED);
     }
 }

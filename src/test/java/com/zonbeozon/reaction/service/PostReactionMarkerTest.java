@@ -13,16 +13,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 public class PostReactionMarkerTest extends AbstractChannelIntegrationTest {
     @Autowired
     private PostReactionMarker reactionMarker;
     @Autowired
     private PostReactionRepository postReactionRepository;
-    @Qualifier("testChannelService")
-    @Autowired
-    private TestChannelService testChannelService;
 
     @DisplayName("좋아요 마크시 저장되어야 한다.")
     @Test

@@ -10,14 +10,16 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CommentRemover {
+public class CommentDeleteService {
     private final ApplicationEventPublisher eventPublisher;
     private final CommentRepository commentRepository;
 
-    public void deleteComment(Long commentId) {
+    public void delete(Long commentId) {
         Comment comment = commentRepository.findByIdWithPostAndChannel(commentId).orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
         commentRepository.delete(comment);
         eventPublisher.publishEvent(new CommentDeletedEvent(
@@ -25,5 +27,13 @@ public class CommentRemover {
                 comment.getPost().getId(),
                 comment.getId())
         );
+    }
+
+    public void deleteByPostId(Long postId) {
+        commentRepository.deleteByPostId(postId);
+    }
+
+    public void deleteByPostIdIn(List<Long> postIds) {
+        commentRepository.deleteByPostIdIn(postIds);
     }
 }

@@ -5,35 +5,39 @@ import com.zonbeozon.channel.service.finder.ChannelFinder;
 import com.zonbeozon.member.domain.Member;
 import com.zonbeozon.member.service.MemberFinder;
 import com.zonbeozon.post.domain.Post;
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import com.zonbeozon.post.repository.PostMetricRepository;
 import com.zonbeozon.post.repository.PostRepository;
-import com.zonbeozon.post.dto.PostCreateCommand;
-import com.zonbeozon.post.dto.PostCreatedEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PostCreator {
+public class PostCreateService {
     private final PostRepository postRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final ChannelFinder channelFinder;
     private final PostImageService postImageService;
     private final MemberFinder memberFinder;
     private final PostMetricRepository postMetricRepository;
 
-    public Long createPost(Long authorId, Long channelId, PostCreateCommand command) {
+    public Long createPost(
+            Long authorId,
+            Long channelId,
+            String content,
+            List<Long> imageIds
+    ) {
         Member author = memberFinder.findByIdElseThrow(authorId);
         Channel channel = channelFinder.findByIdElseThrow(channelId);
         PostMetric metric = createPostMetric();
-        Post post = Post.create(command.content(), channel, author, metric);
+        Post post = Post.create(content, channel, author, metric);
         postRepository.save(post);
-        if(!command.imageIds().isEmpty()) postImageService.updatePostImages(post.getId(), command.imageIds());
-        eventPublisher.publishEvent(new PostCreatedEvent(channelId, post.getId()));
+        if(imageIds == null || imageIds.isEmpty()) return post.getId();
+
+        postImageService.updatePostImages(post.getId(), imageIds);
         return post.getId();
     }
 

@@ -1,7 +1,7 @@
 package com.zonbeozon.post.service;
 
 import com.zonbeozon.channel.entity.Channel;
-import com.zonbeozon.post.domain.metric.PostMetric;
+import com.zonbeozon.post.domain.PostMetric;
 import com.zonbeozon.test.AbstractChannelIntegrationTest;
 import com.zonbeozon.image.ImageRepository;
 import com.zonbeozon.image.TestMockImageBuilder;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class PostUpdateTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private PostUpdater postUpdater;
+    private PostUpdateService postUpdateService;
     @Autowired
     private ImageRepository imageRepository;
     @Autowired
@@ -56,7 +56,7 @@ public class PostUpdateTest extends AbstractChannelIntegrationTest {
                 images.get(1),
                 newImage
         );
-        postUpdater.updateContent(post.getId(), new PostUpdateRequest("", imagesToUpdate.stream().map(Image::getId).toList()));
+        postUpdateService.updateContent(post.getId(), new PostUpdateRequest("", imagesToUpdate.stream().map(Image::getId).toList()));
 
         List<PostImage> postImages = postImageRepository.findAllByPostIdWithImage(post.getId());
         Assertions.assertThat(postImages).hasSize(3);

@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommentDeleteTest extends AbstractChannelIntegrationTest {
     @Autowired
-    private CommentRemover commentRemover;
+    private CommentDeleteService commentDeleteService;
     @Autowired
     private CommentRepository commentRepository;
 
@@ -40,14 +40,14 @@ public class CommentDeleteTest extends AbstractChannelIntegrationTest {
     @Test
     @DisplayName("comment 삭제 테스트")
     void deleteCommentSuccessfully() {
-        commentRemover.deleteComment(comment.getId());
+        commentDeleteService.delete(comment.getId());
         Assertions.assertThat(commentRepository.findById(comment.getId())).isEmpty();
     }
 
     @Test
     @DisplayName("CommentDeletedEvent 이벤트가 발생한다.")
     void publishCommentDeletedEventWithCorrectDetailsOnDeletion() {
-        commentRemover.deleteComment(comment.getId());
+        commentDeleteService.delete(comment.getId());
         List<CommentDeletedEvent> events = applicationEvents.stream(CommentDeletedEvent.class).toList();
         assertThat(events).hasSize(1);
         assertThat(events.get(0).postId()).isEqualTo(post.getId());
