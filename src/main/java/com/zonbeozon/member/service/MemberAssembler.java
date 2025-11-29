@@ -28,8 +28,7 @@ public class MemberAssembler {
 
     public MemberDto getMemberResponse(Long memberId) {
         Member member = memberFinder.findByIdWithProfileElseThrow(memberId);
-        ImageDto imageDto = member.getProfile() == null ? null : ImageDto.from(member.getProfile().getImage());
-        return MemberDto.from(member, imageDto);
+        return MemberDto.from(member);
     }
 
     public Map<Long, MemberDto> getMemberResponse(Collection<Long> memberIds) {

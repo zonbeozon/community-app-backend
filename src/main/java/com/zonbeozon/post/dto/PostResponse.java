@@ -28,7 +28,7 @@ public record PostResponse(
         return new PostResponse(
                 post.getId(),
                 post.getContent(),
-                post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::from).toList(),
+                post.getPostImages().stream().map(PostImage::getImage).map(ImageDto::create).toList(),
                 PostMetricResponse.from(post.getMetric()),
                 authorResponse,
                 isLikedByRequester,

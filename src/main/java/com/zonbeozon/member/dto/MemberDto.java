@@ -18,19 +18,12 @@ public record MemberDto(
                 serverRole
         );
     }
-    public static MemberDto from(Member member, ImageDto profile) {
-        return new MemberDto(
-                member.getId(),
-                member.getUsername(),
-                profile,
-                member.getRole()
-        );
-    }
+
     public static MemberDto from(Member member) {
         return new MemberDto(
                 member.getId(),
                 member.getUsername(),
-                new ImageDto(member.getProfile().getImage().getId(), member.getProfile().getImage().getUrl()),
+                ImageDto.create(member.getImage()),
                 member.getRole()
         );
     }

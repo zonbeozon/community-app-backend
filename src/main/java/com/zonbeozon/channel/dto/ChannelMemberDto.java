@@ -26,11 +26,10 @@ public record ChannelMemberDto(
 
     public static ChannelMemberDto from(ChannelMember channelMember) {
         Member member = channelMember.getMember();
-        ImageDto imageDto = member.getProfile() == null ? null : ImageDto.from(member.getProfile().getImage());
         return new ChannelMemberDto(
                 member.getId(),
                 member.getUsername(),
-                imageDto,
+                ImageDto.create(member.getProfile().getImage()),
                 member.getRole(),
                 channelMember.getRole()
         );

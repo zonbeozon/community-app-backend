@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
-@ToString
+@ToString(exclude = {"parent", "children", "chatImages", "chattingGroup"})
 public class Chat extends BaseTimeEntity {
     public final static int MAX_IMAGE_COUNT = 3;
     public final static int MAX_CONTENT_COUNT = 512;
@@ -50,6 +50,7 @@ public class Chat extends BaseTimeEntity {
     private Chat parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("createdAt DESC, id DESC")
     private List<Chat> children = new ArrayList<>();
 
     public Chat(ChattingGroup chattingGroup, Member author, String content, Chat parent) {
@@ -77,7 +78,11 @@ public class Chat extends BaseTimeEntity {
         return parent == null;
     }
 
+    public List<Image> getImages() {
+        return chatImages.stream().map(ChatImage::getImage).toList();
+    }
+
     public List<Long> getImageIds() {
-        return chatImages.stream().map(ChatImage::getImage).map(Image::getId).toList();
+        return getImages().stream().map(Image::getId).toList();
     }
 }

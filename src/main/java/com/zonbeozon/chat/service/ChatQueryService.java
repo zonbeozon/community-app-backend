@@ -24,9 +24,9 @@ public class ChatQueryService {
     private final ChatRepository chatRepository;
 
     public PagedChatPayload getPagedChatPayload(Long chattingGroupId, ChatCursor cursor, int pageSize) {
-        CursorPage<Chat, ChatCursor> chats = chatRepository.findByChattingGroupAndCursor(chattingGroupId, cursor, pageSize);
+        CursorPage<Chat, ChatCursor> chats = chatRepository.findRootChatByChattingGroupAndCursor(chattingGroupId, cursor, pageSize);
         List<ChatPayload> chatPayloads = convertChatsToChatPayloads(chats.getContent());
-        return new PagedChatPayload(chattingGroupId, chatPayloads, chats.getSize(), chats.getTotalElements(), chats.getNextCursor());
+        return new PagedChatPayload(chattingGroupId, chatPayloads, chats.getSize(), chats.getTotalElements(), chats.isLast(), chats.getNextCursor());
     }
 
     public ChatPayload getReplyExecludedChatPayload(Long chatId) {
@@ -56,6 +56,8 @@ public class ChatQueryService {
     }
 
     private List<ImageDto> convertChatImagesToDto(List<ChatImage> chatImages) {
-        return chatImages.stream().map(chatImage -> new ImageDto(chatImage.getImage().getId(), chatImage.getImage().getUrl())).toList();
+        return chatImages.stream()
+                .map(chatImage -> ImageDto.create(chatImage.getImage()))
+                .toList();
     }
 }

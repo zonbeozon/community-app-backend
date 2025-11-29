@@ -7,8 +7,9 @@ import java.util.List;
 public record PagedChatPayload(
         Long chattingGroupId,
         List<ChatPayload> content,
-        int totalPages,
+        int size,
         long totalElements,
+        boolean isLast,
         ChatCursor nextCursor
 ) {
 }

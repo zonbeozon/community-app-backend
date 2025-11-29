@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface ChatRepositoryCustom {
     Optional<Chat> findByIdWithChatImages(Long id);
     Optional<Chat> findByIdWithChatImagesAndAuthor(Long id);
-    CursorPage<Chat, ChatCursor> findByChattingGroupAndCursor(Long chattingGroupId, ChatCursor cursor, int pageSize);
+    CursorPage<Chat, ChatCursor> findRootChatByChattingGroupAndCursor(Long chattingGroupId, ChatCursor cursor, int pageSize);
 }

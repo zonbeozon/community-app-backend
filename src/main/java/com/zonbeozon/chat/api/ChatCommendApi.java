@@ -2,15 +2,13 @@ package com.zonbeozon.chat.api;
 
 import com.zonbeozon.auth.service.AuthenticationService;
 import com.zonbeozon.chat.domain.ChattingGroup;
-import com.zonbeozon.chat.dto.ChatContentUpdateRequest;
-import com.zonbeozon.chat.dto.ChatCreateRequest;
-import com.zonbeozon.chat.dto.ChatImagesAddRequest;
-import com.zonbeozon.chat.dto.ChatImagesDeleteRequest;
+import com.zonbeozon.chat.dto.*;
 import com.zonbeozon.chat.service.*;
 import com.zonbeozon.global.annotation.ApiComponent;
 import com.zonbeozon.image.service.ImageOwnershipVerifier;
 import com.zonbeozon.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @ApiComponent
@@ -24,11 +22,15 @@ public class ChatCommendApi {
     private final ChatDeleteService chatDeleteService;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
     private final ChattingGroupFinder chattingGroupFinder;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ChatFinder chatFinder;
 
     public Long createChat(Long chattingGroupId, ChatCreateRequest request) {
         Member member = authenticationService.getCurrentMember();
         imageOwnershipVerifier.verify(member.getId(), request.imageIds());
-        return chatCreateService.create(chattingGroupId, member.getId(), request.content(), request.parentId(), request.imageIds());
+        Long chatId = chatCreateService.create(chattingGroupId, member.getId(), request.content(), request.parentId(), request.imageIds());
+        eventPublisher.publishEvent(new ChatEvent.Created(chattingGroupId, chatId));
+        return chatId;
     }
 
     public Long createChat(String chattingGroupName , ChatCreateRequest request) {
@@ -41,23 +43,31 @@ public class ChatCommendApi {
         imageOwnershipVerifier.verify(member.getId(), request.imageIds());
         chatAuthorizationService.verifyOwner(chatId, member.getId());
         chatUpdateService.addImages(chatId, request.imageIds());
+        Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
+        eventPublisher.publishEvent(new ChatEvent.Updated(chattingGroupId ,chatId));
     }
 
     public void updateContent(Long chatId, ChatContentUpdateRequest request) {
         Member member = authenticationService.getCurrentMember();
         chatAuthorizationService.verifyOwner(member.getId(), chatId);
         chatUpdateService.updateContent(chatId, request.content());
+        Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
+        eventPublisher.publishEvent(new ChatEvent.Updated(chattingGroupId ,chatId));
     }
 
     public void deleteChat(Long chatId) {
         Member member = authenticationService.getCurrentMember();
         chatAuthorizationService.verifyOwner(member.getId(), chatId);
         chatDeleteService.deleteChat(chatId);
+        Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
+        eventPublisher.publishEvent(new ChatEvent.Deleted(chattingGroupId ,chatId));
     }
 
     public void deleteChatImages(Long chatId, ChatImagesDeleteRequest request) {
         Member member = authenticationService.getCurrentMember();
         chatAuthorizationService.verifyOwner(member.getId(), chatId);
         chatDeleteService.deleteImages(chatId, request.imageIds());
+        Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
+        eventPublisher.publishEvent(new ChatEvent.Updated(chattingGroupId ,chatId));
     }
 }

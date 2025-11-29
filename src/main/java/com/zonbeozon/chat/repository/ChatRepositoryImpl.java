@@ -46,12 +46,13 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom {
     }
 
     @Override
-    public CursorPage<Chat, ChatCursor> findByChattingGroupAndCursor(Long chattingGroupId, ChatCursor cursor, int pageSize) {
+    public CursorPage<Chat, ChatCursor> findRootChatByChattingGroupAndCursor(Long chattingGroupId, ChatCursor cursor, int pageSize) {
         List<Chat> result = queryFactory
                 .selectFrom(chat)
                 .join(chat.author, member).fetchJoin()
                 .where(
                         chat.chattingGroup.id.eq(chattingGroupId),
+                        chat.parent.isNull(),
                         cursorCondition(cursor)
                 )
                 .orderBy(chat.createdAt.desc(), chat.id.desc())
@@ -70,7 +71,7 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom {
         Long totalElements = queryFactory
                 .select(chat.count())
                 .from(chat)
-                .where(chat.chattingGroup.id.eq(chattingGroupId))
+                .where(chat.chattingGroup.id.eq(chattingGroupId).and(chat.parent.isNull()))
                 .fetchOne();
 
         return new CursorPageImpl<>(result, nextCursor, totalElements, false ,!hasNext);

@@ -6,7 +6,8 @@ public record ImageDto(
         Long imageId,
         String imageUrl
 ) {
-    public static ImageDto from(Image image) {
+    public static ImageDto create(Image image) {
+        if(image == null) return null;
         return new ImageDto(image.getId(), image.getUrl());
     }
 }

@@ -1,6 +1,7 @@
 package com.zonbeozon.member.domain;
 
 import com.zonbeozon.global.entity.BaseTimeEntity;
+import com.zonbeozon.image.entity.Image;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -53,6 +54,10 @@ public class Member extends BaseTimeEntity {
 
     public void setProfile(MemberProfile profile) {
         this.profile = profile;
+    }
+
+    public Image getImage() {
+        return (this.profile == null) ? null : this.profile.getImage();
     }
 
     public void updateServerRole(ServerRole role) {
