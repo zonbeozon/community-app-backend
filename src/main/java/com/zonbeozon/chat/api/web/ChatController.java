@@ -28,7 +28,7 @@ public class ChatController {
     private final ChatQueryApi chatQueryApi;
 
     @Operation(
-            summary = "채팅 생성(그룹 이름)",
+            summary = "채팅 생성",
             description = "채팅 길이는 512자 이내, 채팅 이미지는 3개 까지 가능하다.",
             security = @SecurityRequirement(name = SwaggerConfig.SECURITY_METHOD)
     )
@@ -38,15 +38,15 @@ public class ChatController {
                     schema = @Schema(type = "integer", format = "int64", example = "1")
             ))
     })
-    @PostMapping("chattingGroups/{chattingGroupName}/chats")
+    @PostMapping("chattingGroups/{chattingGroupId}/chats")
     public ResponseEntity<Long> createChat(
             @PathVariable
-            String chattingGroupName,
+            Long chattingGroupId,
             @RequestBody
             @Valid
             ChatCreateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatCommendApi.createChat(chattingGroupName, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatCommendApi.createChat(chattingGroupId, request));
     }
 
     @Operation(
@@ -135,15 +135,15 @@ public class ChatController {
                     schema = @Schema(implementation = PagedChatPayload.class))
             ),
     })
-    @GetMapping("chattingGroups/{chattingGroupName}/chats")
+    @GetMapping("chattingGroups/{chattingGroupId}/chats")
     public ResponseEntity<PagedChatPayload> getPagedChat(
             @PathVariable
-            String chattingGroupName,
+            Long chattingGroupId,
             @RequestParam
             ChatCursor cursor,
             @RequestParam(required = false, defaultValue = "20")
             int pageSize
     ) {
-        return ResponseEntity.ok(chatQueryApi.getPagedChatPayload(chattingGroupName, cursor, pageSize));
+        return ResponseEntity.ok(chatQueryApi.getPagedChatPayload(chattingGroupId, cursor, pageSize));
     }
 }

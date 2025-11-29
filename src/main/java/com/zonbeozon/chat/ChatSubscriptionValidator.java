@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ChatSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String CHAT_SUBSCRIPTION_PATTERN = "/topic/chatting-groups/{chattingGroupName}/chats";
+    private static final String CHAT_SUBSCRIPTION_PATTERN = "/topic/chatting-groups/{chattingGroupId}/chats";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChattingGroupFinder chattingGroupFinder;
 
@@ -32,13 +32,13 @@ public class ChatSubscriptionValidator implements StompSubscriptionValidateHandl
         if (principal == null) {
             throw new SubscriptionException(SubscriptionException.ErrorCode.UNAUTHORIZED);
         }
-        String chattingGroupName = extractGroupNameFromDestination(accessor.getDestination());
-        chattingGroupFinder.findByName(chattingGroupName)
+        Long chattingGroupId = extractGroupNameFromDestination(accessor.getDestination());
+        chattingGroupFinder.findById(chattingGroupId)
                 .orElseThrow(() -> new SubscriptionException(SubscriptionException.ErrorCode.CHATTING_GROUP_NOT_FOUND));
     }
 
-    private String extractGroupNameFromDestination(String destination) {
+    private Long extractGroupNameFromDestination(String destination) {
         Map<String, String> variables = pathMatcher.extractUriTemplateVariables(CHAT_SUBSCRIPTION_PATTERN, destination);
-        return variables.get("chattingGroupName");
+        return Long.parseLong(variables.get("chattingGroupId"));
     }
 }

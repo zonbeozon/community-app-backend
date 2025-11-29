@@ -1,5 +1,6 @@
 package com.zonbeozon.info.crypto.service;
 
+import com.zonbeozon.chat.service.ChattingGroupFinder;
 import com.zonbeozon.global.exception.BadRequestException;
 import com.zonbeozon.global.exception.ErrorCode;
 import com.zonbeozon.global.exception.NotFoundException;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class CoinInfoQueryService {
     private final CoinTickerRepository coinTickerRepository;
     private final CoinMetadataRepository coinMetadataRepository;
+    private final ChattingGroupFinder chattingGroupFinder;
 
     public CoinInfoDto getCoinInfo(String symbol, LanguageCode languageCode, BaseAsset baseAsset) {
         CoinMetadata coinMetadata = coinMetadataRepository.findBySymbol(symbol)
@@ -52,6 +54,10 @@ public class CoinInfoQueryService {
         List<CoinMetadata> metadataList = coinMetadataRepository.findAll();
         if(metadataList.isEmpty() && !metadataList.getFirst().getLocalizedInfos().containsKey(languageCode)) throw new BadRequestException(ErrorCode.SYMBOL_NOT_FOUND);
         Map<String, CoinTicker> tickerMap = coinTickerRepository.findAllAsMap();
+        List<String> symbols = metadataList.stream()
+                .map(CoinMetadata::getSymbol)
+                .toList();
+        Map<String, Long> groupIdMap = chattingGroupFinder.findIdMapByNames(symbols);
         verifyMissingSymbols(metadataList, tickerMap);
         return metadataList.stream()
                 .map(metadata -> {
@@ -60,7 +66,8 @@ public class CoinInfoQueryService {
                             metadata.getSymbol(),
                             metadata.getLogo(),
                             metadata.getLocalizedInfos().get(languageCode).getName(),
-                            ticker.getCurrencyRank()
+                            ticker.getCurrencyRank(),
+                            groupIdMap.get(metadata.getSymbol())
                     );
                 })
                 .sorted(Comparator.comparing(SimplifiedCoinInfoDto::rank))

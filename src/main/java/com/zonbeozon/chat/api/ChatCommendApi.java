@@ -21,7 +21,6 @@ public class ChatCommendApi {
     private final ChatUpdateService chatUpdateService;
     private final ChatDeleteService chatDeleteService;
     private final ImageOwnershipVerifier imageOwnershipVerifier;
-    private final ChattingGroupFinder chattingGroupFinder;
     private final ApplicationEventPublisher eventPublisher;
     private final ChatFinder chatFinder;
 
@@ -31,11 +30,6 @@ public class ChatCommendApi {
         Long chatId = chatCreateService.create(chattingGroupId, member.getId(), request.content(), request.parentId(), request.imageIds());
         eventPublisher.publishEvent(new ChatEvent.Created(chattingGroupId, chatId));
         return chatId;
-    }
-
-    public Long createChat(String chattingGroupName , ChatCreateRequest request) {
-        ChattingGroup chattingGroup = chattingGroupFinder.findByNameElseThrow(chattingGroupName);
-        return createChat(chattingGroup.getId(), request);
     }
 
     public void addChatImages(Long chatId, ChatImagesAddRequest request) {
