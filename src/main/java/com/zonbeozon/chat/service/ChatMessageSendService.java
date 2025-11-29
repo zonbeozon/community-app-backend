@@ -33,10 +33,7 @@ public class ChatMessageSendService {
     public void handleChatDeleted(ChatEvent.Deleted event) {
         messagingTemplate.convertAndSend(
                 getDestination(event.chattingGroupId),
-                new ChatEventMessage(
-                        ChatEventType.DELETED,
-                        chatQueryService.getReplyExecludedChatPayload(event.chatId)
-                )
+                ChatEventMessage.createDeleted(event.chatId)
         );
     }
 

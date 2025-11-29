@@ -35,7 +35,7 @@ public class ChatCommendApi {
     public void addChatImages(Long chatId, ChatImagesAddRequest request) {
         Member member = authenticationService.getCurrentMember();
         imageOwnershipVerifier.verify(member.getId(), request.imageIds());
-        chatAuthorizationService.verifyOwner(chatId, member.getId());
+        chatAuthorizationService.verifyOwner(member.getId(), chatId);
         chatUpdateService.addImages(chatId, request.imageIds());
         Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
         eventPublisher.publishEvent(new ChatEvent.Updated(chattingGroupId ,chatId));
@@ -52,8 +52,8 @@ public class ChatCommendApi {
     public void deleteChat(Long chatId) {
         Member member = authenticationService.getCurrentMember();
         chatAuthorizationService.verifyOwner(member.getId(), chatId);
-        chatDeleteService.deleteChat(chatId);
         Long chattingGroupId = chatFinder.findByIdElseThrow(chatId).getChattingGroup().getId();
+        chatDeleteService.deleteChat(chatId);
         eventPublisher.publishEvent(new ChatEvent.Deleted(chattingGroupId ,chatId));
     }
 
