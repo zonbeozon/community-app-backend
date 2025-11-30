@@ -35,7 +35,7 @@ public class CoinInfoQueryService {
         CoinTicker coinTicker = coinTickerRepository.findBySymbol(symbol)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SYMBOL_NOT_FOUND));
         if(!coinTicker.getQuotes().containsKey(baseAsset)) throw new BadRequestException(ErrorCode.UNSUPPORTED_BASE_ASSET);
-
+        Long chattingGroupId = chattingGroupFinder.findByNameElseThrow(symbol).getId();
         return new CoinInfoDto(
                 symbol,
                 coinMetadata.getLogo(),
@@ -46,7 +46,8 @@ public class CoinInfoQueryService {
                 coinTicker.getCirculatingSupply(),
                 coinTicker.getTotalSupply(),
                 CoinQuoteDto.from(coinTicker.getQuotes().get(baseAsset)),
-                coinTicker.getLastUpdated()
+                coinTicker.getLastUpdated(),
+                chattingGroupId
         );
     }
 
@@ -54,10 +55,6 @@ public class CoinInfoQueryService {
         List<CoinMetadata> metadataList = coinMetadataRepository.findAll();
         if(metadataList.isEmpty() && !metadataList.getFirst().getLocalizedInfos().containsKey(languageCode)) throw new BadRequestException(ErrorCode.SYMBOL_NOT_FOUND);
         Map<String, CoinTicker> tickerMap = coinTickerRepository.findAllAsMap();
-        List<String> symbols = metadataList.stream()
-                .map(CoinMetadata::getSymbol)
-                .toList();
-        Map<String, Long> groupIdMap = chattingGroupFinder.findIdMapByNames(symbols);
         verifyMissingSymbols(metadataList, tickerMap);
         return metadataList.stream()
                 .map(metadata -> {
@@ -66,8 +63,7 @@ public class CoinInfoQueryService {
                             metadata.getSymbol(),
                             metadata.getLogo(),
                             metadata.getLocalizedInfos().get(languageCode).getName(),
-                            ticker.getCurrencyRank(),
-                            groupIdMap.get(metadata.getSymbol())
+                            ticker.getCurrencyRank()
                     );
                 })
                 .sorted(Comparator.comparing(SimplifiedCoinInfoDto::rank))

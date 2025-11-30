@@ -4,7 +4,6 @@ public record SimplifiedCoinInfoDto(
         String symbol,
         String logo,
         String name,
-        Long rank,
-        Long chattingGroupId
+        Long rank
 ) {
 }

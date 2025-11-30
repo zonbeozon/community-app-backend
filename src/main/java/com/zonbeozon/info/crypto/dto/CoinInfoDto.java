@@ -14,6 +14,8 @@ public record CoinInfoDto(
         BigDecimal circulatingSupply,
         BigDecimal totalSupply,
         CoinQuoteDto quote,
-        LocalDateTime tickerLastUpdated
+        LocalDateTime tickerLastUpdated,
+
+        Long chattingGroupId
 ) {
 }
