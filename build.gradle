@@ -58,6 +58,13 @@ dependencies {
 	testImplementation 'com.h2database:h2'
 }
 
+def querydslDir = "src/main/generated"
+sourceSets {
+	main.java.srcDirs += querydslDir
+}
+tasks.withType(JavaCompile).configureEach {
+	options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
