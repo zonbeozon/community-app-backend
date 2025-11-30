@@ -1,4 +1,4 @@
-package com.zonbeozon.post.service.metric;
+package com.zonbeozon.post.service.recommend;
 
 import org.springframework.stereotype.Component;
 
@@ -7,12 +7,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class SimplePostContentAccessor {
+public class SimplePostContentScoreCalculator implements PostContentScoreCalculator {
     private static final double WEIGHT_LENGTH = 2.5;
     private static final double WEIGHT_TTR = 2.0;
     private static final double WEIGHT_STRUCTURE = 1.5;
 
-    public double assess(String content) {
+    @Override
+    public double calculate(String content) {
         if (content == null || content.isBlank()) {
             return 0.0;
         }

@@ -8,7 +8,6 @@ import com.zonbeozon.post.dto.PagedRecommendPostPayload;
 import com.zonbeozon.post.dto.RecommendPostDto;
 import com.zonbeozon.post.repository.PostRepository;
 import com.zonbeozon.post.service.PostImageService;
-import com.zonbeozon.post.service.metric.LastScoreUpdatedTimeProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

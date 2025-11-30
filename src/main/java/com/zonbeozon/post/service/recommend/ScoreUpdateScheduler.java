@@ -1,4 +1,4 @@
-package com.zonbeozon.post.service.metric;
+package com.zonbeozon.post.service.recommend;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

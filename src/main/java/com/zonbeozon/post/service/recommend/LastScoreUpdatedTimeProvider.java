@@ -1,4 +1,4 @@
-package com.zonbeozon.post.service.metric;
+package com.zonbeozon.post.service.recommend;
 
 import java.time.LocalDateTime;
 

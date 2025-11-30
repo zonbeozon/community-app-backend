@@ -25,11 +25,8 @@ class ChannelRepositoryImpl implements ChannelRepositoryCustom {
     @Override
     public Optional<Channel> findByIdWithProfile(Long channelId) {
         JPAQuery<Channel> query = queryFactory.selectFrom(channel);
-
         query.leftJoin(channel.profile, channelProfile).leftJoin(channelProfile.image, image);
-
         query.where(channel.id.eq(channelId));
-
         return Optional.ofNullable(query.fetchOne());
     }
 
