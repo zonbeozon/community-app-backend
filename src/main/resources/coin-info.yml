@@ -1,6 +1,6 @@
 coin-info:
   health-check:
-    data:
+    ticker:
       stale-threshold-minutes: 20
   ticker:
 #    update-interval 이 1분 이하여도 cmc 기반 업데이트인 경우 cmc api 자체 업데이트 빈도가 1분 이기 때문에
