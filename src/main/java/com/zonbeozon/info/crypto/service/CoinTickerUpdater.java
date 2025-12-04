@@ -7,6 +7,8 @@ import com.zonbeozon.info.crypto.dto.CoinTickerDto;
 import com.zonbeozon.info.crypto.repository.CoinTickerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,11 @@ public class CoinTickerUpdater {
     private final SupportedCoinListProvider supportedCoinListProvider;
     private final CoinTickerProvider coinTickerProvider;
     private final CoinInfoDataHealthIndicator coinInfoDataHealthIndicator;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void init() {
+        update();
+    }
 
     @Scheduled(cron = "${coin-info.ticker.update-interval-cron}")
     public void update() {

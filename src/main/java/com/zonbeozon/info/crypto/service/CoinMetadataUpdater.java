@@ -5,6 +5,8 @@ import com.zonbeozon.info.crypto.dto.CoinMetadataDto;
 import com.zonbeozon.info.crypto.repository.CoinMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,11 @@ public class CoinMetadataUpdater {
     private final SupportedCoinListProvider supportedCoinListProvider;
     private final CoinMetadataProvider coinMetadataProvider;
     private final CoinInfoDataHealthIndicator coinInfoDataHealthIndicator;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void init() {
+        update();
+    }
 
     @Scheduled(cron = "${coin-info.metadata.update-interval-cron}")
     public void update() {
