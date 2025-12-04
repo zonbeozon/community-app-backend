@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ChatSubscriptionValidator implements StompSubscriptionValidateHandler {
-    private static final String CHAT_SUBSCRIPTION_PATTERN = "/topic/chatting-groups/{chattingGroupId}/chats";
+    private static final String CHAT_SUBSCRIPTION_PATTERN = "/topic/chattingGroups/{chattingGroupId}/chats";
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final ChattingGroupFinder chattingGroupFinder;
 
