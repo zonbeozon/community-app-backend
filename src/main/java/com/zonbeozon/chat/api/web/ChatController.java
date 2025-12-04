@@ -139,7 +139,7 @@ public class ChatController {
     public ResponseEntity<PagedChatPayload> getPagedChat(
             @PathVariable
             Long chattingGroupId,
-            @RequestParam
+            @RequestParam(required = false)
             ChatCursor cursor,
             @RequestParam(required = false, defaultValue = "20")
             int pageSize
